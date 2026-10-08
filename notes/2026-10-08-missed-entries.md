@@ -4,7 +4,7 @@ Review only. The book is unchanged. This file is pointers for a slow screenshot 
 
 Trinity reads Webull through a screenshot-and-click loop that takes about 30–90+ seconds per cycle. The entry is a 1-minute Heikin Ashi close across EMA20. Both misses today were that close going unread until the bar was already gone. The 9:04 call was a valid reclaim. The 9:41 put was a valid cross, and the ~$0.80 no-chase band did not say to skip it.
 
-The 749 put is the next section. The afternoon 753 call is the section after that.
+The 749 put is the next section. The afternoon 753 call follows it. The doji-at-level idea is last.
 
 Times are CT. Market opened 8:30. Distances below are arithmetic on the prints in this note. Where a live reading was not recorded, it is left blank.
 
@@ -171,4 +171,30 @@ Pointers only. The book still says VWAP is confirmation, the exit is still the H
    A $0.08 premium makes one cent look large. That is the strike and the $0.01 exit spread, not a reason to wait. The stop cancel still has to be the same action as the sell. A rejected sell gets the $0.04 stop back before anything else.
 
 The pattern underneath: four book-shaped looks were missed or passed (9:04 call, 9:41 put, the 11:15 read, the 11:37 put), the crash was invisible, and the two fills the loop could complete were a scratch put and this counter-trend call. The headlines matched the afternoon trend. They were not a reason to have skipped the 9:04 call. This 753 call was the trade fighting that trend. The second bullet Xavier authorized at 10:52 was spent there.
+
+## HA doji at a level
+
+Not a book change. The entry stays the 1-minute HA touch or cross of EMA20. The bar script already emits HA, EMA20, RSI14, VWAP, MACD histogram, and volume about 1.3 seconds after the Webull 1-minute close. A doji flag belongs on that line.
+
+No HA open, high, low, close, or volume was recorded for the 748.19 low, the 746.50 sweep, or the 743.23 low. Those bars are not marked as dojis here. What is known: 748.19 (11:55, RSI14 about 24.5, EMA20 751.04, VWAP 754.01) did not hold, 746.50 (12:03) did not hold, and the later low was 743.23. By 12:38, QQQ 745.90 was 2.67 above 743.23.
+
+1. **Make it an alert that can upgrade a book entry. Do not make the doji its own order.**
+   The doji minute is the warning. The order is still the next bar, and only when that bar is already a legal EMA20 entry (RSI14, the $0.80 band, spread at or under $0.02, ask nearest about $0.15 and at or under $0.20). A doji in the middle of a chart does not block a normal EMA20 trade. A doji that never gets the EMA20 cross does not get a second entry system. Buying the 748 touch because it was "demand" would have been a call 2.57 under EMA and 5.54 under VWAP, and that level failed.
+
+2. **Code the doji off the HA bar Trinity sees, and reject it when the real bar is directional.**
+   `range = ha_high - ha_low`, `body = abs(ha_close - ha_open)`, upper wick and lower wick from the HA body. Fire only when `range` is between $0.08 and $0.60, `body / range <= 0.25`, and each wick is at least 0.20 of `range`. Also require the real bar's `abs(close - open) / (high - low) <= 0.40`. A range under $0.08 is dust. A range over $0.60 is too wide a stop for a $0.15 premium. These ratios are journal gates, not a locked edge.
+
+3. **Test the level with the real wick, against prices that existed before this bar.**
+   Use prior-day high, low, and close. Use premarket high and low only when those 1-minute bars are in the feed. Use VWAP. Use a manual price Xavier wrote down before the open (748 was one). Use a swing only after a 2-bar fractal has confirmed, and only when price comes back to it. The bar that sets a new session low is not support. 746.50 and 743.23 were that kind of bar.
+   Support touch: real low within $0.20 of the level, and real close not more than $0.20 through it. Resistance is the mirror. 748.19 is $0.19 through 748, so it would have matched the band. Two levels inside $0.20 count as one: keep the manual price, otherwise the nearest.
+
+4. **Require the next bar, then use the book stop plus the doji wick.**
+   The alert dies on the next close. A long confirmation is an HA green bar, real close back above the level, and a legal book long. A short is the mirror, with RSI14 still at or above 30. On a fill, place the −50% stop immediately ($0.075 on a $0.15 fill). Also exit on a later 1-minute real close beyond the doji wick (below the doji low on a long, above the doji high on a short), in the same action as clearing that stop. Book exits stay as they are: HA flip, EMA break, chop, 2x, half giveback, flat at 2:45 CT.
+
+5. **Filter trend-day knives and chop. Low volume is a skip.**
+   No long confirmation while price is more than $0.80 under VWAP. The $0.80 here is only this alert's size, borrowed from the chase band. It blocks the 11:55 print (5.54 under) and the 12:38 print (5.97 under). Ordinary EMA20 trades still treat VWAP as confirmation only. No short confirmation more than $0.80 above VWAP. If the last five real closes fit inside $0.40, expire the alert. The 10:43–10:47 box was $0.38.
+   Volume baseline is the median of the prior 20 regular-hours 1-minute volumes, so one flush bar does not reset the scale. No doji alert until those 20 bars exist (8:50 CT). `vol_ratio < 0.8` on the doji is a skip. A quiet doji is not a level. `vol_ratio >= 1.5` is a climax tag, still not an order. The confirmation bar needs `vol_ratio >= 1.0` or the alert expires. Today's three lows have no volume in this note, so they do not calibrate these ratios.
+
+6. **Add `DOJI_AT_LEVEL` to the existing bar line. It does not send an order.**
+   On the doji close, about 1.3 seconds later: `DOJI_AT_LEVEL | watch CALL|PUT | level name price | dist | vol_ratio | confirm_by next close | order no`. On the next close emit `DOJI_CONFIRM` only if pointer 4 and pointer 5 both pass, and only then may the agent run the normal book click. Otherwise emit `DOJI_EXPIRE`. The click agent does nothing on `DOJI_AT_LEVEL` except be awake.
 
