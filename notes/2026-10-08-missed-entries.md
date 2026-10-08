@@ -1,10 +1,10 @@
-# Thu 2026-10-08 — missed entries, and the 749 put
+# Thu 2026-10-08 — missed entries, the 749 put, and the 753 call
 
 Review only. The book is unchanged. This file is pointers for a slow screenshot executor. It is not an order and it does not change the rails.
 
 Trinity reads Webull through a screenshot-and-click loop that takes about 30–90+ seconds per cycle. The entry is a 1-minute Heikin Ashi close across EMA20. Both misses today were that close going unread until the bar was already gone. The 9:04 call was a valid reclaim. The 9:41 put was a valid cross, and the ~$0.80 no-chase band did not say to skip it.
 
-The ticket that was taken, the 749 put, is in the last section.
+The 749 put is the next section. The afternoon 753 call is the section after that.
 
 Times are CT. Market opened 8:30. Distances below are arithmetic on the prints in this note. Where a live reading was not recorded, it is left blank.
 
@@ -103,4 +103,72 @@ Ranked by what changes the next review or the next live exit. The book was not e
 
 4. **Stamp the chop-start bar and the stop-cancel time on the exit line.** Impact: modest, and it is what makes pointer 3 checkable next time. Safety: a log only.
    Why: "~3 minutes" and "cancelled before the sell" are the two judgments on this exit, and the only clock time recorded is the 10:47:44 submit.
+
+## Afternoon session and the 753 call
+
+Xavier authorized one more trade at 10:52. Settled cash $44, 1 contract, max $0.20. Same book. Trinity entered and exited on its own. This call lost about $2 gross. With the 749 put's +$1, the day is about −$1 before fees. The account went from 93.85 to 91.74 on the round trip, −$2.11.
+
+The session he described: open 754.01, high 757.18, later low 743.23 around 12:25–12:30. From that open to that low is 10.78 points, about 1.4%. Backdrop already named: oil above $105, 10Y at 5.34%, and AI-bubble headlines. The book was not edited.
+
+### What was right
+
+The 11:37 put was a real cross, and passing it was the right use of the deadline. High 754.06 against EMA20 about 753.94, a tag of about 0.12. Close about 753.75, about 0.19 under that EMA, and the bar was red. The 750 put was already staged. Qty and limit were still not in before the 11:39 close, so the order was not sent. That pass matches the rule from this morning. The strike being staged was not enough.
+
+No put at 11:55. QQQ 748.47, low 748.19 at the 748 demand zone, EMA20 751.04, VWAP 754.01, RSI14 about 24.5. The RSI < 30 rule blocks the put. The zone did not hold. The later low was 743.23.
+
+The 12:03 print was not a fresh put either. QQQ about 747.1 after a sweep to 746.50, EMA20 749.15, so price was already about 2.05 under EMA, past the $0.80 band. RSI14 31.5 had cleared 30. MACD histogram was shrinking. Distance still blocked it.
+
+The exit of the 753 call followed the book. A closed 1-minute HA bar turned red around 12:44. That is the color flip. Sell 1 limit at the bid, 0.06 against an ask of 0.07, spread $0.01, filled around 12:46. At 12:46, QQQ 746.07 against EMA20 746.05, so price was still on EMA and the EMA-break exit had not fired. The flip is its own exit. The stop was $0.04, half of the about $0.08 fill, so the stop was built off the fill and not off the $0.19 limit. From the red close around 12:44 to the fill around 12:46 is about two minutes.
+
+Restarting Webull is what brought the chart back. It had frozen around 11:43. Quotes kept moving, Time & Sales said Load failed, and the internet was fine. Clicking intervals and the watchlist did not fix it. Restart around 11:53, PIN, chart live around 11:55.
+
+### What was wrong
+
+The 11:15 call was a slow read. QQQ reclaimed EMA20 near 753 and popped to about 754.7 in a couple of bars, about 1.7 points. No close, no RSI, and no spread were recorded, so this note does not fully score that bar. The screen was too slow to take it.
+
+The chart was then blind for the drop. From the freeze around 11:43 until the chart returned around 11:55, QQQ went from about 752.4 to 748.5, about 3.9 points, with no bar recorded in this note. Nothing in that hole is called a missed cross. By the time the picture was back, the put was blocked by RSI.
+
+The 753 call cannot be scored as a finished HA cross. Fill time and the trigger bar were not logged. The logging line from the 749 put was not written. At 12:38 the call was already on and roughly flat: QQQ 745.90, EMA20 745.73 (0.17 above), VWAP 751.87, RSI14 about 51, MACD histogram +0.28 and rising. RSI was not over 70. The distance to EMA was inside $0.80. Those checks do not forbid a call. They also do not prove the entry bar.
+
+It was a low-quality call if that bar did happen. Both in-trade snapshots are far under VWAP: 751.87 − 745.90 = 5.97 at 12:38, and 751.74 − 746.07 = 5.67 at 12:46. The question's figure of about 2.4 under VWAP is not either of those prints. The day had already made the 743.23 low. EMA20 had been 751.04 at 11:55 and 749.15 at 12:03. At 12:38 price was only just back above a much lower EMA. The book still allows the trade, because VWAP is confirmation and not a gate. This is not the 9:04 call. That one was a small reclaim, RSI about 48, and price was above VWAP 753.86 by about 9:06, then ran to 757.18. This one was still about $6 under VWAP and died on the first red bar.
+
+The strike was the wrong neighborhood for a scalp. The 753 call with QQQ near 746 is about 7 points out of the money (753 − 745.90 = 7.10 at the 12:38 print). It filled around $0.08. The book wants about $0.15, and the cash cap was $0.20, so $44 of settled cash did not force a far strike. Between the two snapshots QQQ rose 0.17 (745.90 to 746.07) and the premium fell from about $0.08 to $0.06. No delta and no theta were recorded, so those are not split here. What was recorded is enough: a small bounce did not pay, and the premium decayed. A book exit on the first red minute needs a contract that can respond inside a minute or two. A 7-point 0DTE call at $0.08, with a bit over two hours left until the 3:00 cash close, is a lottery ticket sitting inside a scalp rule. No other strike's ask was recorded, so this note does not name a replacement and does not invent its premium.
+
+The order limit was $0.19. The fill was about $0.08. A buy limit fills at the ask or better, so an $0.08 fill under a $0.19 limit fits, and the −$2.11 account change fits an $0.08 buy and a $0.06 sell (about $2 of premium) better than a $0.19 buy. A $0.19 buy sold at $0.06 would have been about $13, not $2.11. The $0.19 was one cent under the $0.20 cap. It was a max-price limit, not the live ask. This time the fill was better than the limit. The order still gave the market permission to charge anything up to $0.19 if the ask had jumped. That is the slippage on a fast tape. The −50% stop was then set from the real fill, which is the right second step and does not repair the first.
+
+The stop was cancelled before the sell again. Same hole as the 749 put. The fill was around 12:46 and the stop never had to work. The cancel time was not logged.
+
+### Ranked pointers
+
+Process first, then rules. Ranked by what changes the next session. None of this is in the book.
+
+#### Process
+
+1. **Run a 1-minute script on the box, and let the click agent read one line.** Impact: highest. This is the one change that covers the 11:15 miss, the 11:37 scramble, and the frozen chart. Safety: high, if the script cannot type into Webull.
+   Why: the fresh crosses were the ones that got away, and the chart was a 12-minute hole while QQQ dropped about 3.9 points. Staging the 750 put still lost to the 11:39 close, because qty and the limit were the slow part.
+   A process on the Linux box subscribes to QQQ last sales that are current, not a 15-minute delayed feed. It backfills today's 1-minute bars if it starts late, builds each bar locally, and at the minute computes the HA close, EMA20 on those HA closes, and RSI14. If the Webull EMA is on the regular close instead, match the pane. A realtime websocket (the ordinary Linux choices are Polygon, Alpaca's SIP feed, or Databento) can put that line out about a second after the minute. A once-a-second poll is still inside the same minute. This box was not timed against those vendors, so the budget is "about a second," not a measured quote. Yahoo-style delayed charts stay out of the signal.
+   The handoff is one line in a file the agent already watches, plus a notification. Shape: `11:37 PUT | close 753.75 | ema 753.94 | under 0.19 | rsi blank | chart_ok yes`. The agent sets qty 1, reads the ask, types that ask, and clicks, or passes when the next minute closes. The script writes the line whether or not anyone remembers the journal. It does not send keystrokes.
+   Freeze detection sits in the same line. Today the quote moved, the candle did not, and Time & Sales said Load failed. If the script's bar time advances and the Webull candle time does not, or the screen says Load failed, the line is `HALT | chart frozen`. No click. Restart Webull, the way it was restarted around 11:53, and stay flat until the candle time matches the script. The script would have shown the drop to 748.5 and the RSI block at 11:55. It would not have placed a put into RSI about 24.5.
+
+2. **Type the live ask. Never type the $0.20 cap into the limit box.** Impact: high. This is how a $2 loss becomes a $13 loss on the same click. Safety: high.
+   Why: the ticket showed limit $0.19 and the fill was about $0.08. The cap is a ceiling, and the book limit is the ask.
+   Read bid and ask. Pass if the spread is over $0.02 or the ask is over $0.20. Type the ask. If the number in the limit box is not that ask, do not click. After the fill, read the fill off the order status or the account, and set the −50% stop from the fill, which is what the $0.04 stop already did. The journal line keeps limit, ask, and fill as three fields so a gap like $0.19 versus $0.08 cannot hide behind the ticket.
+
+#### Rules
+
+Pointers only. The book still says VWAP is confirmation, the exit is still the HA flip, and the premium target is still about $0.15.
+
+3. **If the staged strike's ask is about $0.08 and about 7 points out, walk closer or pass.** Impact: high on the payoff of whatever the script eventually catches. Safety: high.
+   Why: the 753 call could not respond to the only bounce that was recorded, +0.17 on QQQ, and the premium fell from about $0.08 to $0.06. The scalp exits on the first red minute. The strike needs a move toward 753 to matter.
+   Take the strike whose ask is closest to about $0.15 and still at or under $0.20. If every closer strike is above $0.20, pass. No closer ask was written down, so no replacement strike is named here.
+
+4. **Flag a call that is several dollars under VWAP. Leave VWAP as confirmation.** Impact: this call was the quality problem. Safety: high, because it is a flag and not a new veto.
+   Why: a hard "calls only above VWAP" rule would treat this $6-under call and the 9:04 reclaim as the same trade, and the 9:04 reclaim ran to 757.18. They were not the same shape.
+   A higher-timeframe filter, tried later and not today, would be "no call after the session is already extended under VWAP and has printed a lower low," which is the afternoon, and would still have left room for the morning reclaim. One $2 loss does not install that filter. Log the VWAP distance on the entry line so the next few of these are visible.
+
+5. **Keep selling the closed red HA bar. Keep the −50% stop as the backstop.** Impact: stops a rewrite of the exit off a $0.02 loss. Safety: high.
+   Why: the 12:44 bar had closed red, price was still on EMA at the 12:46 print (746.07 versus 746.05), and the color flip is its own rule. Holding for the $0.04 stop would have risked another $0.02 on a contract that was already the wrong strike.
+   A $0.08 premium makes one cent look large. That is the strike and the $0.01 exit spread, not a reason to wait. The stop cancel still has to be the same action as the sell. A rejected sell gets the $0.04 stop back before anything else.
+
+The pattern underneath: four book-shaped looks were missed or passed (9:04 call, 9:41 put, the 11:15 read, the 11:37 put), the crash was invisible, and the two fills the loop could complete were a scratch put and this counter-trend call. The headlines matched the afternoon trend. They were not a reason to have skipped the 9:04 call. This 753 call was the trade fighting that trend. The second bullet Xavier authorized at 10:52 was spent there.
 
