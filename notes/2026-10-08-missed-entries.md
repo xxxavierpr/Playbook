@@ -1,8 +1,10 @@
-# Thu 2026-10-08 — two missed QQQ entries
+# Thu 2026-10-08 — missed entries, and the 749 put
 
 Review only. The book is unchanged. This file is pointers for a slow screenshot executor. It is not an order and it does not change the rails.
 
 Trinity reads Webull through a screenshot-and-click loop that takes about 30–90+ seconds per cycle. The entry is a 1-minute Heikin Ashi close across EMA20. Both misses today were that close going unread until the bar was already gone. The 9:04 call was a valid reclaim. The 9:41 put was a valid cross, and the ~$0.80 no-chase band did not say to skip it.
+
+The ticket that was taken, the 749 put, is in the last section.
 
 Times are CT. Market opened 8:30. Distances below are arithmetic on the prints in this note. Where a live reading was not recorded, it is left blank.
 
@@ -63,4 +65,42 @@ Notes only. The book file was not edited. None of these are in force until they 
 
 ## Left blank on purpose
 
-No 9:04 option ask, no 9:41 option quote, no 9:41 RSI, MACD, or VWAP, no live EMA at 9:07 or at the put read, no option P&L. Those are not guessed here.
+No 9:04 option ask, no 9:41 option quote, no 9:41 RSI, MACD, or VWAP, no live EMA at 9:07 or at the 9:41 read. The 749 put that was filled is below. Nothing else is guessed here.
+
+## The 749 put that was taken
+
+Today's one trade, after the two misses above. Review only. Result +$0.01 a contract, about +$1 gross, about +$0.85–0.90 net.
+
+### What matched
+
+At 10:10, QQQ 754.13 was 0.36 under EMA20 754.49 and 0.77 under VWAP 754.90, with RSI14 at 38.5. Passing on that print was right. Price was already grinding under EMA. The plan was a bounce into 754.5–754.9, which is that print's EMA to VWAP, and a red close back under EMA20. That is the book's cross. VWAP stays confirmation only.
+
+The order that was recorded matches the ticket rules. Buy to open 1 QQQ 749 put, 0DTE, limit $0.16 at the ask. Sell stop $0.08, which is half of $0.16. One contract, premium on the ~$0.15 rail, hard stop at −50%. At the 10:10 plan, RSI14 38.5 left the under-30 put skip off.
+
+The exit waited for a book reason. The 10:44 bar was green only while it was forming, so there was no HA color flip to sell. Price came back to EMA20 near 753.45 around 10:46–10:47, and there was no confirmed 1-minute close above it, so there was no EMA break to sell. From about 10:43, QQQ sat in 753.05–753.43, a 0.38 box, and the open P&L came off +$6.45 at about 10:41 (premium about $0.22) to +$1.45–2.45 by 10:46. Sell to close 1 at limit $0.17, at the bid, submitted 10:47:44, filled. The box runs from about 10:43 to that sell, which is the ~3 minute chop on the times recorded. The start bar was not stamped, so it is not a scored 3:00. Flat well before 2:45.
+
+### What was wrong, or cannot be checked
+
+The entry time was not captured. The fill sits somewhere between about 10:15 and about 10:40. No HA open or close, no EMA20, no RSI14, and no bid/ask spread on the entry bar. The plan had the right shape. This note cannot score the fill against that bar. The spread ≤ $0.02 gate and the RSI < 30 skip are unchecked at the click.
+
+The $0.08 stop was cancelled before the limit sell, and the cancel time was not written down. The stop never hit. The marks that were recorded stayed above it, from about $0.22 at the peak to the $0.17 sale. Cancelling first still takes the hard stop off before a closing order is working.
+
+### Pointers
+
+Ranked by what changes the next review or the next live exit. The book was not edited.
+
+1. **Log the entry bar at the fill.** Impact: highest for any later review. Safety: a log only.
+   Why: a window from about 10:15 to about 10:40 hides the HA cross, the RSI < 30 skip, and the $0.02 spread gate, so the day's only trade cannot be passed or failed.
+   One line at the fill: time, HA open, HA close, EMA20, RSI14, QQQ, bid, ask, spread, limit, strike.
+
+2. **Lift the stop only in the same action as the sell, and put $0.08 back if the sell is rejected.** Impact: high on a live contract. Safety: this is the rail.
+   Why: the −50% stop is the hard exit, and cancelling it first leaves the put with no stop until the limit is accepted. This sale filled at $0.17, and the stop was never threatened. The gap itself has no recorded length.
+   If the platform allows it, send the sell limit first and cancel the stop once that sell is accepted. If one contract cannot carry two sells, cancel and submit the limit on the next click. A rejected sell gets the $0.08 stop back before anything else.
+
+3. **Keep this chop exit. Leave trails and premium targets out.** Impact: stops a one-trade rewrite of the exit. Safety: high.
+   Why: the flip and the EMA break were both unconfirmed, and the 753.05–753.43 box from about 10:43 through the 10:47:44 sell is the ~3 minute chop, with the open profit already down from +$6.45 to +$1.45–2.45 by 10:46.
+   A trail at the $0.16 entry is still below the 10:46 open P&L of +$1.45–2.45 and below the $0.17 sale. It does not take the +$6.45. Selling the peak at about 10:41 would have been before the chop, before an HA flip, and before a close through EMA. That is a new target. One round trip from +$6.45 to about +$1 does not earn it. Keep recording the peak P&L and its time so a later sample can look.
+
+4. **Stamp the chop-start bar and the stop-cancel time on the exit line.** Impact: modest, and it is what makes pointer 3 checkable next time. Safety: a log only.
+   Why: "~3 minutes" and "cancelled before the sell" are the two judgments on this exit, and the only clock time recorded is the 10:47:44 submit.
+
