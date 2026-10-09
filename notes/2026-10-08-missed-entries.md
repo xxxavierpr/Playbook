@@ -4,7 +4,7 @@ Review only. The book is unchanged. This file is pointers for a slow screenshot 
 
 Trinity reads Webull through a screenshot-and-click loop that takes about 30–90+ seconds per cycle. The entry is a 1-minute Heikin Ashi close across EMA20. Both misses today were that close going unread until the bar was already gone. The 9:04 call was a valid reclaim. The 9:41 put was a valid cross, and the ~$0.80 no-chase band did not say to skip it.
 
-The 749 put is the next section. The afternoon 753 call follows it. The doji-at-level idea is last.
+The 749 put is the next section. The afternoon 753 call follows it. The doji-at-level idea is after that. Friday's open miss is last.
 
 Times are CT. Market opened 8:30. Distances below are arithmetic on the prints in this note. Where a live reading was not recorded, it is left blank.
 
@@ -197,4 +197,19 @@ No HA open, high, low, close, or volume was recorded for the 748.19 low, the 746
 
 6. **Add `DOJI_AT_LEVEL` to the existing bar line. It does not send an order.**
    On the doji close, about 1.3 seconds later: `DOJI_AT_LEVEL | watch CALL|PUT | level name price | dist | vol_ratio | confirm_by next close | order no`. On the next close emit `DOJI_CONFIRM` only if pointer 4 and pointer 5 both pass, and only then may the agent run the normal book click. Otherwise emit `DOJI_EXPIRE`. The click agent does nothing on `DOJI_AT_LEVEL` except be awake.
+
+## Fri 2026-10-09 open miss
+
+Process only. The book is unchanged.
+
+QQQ gapped up. Prior close 747.58, open 752.45, a gap of 4.87. Premarket high 754.95, premarket low 751.85. The open was inside that range, 0.60 above the premarket low and 2.50 under the premarket high. Around 8:35 price bounced into the 1-minute EMA20 near 752.5, wicked, and rejected red. It then flushed to 748.72 by 8:47, with RSI14 about 28–32. That range straddles the put skip at 30. No separate RSI was recorded on the 8:35 bar.
+
+Trinity was not able to take the rejection. Webull trading was PIN-locked at the open. Xavier entered the PIN around 8:34. The bar script warmed up on same-session bars only, so EMA20 and RSI were blank until about 8:50. The signal bar had already closed, and the flush was done.
+
+Execution fixes, before the next open:
+
+- Seed EMA20 and RSI from prior sessions so the 8:31 bar is not blank. Same-session warmup is why the line stayed empty until about 8:50.
+- Ask Xavier for the PIN before the open. Webull trading is unlocked by 8:20 CT.
+- The hunter is running by 8:25 CT.
+- First test of the day: the first EMA20 test after the open that rejects is the put, and the first that reclaims is the call. Fire on that bar close. This is the A+ open setup. It does not add a new entry.
 
