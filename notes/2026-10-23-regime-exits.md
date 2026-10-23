@@ -4,7 +4,7 @@ Stop buying the with-trend EMA20 retest on the contract the paper is actually fi
 
 The only book that is above 70% and still green after one cent, on the train and on the holdout, is a chop-only fade: when the morning is labeled chop, sell a VWAP tag that closes back through VWAP, stop $0.05 past that bar (floor $0.15, cap $1.00), take +25%, and flatten at 10 minutes. Hard-trend bars and mixed bars send nothing. That book is 15 wins in 20 trades, net +$41.55 after $2 of slippage. One holdout loss is a gap of −$32.50. It is a paper experiment. It is not a live rule.
 
-`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. No trading-bot code was changed.
+`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. The Monday 10/26 paper build is the last section. It keeps the trend retest on, behind `regime_mode`, and the combined replay of that book is there too. `--live` is unchanged.
 
 ## Sample, contract, and the split
 
@@ -136,18 +136,50 @@ The twenty fills:
 
 Today the stitch skips both retests. At 09:25 the label is CHOP and the bar is a put fade: high 704.84 against VWAP 704.29, close 704.16, HA red. Stop 704.89, target 703.66, filled on the 09:26 low, +$12.50. At 09:29 a call fade: low 704.00 against VWAP 704.27, close 704.87, HA green. Stop 703.95, target 705.37, filled on the 09:30 high of 705.54, +$12.50. The position is flat before the run to 707.48 at 09:40. From 11:00 the label is mixed, then trend for the 11:09 retest, then mixed again, and the book takes nothing.
 
-## What to set
+## Monday paper switch
 
-The override keys on the bot today cannot express this. There is no regime key, no signal-bar stop, and no VWAP-fade entry. While `tp_pct` is set, the latch and the built-in chop +10% path do not run. `max_buys=0` would flatten the bot, fade included. There is no key that means "skip the trend retest and keep the fade."
+The ranking above leaves trend flat, because that book has no profitable exit. For the Monday 10/26 paper test the switch is built the other way: trend bars keep the current PR #8 retest (stop $0.30, +12%, 5 minutes), chop bars take the VWAP fade, and mixed or warmup bars send nothing. It lives in `trader.py` behind `regime_mode`. The flag defaults off. `--live` ignores it, and a new live day still rebuilds `trader_state.json` with no override and no day-regime history.
 
-Leave the live keys as they are. The closer-contract spike is the set to avoid: `qqq_stop` 0.60, `tp_pct` 0.10, `time_exit_min` 3, and a higher `paper_max_ask` so the bot buys a $1 delta-0.50 contract.
+`report_combined` in `notes/2026-10-23-regime-grid.py` replays that combination on the same Yahoo mornings, live contract $0.50 / delta 0.25, through 2026-10-23 12:55 CT. The entry window had closed. The replay stop fills when price trades strictly through the level. The paper bot's existing cursor exit fills when the bar touches the level. Today's two $0.30 stops are through the level either way.
 
-The switch is a logic change. On each completed minute from 09:00, compute the label above.
+| Split | Regime | Trades | Win rate | Avg win | Avg loss | Net of 1¢ |
+| --- | --- | --- | --- | --- | --- | --- |
+| Train | TREND retest | 29 | 48.3% (14/29) | +$6.00 | −$7.50 | −$86.50 |
+| Train | CHOP fade | 14 | 71.4% (10/14) | +$12.50 | −$18.36 | +$23.55 |
+| Train | Combined | 43 | 55.8% (24/43) | +$8.71 | −$9.79 | −$62.95 |
+| Holdout | TREND retest | 13 | 61.5% (8/13) | +$6.00 | −$7.50 | −$15.50 |
+| Holdout | CHOP fade | 6 | 83.3% (5/6) | +$12.50 | −$32.50 | +$18.00 |
+| Holdout | Combined | 19 | 68.4% (13/19) | +$8.50 | −$11.67 | +$2.50 |
+| Full | TREND retest | 42 | 52.4% (22/42) | +$6.00 | −$7.50 | −$102.00 |
+| Full | CHOP fade | 20 | 75.0% (15/20) | +$12.50 | −$21.19 | +$41.55 |
+| Full | Combined | 62 | 59.7% (37/62) | +$8.64 | −$10.24 | −$60.45 |
 
-- WARMUP, TREND, or MIXED: no entry.
-- CHOP: the VWAP fade. Call when the HA bar is green, the low is at least $0.25 through VWAP, and the close is back above VWAP. Put is the mirror.
-- Stop: $0.05 beyond the signal bar's low on a call, or high on a put. Use $0.15 when that distance is shorter, and $1.00 when it is longer.
-- `tp_pct` 0.25, `time_exit_min` 10, `reentry_cooldown_bars` 1.
-- Keep `paper_min_ask` 0.30 and `paper_max_ask` 0.60. The dollar figures above are the $0.50 / 0.25 contract inside that band.
+Mixed contributes no trades. The holdout combined net is +$2.50. The train combined net is −$62.95, and the full sample is −$60.45. Both of today's retests are in the trend column, −$7.50 each, and both fades are in the chop column, +$12.50 each.
 
-Treat it as a paper test. Twenty trades, searched out of 336 chop exit cells, one of them a −$32.50 gap, and a train lower bound near 45%. The trend retest stays off because no exit in the grid paid for it.
+## What to set for paper
+
+On the dry-run state only (`trader_state.dryrun.json`), the override block:
+
+```json
+{
+  "regime_mode": true,
+  "entry_mode": "retest_trend",
+  "retest_trend_only": true,
+  "retest_near_only": true,
+  "tp_pct": 0.12,
+  "tp_min_hold_s": 10,
+  "qqq_stop": 0.30,
+  "time_exit_min": 5,
+  "reentry_cooldown_bars": 1,
+  "quick_tp": false,
+  "max_vwap_dist": 6.0,
+  "paper_min_ask": 0.30,
+  "paper_max_ask": 0.60,
+  "paper_max_spread": 0.05,
+  "max_buys": 12
+}
+```
+
+A new paper day keeps that block and clears the position, the buy count, and `done`. Live does not. `done` stops further paper entries once `buys` has reached `max_buys`. Under the cap it stays clear, so the 12-buy paper day can take the next fade after a stop.
+
+While the flag is on, every dry-run decision line (`no_entry`, `entry_blocked`, `entry_signal`, `retest_check`, and `hold` / `exit_signal` while a paper position is open) carries `day_regime`. Chop exits are armed on the position itself: stop $0.05 past the signal bar, clamped to $0.15–$1.00, `tp_pct` 0.25, `time_exit_min` 10. Trend exits stay on the keys above. Entries stay inside 08:45–12:00 CT. Before 09:00 the label is WARMUP, so the first fifteen minutes of the window are flat. The closer-contract spike stays off the list: `qqq_stop` 0.60, `tp_pct` 0.10, `time_exit_min` 3, and a $1 ask.

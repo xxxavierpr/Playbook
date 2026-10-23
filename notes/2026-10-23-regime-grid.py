@@ -799,6 +799,38 @@ def main():
             lab, _ = day_label(b, i)
             occ[flag][lab] = occ[flag].get(lab, 0) + 1
     print(occ)
+    report_combined(days)
+
+
+def report_combined(days):
+    """Monday paper switch: TREND keeps the PR #8 retest, CHOP fades VWAP, MIXED is flat.
+
+    Live contract $0.50 / delta 0.25. Same fill rules as the rest of this script.
+    """
+    prem, delta = CONTRACTS["live"]
+    books = {
+        "TREND": ("base", ("fixed", 0.30, 0.12, 5, False, prem, delta)),
+        "CHOP": ("fade_vwap", ("bar", 0.0, 0.25, 10, False, prem, delta)),
+        "MIXED": None,
+    }
+    buckets = {"train": [], "hold": [], "full": []}
+    by = {"train": {}, "hold": {}, "full": {}}
+    print("\n== combined paper switch (TREND retest 0.30/12%/5m, CHOP fade bar/25%/10m) ==")
+    for flag, b, d in days:
+        got = simulate_switch(b, books)
+        buckets[flag] += got
+        buckets["full"] += got
+        for t in got:
+            by[flag].setdefault(t["regime"], []).append(t)
+            by["full"].setdefault(t["regime"], []).append(t)
+    for name in ("train", "hold", "full"):
+        s = summarize(buckets[name])
+        print(f"COMBINED {name.upper():5} {wr(s):16} gross {s['gross']:+8.2f} net {s['net']:+8.2f} "
+              f"aw {money(s['avg_win'])} al {money(s['avg_loss'])}")
+        for gate in ("TREND", "CHOP", "MIXED"):
+            rows = by[name].get(gate) or []
+            s = summarize(rows)
+            print(f"  {name}/{gate} {wr(s)} net {s['net']:+.2f}")
 
 
 if __name__ == "__main__":
