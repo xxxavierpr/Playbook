@@ -11,9 +11,10 @@ Only `--live` lets it call /trading/orders/place and /trading/orders/cancel.
 Paper day-type switch (Xavier 2026-10-23, Monday 10/26 test): override key regime_mode.
 Default off. Ignored when --live, and it is not written into the live state file.
 TREND keeps the PR #8 retest (tp_pct 0.12, qqq_stop 0.30, 5-minute clock) and only
-fires when the 09:00 classifier says TREND. CHOP fades a VWAP tag, stop $0.05 past
-the signal bar (clamped $0.15-$1.00), +25% or 10 minutes. MIXED and WARMUP send nothing.
-Window stays 08:45-12:00 CT.
+fires when the 09:00 classifier says TREND. regime_trend_enabled defaults true;
+false still logs retest_check and sends no trend entry. CHOP fades a VWAP tag,
+stop $0.05 past the signal bar (clamped $0.15-$1.00), +25% or 10 minutes.
+MIXED and WARMUP send nothing. Window stays 08:45-12:00 CT.
 
 Book (Xavier's locked rules):
   Entry  SIGNAL=CALL/PUT (Config C channel break) OR alt_signal=CALL (doji_demand_bb)
@@ -1093,6 +1094,15 @@ class Trader:
     def regime_mode_on(self) -> bool:
         return bool(self.paper_mode("regime_mode"))
 
+    def regime_trend_enabled(self) -> bool:
+        """Paper only. Missing key stays on. Live never reaches the trend gate."""
+        if not self.regime_mode_on():
+            return True
+        ov = self.state.get("override") or {}
+        if "regime_trend_enabled" not in ov:
+            return True
+        return bool(self.paper_mode("regime_trend_enabled"))
+
     def _regime_fields(self) -> dict:
         lab = getattr(self, "_day_regime", None)
         if not lab:
@@ -1132,7 +1142,10 @@ class Trader:
         """TREND uses the PR #8 retest. CHOP fades VWAP. MIXED and WARMUP stay flat."""
         label = (self._day_regime or {}).get("label")
         if label == "TREND":
-            return self.retest_trend_signal(rec)
+            rec = self.retest_trend_signal(rec)
+            if not self.regime_trend_enabled():
+                return {**rec, "signal": "NONE", "reason": "trend_disabled", "entry_source": None}
+            return rec
         if label == "CHOP":
             side = vwap_fade_side(rec.get("ha_color"), fnum(rec.get("high")), fnum(rec.get("low")),
                                   fnum(rec.get("close")), fnum(rec.get("vwap")))

@@ -4,7 +4,7 @@ Stop buying the with-trend EMA20 retest on the contract the paper is actually fi
 
 The only book that is above 70% and still green after one cent, on the train and on the holdout, is a chop-only fade: when the morning is labeled chop, sell a VWAP tag that closes back through VWAP, stop $0.05 past that bar (floor $0.15, cap $1.00), take +25%, and flatten at 10 minutes. Hard-trend bars and mixed bars send nothing. That book is 15 wins in 20 trades, net +$41.55 after $2 of slippage. One holdout loss is a gap of −$32.50. It is a paper experiment. It is not a live rule.
 
-`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. The Monday 10/26 paper build is the last section. It keeps the trend retest on, behind `regime_mode`, and the combined replay of that book is there too. `--live` is unchanged.
+`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. The Monday 10/26 paper build is the last section. `regime_mode` can keep the trend retest or turn it off with `regime_trend_enabled`. Monday paper sets that false, so the book is the chop fade. `--live` is unchanged.
 
 ## Sample, contract, and the split
 
@@ -138,7 +138,7 @@ Today the stitch skips both retests. At 09:25 the label is CHOP and the bar is a
 
 ## Monday paper switch
 
-The ranking above leaves trend flat, because that book has no profitable exit. For the Monday 10/26 paper test the switch is built the other way: trend bars keep the current PR #8 retest (stop $0.30, +12%, 5 minutes), chop bars take the VWAP fade, and mixed or warmup bars send nothing. It lives in `trader.py` behind `regime_mode`. The flag defaults off. `--live` ignores it, and a new live day still rebuilds `trader_state.json` with no override and no day-regime history.
+The ranking above leaves trend flat, because that book has no profitable exit. `trader.py` can still run both: trend bars keep the PR #8 retest (stop $0.30, +12%, 5 minutes) when `regime_trend_enabled` is true, chop bars take the VWAP fade, and mixed or warmup bars send nothing. `regime_mode` defaults off. `--live` ignores it, and a new live day still rebuilds `trader_state.json` with no override and no day-regime history. The table is that combined book. Monday paper turns the trend half off.
 
 `report_combined` in `notes/2026-10-23-regime-grid.py` replays that combination on the same Yahoo mornings, live contract $0.50 / delta 0.25, through 2026-10-23 12:55 CT. The entry window had closed. The replay stop fills when price trades strictly through the level. The paper bot's existing cursor exit fills when the bar touches the level. Today's two $0.30 stops are through the level either way.
 
@@ -160,9 +160,12 @@ Mixed contributes no trades. The holdout combined net is +$2.50. The train combi
 
 On the dry-run state only (`trader_state.dryrun.json`), the override block:
 
+Monday paper is chop-only. `regime_trend_enabled` defaults to true, which is the combined book in the table above. Set it false and a TREND bar still logs `retest_check` with `day_regime` and sends no order. The book is then the chop rows only: train 71.4% (10/14), net +$23.55; holdout 83.3% (5/6), net +$18.00; full 75.0% (15/20), net +$41.55.
+
 ```json
 {
   "regime_mode": true,
+  "regime_trend_enabled": false,
   "entry_mode": "retest_trend",
   "retest_trend_only": true,
   "retest_near_only": true,

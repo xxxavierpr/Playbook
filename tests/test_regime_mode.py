@@ -262,6 +262,55 @@ class SwitchTests(unittest.TestCase):
             self.assertTrue(all("day_regime" in e for e in decisions))
             self.assertEqual(decisions[-1]["day_regime"], "TREND")
 
+    def test_trend_disabled_logs_retest_and_sends_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            day = datetime(2026, 10, 26, 8, 30, tzinfo=CT)
+            tr, log, clock = make_trader(tmp, day.date(), ov=override(regime_trend_enabled=False))
+            self.assertFalse(tr.regime_trend_enabled())
+            for i in range(31):
+                t = day + timedelta(minutes=i)
+                close = 700 + i * 0.10
+                color = "red" if i == 28 else "green"
+                feed(tr, clock, bar_at(t, close, color=color))
+            self.assertIsNone(tr.state["position"])
+            self.assertEqual(tr.state["buys"], 0)
+            self.assertEqual(tr.b.placed, [])
+            checks = [e for e in read_events(log) if e["event"] == "retest_check"]
+            self.assertTrue(checks)
+            self.assertTrue(all(e.get("day_regime") == "TREND" for e in checks))
+            self.assertTrue(any(e.get("signal") == "CALL" for e in checks))
+            self.assertFalse(any(e["event"] == "entry_signal" for e in read_events(log)))
+            last = [e for e in read_events(log) if e["event"] == "no_entry"][-1]
+            self.assertEqual(last["day_regime"], "TREND")
+            self.assertEqual(last["reason"], "trend_disabled")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            start = datetime(2026, 10, 26, 9, 0, tzinfo=CT)
+            tr, log, clock = make_trader(tmp, start.date(), ov=override(regime_trend_enabled=False))
+            for i in range(21):
+                t = start + timedelta(minutes=i)
+                close = 100.2 if i % 2 == 0 else 99.8
+                kw = {}
+                if i == 20:
+                    kw = {"color": "red", "high": 100.40, "low": 99.70}
+                    close = 99.80
+                feed(tr, clock, bar_at(t, close, ema=100.0, vwap=100.0, **kw))
+            self.assertEqual(tr.state["position"]["entry_source"], "vwap_fade")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            day = datetime(2026, 10, 26, 9, 5, tzinfo=CT)
+            live_state = Path(tmp) / "trader_state.json"
+            live_state.write_text(json.dumps({
+                "day": "2026-10-26", "buys": 0, "attempts": 0, "position": None,
+                "pending_buy": None, "done": False, "closed": [],
+                "override": override(regime_trend_enabled=False),
+            }))
+            live = Trader(FakeBroker(), trader.Logger(Path(tmp) / "live.log", "LIVE", echo=False),
+                          live=True, state_path=live_state, kill_path=Path(tmp) / "KILL",
+                          clock=Clock(day), signals_log=None)
+            self.assertTrue(live.regime_trend_enabled())
+            self.assertIsNone(live.paper_mode("regime_trend_enabled"))
+
     def test_chop_fade_arms_the_bar_stop_and_mixed_warmup_stay_flat(self):
         with tempfile.TemporaryDirectory() as tmp:
             start = datetime(2026, 10, 26, 9, 0, tzinfo=CT)
