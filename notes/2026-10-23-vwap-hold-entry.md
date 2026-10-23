@@ -4,6 +4,8 @@ Xavier, the paper rule from the 10/22 exit note (PR #8), with entries limited to
 
 The 9:13 CT buy today is that first touch. The 09:12 bar closed 705.50, EMA20 705.19, slope +0.22, trending, HA green, close above VWAP. The paper trader bought the 713C at $0.46. The stop was 705.20. The 09:13 bar low was 704.90, so the $0.30 QQQ stop filled. The ticket sold at $0.39, −$7. In this proxy the same stop is −$9.
 
+A later note, `notes/2026-10-23-regime-exits.md`, continues the same morning through 11:31 CT. It prices the ~$0.50 contract the paper bought, grids the exit with the entry, and splits hard-trend bars from chop. The table below is the 09:32 cutoff on the $0.30 proxy and stays as it is.
+
 ## Sample and proxy
 
 Yahoo 1-minute QQQ, regular hours, 2026-09-29 through 2026-10-23 09:32 CT. Nineteen sessions, 7,082 bars. The slice through 2026-10-22 11:49 CT is 6,829 bars, the same count as PR #9, and 2026-10-07 is still missing the bar between 11:41 and 11:43 CT. 10/23 stops at 09:32 CT, the last complete bar when this was run, so the morning window is not finished and any signal after that is absent. `notes/2026-10-23-vwap-hold-replay.py` reprints the table from that cutoff.
