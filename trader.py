@@ -10,11 +10,17 @@ Only `--live` lets it call /trading/orders/place and /trading/orders/cancel.
 
 Paper day-type switch (Xavier 2026-10-23, Monday 10/26 test): override key regime_mode.
 Default off. Ignored when --live, and it is not written into the live state file.
-TREND keeps the PR #8 retest (tp_pct 0.12, qqq_stop 0.30, 5-minute clock) and only
-fires when the 09:00 classifier says TREND. regime_trend_enabled defaults true;
-false still logs retest_check and sends no trend entry. CHOP fades a VWAP tag,
-stop $0.05 past the signal bar (clamped $0.15-$1.00), +25% or 10 minutes.
-MIXED and WARMUP send nothing. Window stays 08:45-12:00 CT.
+TREND fires only when the 09:00 classifier says TREND. Those positions ride:
+latch at trend_latch_pct (default 0.20 on the bid), then sell on an HA bar
+against the trade or a slip back to that gain. Before the latch, sell on an
+HA close through EMA20 (trend_ema_buf, default 0) or trend_qqq_stop (default
+0.30). trend_tp_pct defaults to 0, so there is no hard target. trend_time_exit_min
+defaults to 0, so there is no clock. trend_entry stays "retest" unless set to
+"pullback" (EMA20 tag, trend direction only). regime_trend_enabled defaults
+true; false still logs the check and sends no trend entry. The chop keys
+tp_pct / qqq_stop / time_exit_min do not arm a trend position. CHOP fades a
+VWAP tag, stop $0.05 past the signal bar (clamped $0.15-$1.00), +25% or 10
+minutes. MIXED and WARMUP send nothing. Window stays 08:45-12:00 CT.
 
 Book (Xavier's locked rules):
   Entry  SIGNAL=CALL/PUT (Config C channel break) OR alt_signal=CALL (doji_demand_bb)
@@ -738,6 +744,8 @@ class Trader:
                     pos["qqq_stop_level"] = round(spot - dist if side == "CALL" else spot + dist, 2)
                     pos["tp_pct"] = 0.25
                     pos["time_exit_min"] = 10
+                elif self.regime_mode_on() and (self._day_regime or {}).get("label") == "TREND":
+                    self._arm_trend_ride(pos, side, spot)
                 else:
                     qs = float(self.paper_mode("qqq_stop") or 0.30)
                     pos["qqq_stop_level"] = round(spot + qs if side == "PUT" else spot - qs, 2)
@@ -745,9 +753,10 @@ class Trader:
                     pos["tp_pct"] = float(tp if tp is not None else 0.12)
                     pos["time_exit_min"] = float(self.paper_mode("time_exit_min") or 5)
                 self.log("cursor_exit_armed", entry_qqq=spot, qqq_stop_level=pos["qqq_stop_level"],
-                         tp_pct=pos["tp_pct"], tp_on="bid", tp_min_hold_s=self.tp_min_hold_s(),
-                         time_exit_min=pos["time_exit_min"], option_backstop=pos["stop"],
-                         **self._regime_fields())
+                         exit_style=pos.get("exit_style"), tp_pct=pos.get("tp_pct"), tp_on="bid",
+                         tp_min_hold_s=self.tp_min_hold_s(), time_exit_min=pos.get("time_exit_min"),
+                         trend_latch_pct=pos.get("trend_latch_pct"), trend_ema_buf=pos.get("trend_ema_buf"),
+                         option_backstop=pos["stop"], **self._regime_fields())
                 self.save()
             return
         # live
@@ -1138,11 +1147,35 @@ class Trader:
         triples = [(row[1], row[2], row[3]) for row in h if len(row) >= 4]
         return classify_day_regime(triples, self.state.get("or_hi"), self.state.get("or_lo"), when)
 
+    def _paper_float(self, key: str, default: float) -> float:
+        v = self.paper_mode(key)
+        return default if v is None else float(v)
+
+    def _arm_trend_ride(self, pos: dict, side: str, spot: float):
+        """Trend book only. Chop tp_pct / time_exit_min / qqq_stop are not read here."""
+        qs = self._paper_float("trend_qqq_stop", 0.30)
+        latch = self._paper_float("trend_latch_pct", 0.20)
+        hard = self._paper_float("trend_tp_pct", 0.0)
+        clock = self._paper_float("trend_time_exit_min", 0.0)
+        buf = self._paper_float("trend_ema_buf", 0.0)
+        pos["exit_style"] = "trend_ride"
+        pos["qqq_stop_dist"] = qs
+        pos["qqq_stop_level"] = round(spot + qs if side == "PUT" else spot - qs, 2)
+        pos["trend_latch_pct"] = latch
+        pos["trend_ema_buf"] = buf
+        pos["latch_armed"] = False
+        pos["tp_pct"] = hard if hard > 0 else None
+        pos["time_exit_min"] = clock
+
     def regime_entry_signal(self, rec: dict) -> dict:
-        """TREND uses the PR #8 retest. CHOP fades VWAP. MIXED and WARMUP stay flat."""
+        """TREND retest, or a with-trend EMA pullback when trend_entry is pullback.
+        CHOP fades VWAP. MIXED and WARMUP stay flat."""
         label = (self._day_regime or {}).get("label")
         if label == "TREND":
-            rec = self.retest_trend_signal(rec)
+            if self.paper_mode("trend_entry") == "pullback":
+                rec = self.pullback_trend_signal(rec)
+            else:
+                rec = self.retest_trend_signal(rec)
             if not self.regime_trend_enabled():
                 return {**rec, "signal": "NONE", "reason": "trend_disabled", "entry_source": None}
             return rec
@@ -1229,6 +1262,36 @@ class Trader:
         self.log("retest_check", bar=rec.get("t"), signal=sig, why=why, **self._regime_fields())
         return {**rec, "signal": sig, "reason": why, "entry_source": "retest_trend" if sig != "NONE" else None}
 
+    PULLBACK_TAG = 0.40
+
+    def pullback_trend_signal(self, rec: dict) -> dict:
+        """With-trend EMA20 tag that closes back through EMA. Day direction only.
+        A call needs the low in [EMA-low − 0.40, max(EMA, EMA-high) + 0.15]. Put is the mirror.
+        This does not require the $0.15 HA kiss the retest uses."""
+        c, vwap, ema, el, eh, hi, lo = (fnum(rec.get(k)) for k in
+                                        ("close", "vwap", "ema20", "ema_low", "ema_high", "high", "low"))
+        sig, why = "NONE", "no_pullback"
+        rg = self.pr8_regime()
+        direc = (self._day_regime or {}).get("direction") or 0
+        if None in (c, vwap, ema, el, eh, hi, lo) or rg.get("slope5") is None:
+            why = "pullback_warmup"
+        elif direc > 0:
+            tagged = (el - self.PULLBACK_TAG) <= lo <= max(ema, eh) + self.TOUCH
+            if (tagged and rg["regime"] == "TRENDING" and rg["slope5"] > 0
+                    and rec.get("ha_color") == "green" and c > ema and c > vwap):
+                sig, why = "CALL", "pullback_ema_call"
+        elif direc < 0:
+            tagged = min(ema, el) - self.TOUCH <= hi <= eh + self.PULLBACK_TAG
+            if (tagged and rg["regime"] == "TRENDING" and rg["slope5"] < 0
+                    and rec.get("ha_color") == "red" and c < ema and c < vwap):
+                sig, why = "PUT", "pullback_ema_put"
+        if sig != "NONE":
+            blk = self.cursor_trend_block(rec, sig)
+            if blk:
+                sig, why = "NONE", f"{why}_blocked:{blk}"
+        self.log("pullback_check", bar=rec.get("t"), signal=sig, why=why, **self._regime_fields())
+        return {**rec, "signal": sig, "reason": why, "entry_source": "pullback_ema" if sig != "NONE" else None}
+
     EMA_BREAK_BUF = 0.15
 
     def ema_break_exit(self, rec: dict) -> Optional[str]:
@@ -1303,7 +1366,8 @@ class Trader:
         return float(self.paper_mode("tp_min_hold_s") or 10)
 
     def cursor_exit_check(self, rec: Optional[dict]) -> bool:
-        """Order: QQQ $stop (bar high/low through stop level) -> +tp on BID (after min hold) -> time exit. True if sold."""
+        """QQQ stop first. A trend ride then latches, gives back, or exits on structure.
+        Anything else is +tp on the bid after the min hold, then the time exit."""
         p = self.state.get("position")
         if not p:
             return False
@@ -1323,6 +1387,8 @@ class Trader:
                     label = f"{float(self.paper_mode('qqq_stop') or 0.30):.2f}"
                 self.sell(f"QQQ ${label} stop (level {lvl})")
                 return True
+        if p.get("exit_style") == "trend_ride":
+            return self.trend_ride_exit(rec, p, held)
         q = self.b.quotes(p["expiry"], {p["symbol"]: (p["side"], p["strike"])}).get(p["symbol"])
         bid = q.bid if q and q.bid else None
         tp = float(p.get("tp_pct") or self.paper_mode("tp_pct"))
@@ -1337,6 +1403,86 @@ class Trader:
                     return True
                 self.log("tp_too_soon", bid=bid, gain=round(g, 3), held_s=round(held, 1), need_s=self.tp_min_hold_s())
         if held >= float(p.get("time_exit_min") or self.paper_mode("time_exit_min") or 5) * 60:
+            self.log("exit_signal", why="time_exit", bid=bid, held_s=round(held, 1), **self._regime_fields())
+            self.sell(f"time exit {held / 60:.1f}m")
+            return True
+        return False
+
+    def trend_momentum_against(self, rec: dict, side: str) -> Optional[str]:
+        """Weakening momentum after the latch: an HA bar against the trade."""
+        ha = rec.get("ha_color")
+        if side == "CALL" and ha == "red":
+            return "HA red"
+        if side == "PUT" and ha == "green":
+            return "HA green"
+        return None
+
+    def trend_structure_exit(self, rec: dict, side: str, buf: float) -> Optional[str]:
+        """HA close through EMA20. Used only before the latch is armed."""
+        hc, ema = fnum(rec.get("ha_close")), fnum(rec.get("ema20"))
+        if hc is None or ema is None:
+            return None
+        if side == "CALL" and hc < ema - buf:
+            return f"HA close {hc:.2f} through EMA20 {ema:.2f}"
+        if side == "PUT" and hc > ema + buf:
+            return f"HA close {hc:.2f} through EMA20 {ema:.2f}"
+        return None
+
+    def trend_ride_exit(self, rec: Optional[dict], p: dict, held: float) -> bool:
+        """Latch on the option bid. Give back to the latch, or an HA bar against the trade, sells.
+        Before the latch: HA close through EMA20, or a hard bid target if trend_tp_pct is set.
+        A clock runs only when trend_time_exit_min is above 0. The QQQ stop already ran."""
+        latch = float(p.get("trend_latch_pct") if p.get("trend_latch_pct") is not None else 0.20)
+        buf = float(p.get("trend_ema_buf") if p.get("trend_ema_buf") is not None else 0.0)
+        hard = float(p.get("tp_pct") or 0.0)
+        clock = float(p.get("time_exit_min") or 0.0)
+        q = self.b.quotes(p["expiry"], {p["symbol"]: (p["side"], p["strike"])}).get(p["symbol"])
+        bid = q.bid if q and q.bid else None
+        g = None
+        if bid is not None and p.get("fill"):
+            g = (bid - p["fill"]) / p["fill"]
+            p["peak_gain"] = max(p.get("peak_gain", 0.0), g)
+        if hard > 0 and g is not None and g >= hard - 1e-9 and held >= self.tp_min_hold_s():
+            self.log("exit_signal", why=f"+{hard:.0%} TP on bid", bid=bid, gain=round(g, 3),
+                     held_s=round(held, 1), **self._regime_fields())
+            self.sell(f"+{hard:.0%} TP on bid (gain {g:.0%}, held {held:.0f}s)")
+            return True
+        armed = bool(p.get("latch_armed"))
+        if armed and g is not None and g <= latch + 1e-9:
+            self.log("exit_signal", why="trend_latch_giveback", bid=bid, gain=round(g, 3),
+                     latch_pct=latch, held_s=round(held, 1), **self._regime_fields())
+            self.sell(f"trend latch giveback (gain {g:.0%} back to {latch:.0%})")
+            return True
+        if armed and rec is not None:
+            why = self.trend_momentum_against(rec, p["side"])
+            if why:
+                self.log("exit_signal", why="trend_momentum", detail=why, bid=bid,
+                         gain=None if g is None else round(g, 3), held_s=round(held, 1),
+                         **self._regime_fields())
+                self.sell(f"trend momentum: {why}")
+                return True
+        if (not armed) and g is not None and g >= latch - 1e-9:
+            p["latch_armed"] = True
+            self.log("trend_latch_armed", bid=bid, gain=round(g, 3), latch_pct=latch,
+                     held_s=round(held, 1), **self._regime_fields())
+            self.save()
+            if rec is not None:
+                why = self.trend_momentum_against(rec, p["side"])
+                if why:
+                    self.log("exit_signal", why="trend_momentum", detail=why, bid=bid,
+                             gain=round(g, 3), held_s=round(held, 1), **self._regime_fields())
+                    self.sell(f"trend momentum: {why}")
+                    return True
+            return False
+        if (not p.get("latch_armed")) and rec is not None:
+            why = self.trend_structure_exit(rec, p["side"], buf)
+            if why:
+                self.log("exit_signal", why="trend_ema", detail=why, bid=bid,
+                         gain=None if g is None else round(g, 3), held_s=round(held, 1),
+                         **self._regime_fields())
+                self.sell(f"trend EMA: {why}")
+                return True
+        if clock > 0 and held >= clock * 60:
             self.log("exit_signal", why="time_exit", bid=bid, held_s=round(held, 1), **self._regime_fields())
             self.sell(f"time exit {held / 60:.1f}m")
             return True

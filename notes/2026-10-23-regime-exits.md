@@ -4,7 +4,7 @@ Stop buying the with-trend EMA20 retest on the contract the paper is actually fi
 
 The only book that is above 70% and still green after one cent, on the train and on the holdout, is a chop-only fade: when the morning is labeled chop, sell a VWAP tag that closes back through VWAP, stop $0.05 past that bar (floor $0.15, cap $1.00), take +25%, and flatten at 10 minutes. Hard-trend bars and mixed bars send nothing. That book is 15 wins in 20 trades, net +$41.55 after $2 of slippage. One holdout loss is a gap of −$32.50. It is a paper experiment. It is not a live rule.
 
-`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. The Monday 10/26 paper build is the last section. `regime_mode` can keep the trend retest or turn it off with `regime_trend_enabled`. Monday paper sets that false, so the book is the chop fade. `--live` is unchanged.
+`notes/2026-10-23-regime-grid.py` reprints every figure from the cutoff below. The Monday paper build is the chop fade, and the trend ride added later is its own section. `regime_mode` can keep a trend book or turn it off with `regime_trend_enabled`. The chop fade is still the only book that clears 70% and a positive net on both splits. `--live` is unchanged.
 
 ## Sample, contract, and the split
 
@@ -138,7 +138,7 @@ Today the stitch skips both retests. At 09:25 the label is CHOP and the bar is a
 
 ## Monday paper switch
 
-The ranking above leaves trend flat, because that book has no profitable exit. `trader.py` can still run both: trend bars keep the PR #8 retest (stop $0.30, +12%, 5 minutes) when `regime_trend_enabled` is true, chop bars take the VWAP fade, and mixed or warmup bars send nothing. `regime_mode` defaults off. `--live` ignores it, and a new live day still rebuilds `trader_state.json` with no override and no day-regime history. The table is that combined book. Monday paper turns the trend half off.
+The ranking above leaves trend flat, because that book has no profitable exit. The table is the combined book with the old trend exit still on: stop $0.30, +12%, 5 minutes, and only when `regime_trend_enabled` is true. Chop bars take the VWAP fade. Mixed and warmup bars send nothing. `regime_mode` defaults off. `--live` ignores it, and a new live day still rebuilds `trader_state.json` with no override and no day-regime history. The trend ride section below is what the paper bot does now when the trend half is on. Monday's first paper setting turns that half off.
 
 `report_combined` in `notes/2026-10-23-regime-grid.py` replays that combination on the same Yahoo mornings, live contract $0.50 / delta 0.25, through 2026-10-23 12:55 CT. The entry window had closed. The replay stop fills when price trades strictly through the level. The paper bot's existing cursor exit fills when the bar touches the level. Today's two $0.30 stops are through the level either way.
 
@@ -185,4 +185,60 @@ Monday paper is chop-only. `regime_trend_enabled` defaults to true, which is the
 
 A new paper day keeps that block and clears the position, the buy count, and `done`. Live does not. `done` stops further paper entries once `buys` has reached `max_buys`. Under the cap it stays clear, so the 12-buy paper day can take the next fade after a stop.
 
-While the flag is on, every dry-run decision line (`no_entry`, `entry_blocked`, `entry_signal`, `retest_check`, and `hold` / `exit_signal` while a paper position is open) carries `day_regime`. Chop exits are armed on the position itself: stop $0.05 past the signal bar, clamped to $0.15–$1.00, `tp_pct` 0.25, `time_exit_min` 10. Trend exits stay on the keys above. Entries stay inside 08:45–12:00 CT. Before 09:00 the label is WARMUP, so the first fifteen minutes of the window are flat. The closer-contract spike stays off the list: `qqq_stop` 0.60, `tp_pct` 0.10, `time_exit_min` 3, and a $1 ask.
+While the flag is on, every dry-run decision line (`no_entry`, `entry_blocked`, `entry_signal`, `retest_check`, `pullback_check`, and `hold` / `exit_signal` while a paper position is open) carries `day_regime`. Chop exits are armed on the position itself: stop $0.05 past the signal bar, clamped to $0.15–$1.00, `tp_pct` 0.25, `time_exit_min` 10. Those three keys do not arm a trend position. Entries stay inside 08:45–12:00 CT. Before 09:00 the label is WARMUP, so the first fifteen minutes of the window are flat. The closer-contract spike stays off the list: `qqq_stop` 0.60, `tp_pct` 0.10, `time_exit_min` 3, and a $1 ask.
+
+## Trend ride
+
+10/26 was a trend-up morning, about 707 to 714 by 10:07 CT, and the paper retest sat out the push. With `regime_trend_enabled` back on, the trend book was still using the chop-era exit: +12% on the bid, a 5-minute clock, and a $0.30 QQQ stop. That exit is red on every split. The trend book now has its own paper exits. Chop fades are unchanged. `--live` never reads the new keys.
+
+Xavier's rule, and the default when the keys are absent: with-trend entries ride. Once the bid is up 20%, latch. After that, sell on an HA bar against the trade, or if the bid slips back to +20%. Before the latch, sell when the HA close goes through EMA20, or on the QQQ stop. There is no short clock and no hard target unless a key sets one. A hard `trend_tp_pct` above 0 is a cap and it sells before the latch. The replay below maps +20% to $0.40 of QQQ (premium $0.50, delta 0.25). The bot latches on the option bid, the same way the +12% target already works. The replay stop fills when price trades strictly through the level. The bot fills when the bar touches it. The −50% option backstop is still in the bot and is not in this replay.
+
+`trend_entry` stays `retest` (the PR #8 HA kiss within $0.15 of EMA20). Set it to `pullback` for an EMA20 tag in the trend direction only: the bar tags the EMA band, HA color and the 5-bar slope agree with the day, and the close is back through EMA20 and on that side of VWAP. It does not require the $0.15 kiss. A pullback against the day label does not fire.
+
+The grid is `notes/2026-10-26-trend-ride.py`. It uses the same classifier as the Monday section, including the rule that four EMA crosses in 20 bars is chop. Train is every session except the last five. The holdout is 10/20, 10/21, 10/22, 10/23, and 10/26. Yahoo's last bar in this run is 10/26 10:21 CT. The entry window was still open until 12:00, so a later bar can add trades. The two retests below are already closed. Rank is train win rate, then train net after $2. Nothing with at least 20 train trades is both at least 70% and net-positive. The count of those cells is 0.
+
+| Split | Book | Trades | Win rate | Avg win | Avg loss | Net of $2 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Train | Retest, ride, stop $0.30, latch 20%, no clock | 30 | 30.0% (9/30) | +$15.96 | −$7.33 | −$70.36 |
+| Holdout | Retest, ride, stop $0.30, latch 20%, no clock | 11 | 45.5% (5/11) | +$8.15 | −$6.56 | −$20.58 |
+| Full | Retest, ride, stop $0.30, latch 20%, no clock | 41 | 34.1% (14/41) | +$13.17 | −$7.16 | −$90.94 |
+| Train | Same retest, old +12% / 5 min / $0.30 | 30 | 50.0% (15/30) | +$6.00 | −$7.45 | −$81.74 |
+| Holdout | Same retest, old +12% / 5 min / $0.30 | 11 | 54.5% (6/11) | +$6.00 | −$8.25 | −$27.27 |
+| Full | Same retest, old +12% / 5 min / $0.30 | 41 | 51.2% (21/41) | +$6.00 | −$7.65 | −$109.00 |
+| Train | Pullback, same ride, stop $0.30 | 66 | 39.4% (26/66) | +$12.70 | −$7.59 | −$105.59 |
+| Holdout | Pullback, same ride, stop $0.30 | 24 | 41.7% (10/24) | +$12.06 | −$7.10 | −$26.70 |
+
+The highest train win rate with at least 8 trades is a pullback, a stop at the EMA band, a 15% latch, a 0.15 EMA buffer, and a hard +20% target, with no clock: 70.9% (39/55), net −$24.35. Holdout 68.0% (17/25), net −$20.08. The best train net is the same pullback and EMA stop with a 15% latch, no hard target, and a 5-minute clock: 66.1% (37/56), net +$46.10. Holdout 52.2% (12/23), net −$77.94. That clock is the one the rule leaves off, and the holdout gives the gain back. A 30-minute clock ties "no clock" on the top rows, so the clock was not what closed those trades.
+
+On 10/26 the retest never kissed EMA20 during the push. At 09:28 the HA close was 709.89 against EMA 709.31. The first retest is 10:14 at 714.28. The shipped stop takes it at 10:16 for −$7.50. The 10:18 retest latches for +$10.00 by 10:21. A pullback would have bought the 09:28 tag at 709.97. The 09:29 low is 709.40, so a $0.30 or $0.45 stop is already dead, before the run to 715. From 09:35 to 09:45 the label is CHOP because the dip made four EMA crosses, while price was $1.50 to $2.70 above VWAP. The chop fade needs a $0.25 tag of VWAP, so it does not take that push either. The label is TREND again at 09:50 (712.83) with the low $1.40 above EMA, so neither entry fires. The classifier is unchanged. Widening it so four crosses can still be a trend was tried off to the side and the trend book was still red on the train and the holdout, so it is not in the bot.
+
+Paper override for the trend ride. `trend_entry` can be omitted; `retest` is the default. `tp_pct`, `qqq_stop`, and `time_exit_min` stay in the block for a day with `regime_mode` off. They do not arm the trend position.
+
+```json
+{
+  "regime_mode": true,
+  "regime_trend_enabled": true,
+  "trend_entry": "retest",
+  "trend_latch_pct": 0.20,
+  "trend_tp_pct": 0,
+  "trend_time_exit_min": 0,
+  "trend_qqq_stop": 0.30,
+  "trend_ema_buf": 0,
+  "entry_mode": "retest_trend",
+  "retest_trend_only": true,
+  "retest_near_only": true,
+  "tp_pct": 0.12,
+  "tp_min_hold_s": 10,
+  "qqq_stop": 0.30,
+  "time_exit_min": 5,
+  "reentry_cooldown_bars": 1,
+  "quick_tp": false,
+  "max_vwap_dist": 6.0,
+  "paper_min_ask": 0.30,
+  "paper_max_ask": 0.60,
+  "paper_max_spread": 0.05,
+  "max_buys": 12
+}
+```
+
+Copy `trader.py` over `/workspace/bar-signal/trader.py` again and restart the dry run. Leave `bar_signal.py` and `trader_state.json` where they are. The override lives in `trader_state.dryrun.json`. Chop-only is still the block in the previous section (`regime_trend_enabled` false). Set `trend_entry` to `pullback` only as a paper experiment. The replay does not support it.

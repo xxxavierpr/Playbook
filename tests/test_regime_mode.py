@@ -240,7 +240,7 @@ class StateTests(unittest.TestCase):
 
 
 class SwitchTests(unittest.TestCase):
-    def test_trend_retest_uses_pr8_exits_and_logs_the_label(self):
+    def test_trend_retest_rides_and_logs_the_label(self):
         with tempfile.TemporaryDirectory() as tmp:
             day = datetime(2026, 10, 26, 8, 30, tzinfo=CT)
             tr, log, clock = make_trader(tmp, day.date(), ov=override())
@@ -253,8 +253,12 @@ class SwitchTests(unittest.TestCase):
             self.assertIsNotNone(pos)
             self.assertEqual(pos["entry_source"], "retest_trend")
             self.assertEqual(pos["side"], "CALL")
-            self.assertAlmostEqual(pos["tp_pct"], 0.12)
-            self.assertEqual(pos["time_exit_min"], 5)
+            self.assertEqual(pos["exit_style"], "trend_ride")
+            self.assertIsNone(pos["tp_pct"])
+            self.assertEqual(pos["time_exit_min"], 0)
+            self.assertAlmostEqual(pos["trend_latch_pct"], 0.20)
+            self.assertAlmostEqual(pos["trend_ema_buf"], 0.0)
+            self.assertFalse(pos["latch_armed"])
             self.assertAlmostEqual(pos["qqq_stop_level"], round(pos["entry_qqq"] - 0.30, 2))
             self.assertEqual(tr.b.placed, [])
             decisions = [e for e in read_events(log) if e["event"] in ("no_entry", "entry_signal", "entry_blocked", "hold")]
@@ -314,7 +318,8 @@ class SwitchTests(unittest.TestCase):
     def test_chop_fade_arms_the_bar_stop_and_mixed_warmup_stay_flat(self):
         with tempfile.TemporaryDirectory() as tmp:
             start = datetime(2026, 10, 26, 9, 0, tzinfo=CT)
-            tr, log, clock = make_trader(tmp, start.date(), ov=override())
+            tr, log, clock = make_trader(tmp, start.date(), ov=override(
+                trend_qqq_stop=0.60, trend_latch_pct=0.20, trend_time_exit_min=0))
             for i in range(21):
                 t = start + timedelta(minutes=i)
                 close = 100.2 if i % 2 == 0 else 99.8
@@ -326,6 +331,7 @@ class SwitchTests(unittest.TestCase):
             pos = tr.state["position"]
             self.assertEqual(pos["entry_source"], "vwap_fade")
             self.assertEqual(pos["side"], "PUT")
+            self.assertNotEqual(pos.get("exit_style"), "trend_ride")
             self.assertAlmostEqual(pos["tp_pct"], 0.25)
             self.assertEqual(pos["time_exit_min"], 10)
             self.assertAlmostEqual(pos["qqq_stop_dist"], fade_stop_dist("PUT", 99.80, 100.40, 99.70))
@@ -382,7 +388,7 @@ class SwitchTests(unittest.TestCase):
             live_state.write_text(json.dumps({
                 "day": "2026-10-26", "buys": 0, "attempts": 0, "position": None,
                 "pending_buy": None, "done": False, "closed": [],
-                "override": override(),
+                "override": override(trend_latch_pct=0.20, trend_qqq_stop=0.45, trend_entry="pullback"),
             }))
             live = Trader(FakeBroker(), trader.Logger(Path(tmp) / "live.log", "LIVE", echo=False),
                           live=True, state_path=live_state, kill_path=Path(tmp) / "KILL",
@@ -393,6 +399,140 @@ class SwitchTests(unittest.TestCase):
             self.assertNotIn("day_regime_hist", after)
             self.assertEqual(before.get("override"), after.get("override"))
             self.assertTrue(all("day_regime" not in e for e in read_events(Path(tmp) / "live.log")))
+            self.assertIsNone(live.paper_mode("trend_latch_pct"))
+            self.assertIsNone(live.paper_mode("trend_qqq_stop"))
+            self.assertIsNone(live.paper_mode("trend_entry"))
+
+
+def ramp(day, n, up=True, ha_pad=0.0):
+    rows = []
+    for i in range(n):
+        close = 700 + i * 0.10 if up else 700 - i * 0.10
+        color = "green" if up else "red"
+        if i == 28:
+            color = "red" if up else "green"
+        ema = (close - 0.05) if up else (close + 0.05)
+        vwap = (close - 1.0) if up else (close + 1.0)
+        rows.append(bar_at(
+            day + timedelta(minutes=i), close, ema=ema, vwap=vwap, color=color,
+            ha_close=close + ha_pad if up else close - ha_pad))
+    return rows
+
+
+class TrendRideTests(unittest.TestCase):
+    def test_pullback_is_opt_in_and_stays_with_the_trend(self):
+        day = datetime(2026, 10, 26, 8, 30, tzinfo=CT)
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock = make_trader(tmp, day.date(), ov=override())
+            for rec in ramp(day, 31, ha_pad=1.0):
+                feed(tr, clock, rec)
+            self.assertIsNone(tr.state["position"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock = make_trader(tmp, day.date(), ov=override(trend_entry="pullback"))
+            for rec in ramp(day, 31, ha_pad=1.0):
+                feed(tr, clock, rec)
+            pos = tr.state["position"]
+            self.assertEqual(pos["entry_source"], "pullback_ema")
+            self.assertEqual(pos["side"], "CALL")
+            self.assertEqual(pos["exit_style"], "trend_ride")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock = make_trader(tmp, day.date(), ov=override(trend_entry="pullback"))
+            for rec in ramp(day, 31, up=False, ha_pad=1.0):
+                feed(tr, clock, rec)
+            pos = tr.state["position"]
+            self.assertEqual(pos["entry_source"], "pullback_ema")
+            self.assertEqual(pos["side"], "PUT")
+            self.assertAlmostEqual(pos["qqq_stop_level"], round(pos["entry_qqq"] + 0.30, 2))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock = make_trader(tmp, day.date(), ov=override(trend_entry="pullback"))
+            for i, rec in enumerate(ramp(day, 31)):
+                if i == 30:
+                    close = rec["close"]
+                    ema = close + 0.20
+                    rec = bar_at(datetime.fromisoformat(rec["t"]), close, ema=ema, vwap=close - 1.0,
+                                 color="red", high=ema + 0.05, low=ema - 0.30, ha_close=ema + 0.40)
+                else:
+                    # stay above the EMA band so the ramp itself is not a pullback
+                    rec = {**rec, "ema20": rec["close"] - 2.0,
+                           "ema_high": rec["close"] - 1.90, "ema_low": rec["close"] - 2.10}
+                feed(tr, clock, rec)
+            self.assertIsNone(tr.state["position"])
+
+    def _open(self, tmp, **ov):
+        day = datetime(2026, 10, 26, 8, 30, tzinfo=CT)
+        tr, log, clock = make_trader(tmp, day.date(), ov=override(**ov))
+        for rec in ramp(day, 31):
+            feed(tr, clock, rec)
+        self.assertEqual(tr.state["position"]["exit_style"], "trend_ride")
+        return tr, log, clock, day
+
+    def test_ride_ignores_the_five_minute_clock_until_structure_or_the_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock, day = self._open(tmp, trend_qqq_stop=0.45, trend_ema_buf=0.15)
+            tr.b.bid, tr.b.ask = 0.52, 0.54
+            for k in range(6):
+                t = day + timedelta(minutes=31 + k)
+                feed(tr, clock, bar_at(t, 710 + k * 0.05, ema=709.0, color="red",
+                                       ha_close=709.2, low=709.4, high=710.4))
+            self.assertIsNotNone(tr.state["position"])
+            self.assertFalse(tr.state["position"]["latch_armed"])
+            t = day + timedelta(minutes=37)
+            feed(tr, clock, bar_at(t, 709.0, ema=709.0, color="red", ha_close=708.70,
+                                   low=708.9, high=709.3))
+            self.assertIsNone(tr.state["position"])
+            self.assertIn("trend EMA", tr.state["closed"][-1]["reason"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock, day = self._open(tmp, trend_qqq_stop=0.45)
+            tr.b.bid, tr.b.ask = 0.52, 0.54
+            stop = tr.state["position"]["qqq_stop_level"]
+            t = day + timedelta(minutes=31)
+            feed(tr, clock, bar_at(t, stop - 0.10, ema=stop, color="green", ha_close=stop + 0.20,
+                                   low=stop - 0.05, high=stop + 0.20))
+            self.assertIsNone(tr.state["position"])
+            self.assertIn("stop", tr.state["closed"][-1]["reason"])
+
+    def test_latch_holds_through_the_touch_then_sells_on_giveback_or_a_red_ha(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock, day = self._open(tmp, trend_latch_pct=0.30)
+            tr.b.bid, tr.b.ask = 0.70, 0.72
+            t = day + timedelta(minutes=31)
+            feed(tr, clock, bar_at(t, 712, ema=711, color="green", ha_close=711.5,
+                                   low=711.2, high=712.4))
+            pos = tr.state["position"]
+            self.assertIsNotNone(pos)
+            self.assertTrue(pos["latch_armed"])
+            tr.b.bid, tr.b.ask = 0.64, 0.66
+            t = day + timedelta(minutes=32)
+            feed(tr, clock, bar_at(t, 712.2, ema=711.2, color="green", ha_close=711.8,
+                                   low=711.5, high=712.5))
+            self.assertIsNone(tr.state["position"])
+            self.assertIn("giveback", tr.state["closed"][-1]["reason"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock, day = self._open(tmp, trend_latch_pct=0.30)
+            tr.b.bid, tr.b.ask = 0.70, 0.72
+            t = day + timedelta(minutes=31)
+            feed(tr, clock, bar_at(t, 712, ema=711, color="green", ha_close=711.5,
+                                   low=711.2, high=712.4))
+            self.assertTrue(tr.state["position"]["latch_armed"])
+            t = day + timedelta(minutes=32)
+            feed(tr, clock, bar_at(t, 712.4, ema=711.2, color="red", ha_close=711.6,
+                                   low=711.6, high=712.6))
+            self.assertIsNone(tr.state["position"])
+            self.assertIn("momentum", tr.state["closed"][-1]["reason"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tr, _, clock, day = self._open(tmp, trend_tp_pct=0.20, trend_latch_pct=0.30)
+            tr.b.bid, tr.b.ask = 0.62, 0.64
+            t = day + timedelta(minutes=31)
+            feed(tr, clock, bar_at(t, 712, ema=711, color="green", ha_close=711.5,
+                                   low=711.2, high=712.4))
+            self.assertIsNone(tr.state["position"])
+            self.assertIn("20%", tr.state["closed"][-1]["reason"])
 
 
 if __name__ == "__main__":

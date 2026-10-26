@@ -38,10 +38,10 @@ TREND_ENTRIES = ("base", "confirm", "vwap15", "vwap30", "band")
 CHOP_ENTRIES = ("skip", "fade_vwap", "fade_ema")
 
 
-def fetch() -> list[dict]:
+def fetch(end_day: str = "2026-10-24") -> list[dict]:
     headers = {"User-Agent": "Mozilla/5.0"}
     start = datetime(2026, 9, 29, tzinfo=timezone.utc)
-    end = datetime(2026, 10, 24, tzinfo=timezone.utc)
+    end = datetime.fromisoformat(end_day).replace(tzinfo=timezone.utc)
     bars: list[dict] = []
     cur = start
     while cur < end:
