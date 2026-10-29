@@ -1045,7 +1045,7 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
     closes: list[float] = []
     lines: list[float] = []
     hists: list[float] = []
-    last_lower = None
+    last_lower = None  # (bar index, low of the touch bar)
     last_upper = None
     trades = []
     pos = None
@@ -1072,9 +1072,9 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
         if band is not None:
             mid, upper, lower = band
             if rec["l"] <= lower:
-                last_lower = i
+                last_lower = (i, rec["l"])
             if rec["h"] >= upper:
-                last_upper = i
+                last_upper = (i, rec["h"])
         else:
             mid = upper = lower = None
         turn_up, turn_down = curve_turns(lines, hists, "slope")
@@ -1132,7 +1132,7 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
             if side is None:
                 continue
             touched = last_lower if side == "CALL" else last_upper
-            if touched is None or i - touched > spec["touch_n"]:
+            if touched is None or i - touched[0] > spec["touch_n"]:
                 continue
             macd_line = lines[-1] if lines else None
             if spec["need_zero"] and macd_line is not None:
@@ -1144,7 +1144,15 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
                 continue
             entry = rec["c"]
             stop = spec["disaster"]
-            level = round(entry - stop if side == "CALL" else entry + stop, 2)
+            if stop == "bar":
+                # $0.05 past the touch bar. Never closer than $0.15, so the
+                # stop cannot sit on the fill or on the wrong side of it.
+                if side == "CALL":
+                    level = round(min(touched[1] - 0.05, entry - 0.15), 2)
+                else:
+                    level = round(max(touched[1] + 0.05, entry + 0.15), 2)
+            else:
+                level = round(entry - stop if side == "CALL" else entry + stop, 2)
             pos = {
                 "side": side, "style": "bband", "entry": entry, "entry_t": rec["t"],
                 "stop_dist": abs(entry - level), "stop_level": level,
@@ -1169,6 +1177,7 @@ def finish(pos, rec, reason, points, delta) -> dict:
         "label": pos["label"],
         "entry": round(pos["entry"], 4),
         "exit_reason": reason,
+        "stop_dist": None if pos.get("stop_dist") is None else round(pos["stop_dist"], 3),
         "qqq_points": round(points, 4),
         "opt_gross": round(gross, 2),
         "opt_net": round(net, 2),
@@ -1234,6 +1243,9 @@ def summarize(trades: list[dict], sessions: list[str]) -> dict:
         "net": round(sum(r["opt_net"] for r in trades), 2),
         "gross": round(sum(r["opt_gross"] for r in trades), 2),
         "qqq_points": round(sum(r["qqq_points"] for r in trades), 3),
+        "avg_stop": None if not any(r.get("stop_dist") for r in trades) else round(
+            sum(r["stop_dist"] for r in trades if r.get("stop_dist")) /
+            sum(1 for r in trades if r.get("stop_dist")), 3),
         "exits": dict(reasons),
         "sessions": len(sessions),
         "days_above_70": days_above,
@@ -1398,12 +1410,21 @@ def build_specs() -> list[dict]:
         (12, 26, 9, "slope", 2.0, 2, False, "opp", 0.50, "morning"),
         (12, 26, 9, "slope", 2.0, 2, False, "curl", 0.30, "morning"),
         (12, 26, 9, "slope", 2.0, 2, False, "latch20", 0.50, "rth"),
+        # $0.30 on the other two decision exits, and a stop $0.05 past the
+        # touch bar. Every Bollinger cell has a stop. There is no no-stop row.
+        (12, 26, 9, "slope", 2.0, 2, False, "mid", 0.30, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "latch20", 0.30, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "curl", "bar", "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "latch20", "bar", "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "mid", "bar", "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "curl", "bar", "rth"),
     ]
     for fast, slow, sig, trig, nstd, touch_n, need_zero, bb_exit, stop, window in bb_rows:
         kname = str(nstd).replace(".", "")
         zname = "zero" if need_zero else "any"
+        sname = "bar" if stop == "bar" else str(int(round(stop * 100)))
         specs.append({
-            "name": f"bb_{fast}_{slow}_{sig}_{trig}_k{kname}_n{touch_n}_{zname}_{bb_exit}_s{int(stop * 100)}_{window}",
+            "name": f"bb_{fast}_{slow}_{sig}_{trig}_k{kname}_n{touch_n}_{zname}_{bb_exit}_s{sname}_{window}",
             "kind": "bband", "fast": fast, "slow": slow, "sig": sig, "series": "close",
             "trigger": trig, "trend_filter": False, "exit": bb_exit,
             "trigger_mode": trig, "nstd": nstd, "touch_n": touch_n,
@@ -1619,6 +1640,9 @@ def run() -> dict:
     checks = indicator_checks(recs)
     sess = sessions_of(recs)
     specs = build_specs()
+    for spec in specs:
+        if spec["kind"] == "bband" and spec.get("disaster") not in (0.30, 0.50, "bar"):
+            raise SystemExit(f"Bollinger cell missing a stop: {spec['name']}")
     results = []
     trade_bank = {}
     for spec in specs:
@@ -2022,8 +2046,8 @@ def print_report(payload: dict) -> None:
         fw = r["focus_week"]
         mark = " *" if r["name"] in BB_REFERENCE else ""
         print(f"  {r['name']:62s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
-              f"avg {r['avg_win']}/{r['avg_loss']}  days>70 {r['days_above_70']:2d}  flat {r['days_no_trade']:2d}  "
-              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  {r['exits']}{mark}")
+              f"avg {r['avg_win']}/{r['avg_loss']}  stop {r.get('avg_stop')}  days>70 {r['days_above_70']:2d}  "
+              f"flat {r['days_no_trade']:2d}  focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  {r['exits']}{mark}")
     print("BB DECISION SET, per day:")
     for name in BB_REFERENCE:
         r = by[name]
