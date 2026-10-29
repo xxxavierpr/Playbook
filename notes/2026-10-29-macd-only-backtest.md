@@ -8,6 +8,8 @@ Research only. Nothing here changes the paper or live trader.
 
 The current rules do not clear that bar either. They win 34 of 65 trades (52%) and lose about $63 after fees. Six of 22 days are above 70%, and several of those days are a single trade.
 
+**MACD plus RSI, with no EMA20, no VWAP, no Heikin Ashi, and no day label, does not beat those rules and does not get near 70% every day.** On the same 22 mornings and the same two exit sets, a 24-cell grid runs 37–52% wins. Zero cells win more often than the rules. One cell is green on dollars (about +$36) and it wins less often than the rules (48%). The widest "days above 70%" count in the grid is 7 of 22. Details are in the follow-up section below.
+
 ## What "the current rules" means here
 
 The paper book (`regime_mode` on the 2026-10-29 dry-run) was transcribed into `research/macd_only_backtest.py`. The trader itself was not imported and was not edited.
@@ -152,6 +154,131 @@ Heikin Ashi MACD is worse than regular-close MACD. The zero-line cross trades le
 
 The highest win rate anywhere in the 48 is 53.3% (6/13/5, zero-line cross, EMA filter, trend exits). That cell loses $246 and clears 70% on 4 of 22 days. The highest net anywhere in the 48 is the −$105 row already in the table. With 48 looks at the same 22 days, both of those "best" figures are biased high, and both are still losers.
 
+## Follow-up: MACD + RSI only
+
+Xavier asked for MACD and RSI with nothing else in the entry: no EMA20, no VWAP, no Heikin Ashi, no regime label. Same 22 sessions, entries 08:30–12:00 CT, one position, the same $0.50 / 0.22 / $1.30 proxy, and the same two exit sets (chop: bar stop up to $1, +25%, 10 minutes; trend: $0.30 stop, +12%, 5 minutes).
+
+The grid was written into the script before this run. It is 24 cells:
+
+- MACD signal-line cross, regular close: 12/26/9 and 6/13/5.
+- RSI 14, and RSI 7.
+- Confirm: take the MACD cross only when RSI is already above 50 for a call or below 50 for a put.
+- Reversal: RSI crosses back above 30 (call) or back below 70 (put), and a same-side MACD cross prints on that bar or within the previous N bars on the tape. Enter once, on the later of the two events. N is 3 and N is 5.
+- Each of those with both exit sets.
+
+That is 2 speeds × 2 RSI lengths × 2 exits × (1 confirm + 2 windows) = 24. Eight of them were named as the decision set before the run: 12/26/9 with RSI 14, confirm and the N=5 reversal, both exits; 6/13/5 with RSI 14, confirm, both exits; the fast pair together (6/13/5 with RSI 7, confirm, chop exits); and a tight reversal (12/26/9, RSI 7, N=3, chop exits). A cell "beats the rules" only if it is higher on after-fee win rate and higher on net. The other 16 cells are the same ideas with the other RSI length or the other N. The best of those 16 is reported and is not a new book.
+
+### Does it beat the rules?
+
+No. None of the 8 decision cells do. All 8 lose money. Their win rates are 38–49%, all below the rules' 52%. Days above 70% run from 0 to 4, against 6 for the rules.
+
+| Book | Trades | Win rate | Net | Days above 70% | Flat days | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Current rules | 65 | 52.3% | −$63 | 6 | 0 | 8/15, −$27 |
+| MACD 12/26/9 cross, chop exits | 255 | 44.3% | −$269 | 0 | 0 | 20/46, −$50 |
+| MACD 12/26/9 cross, trend exits | 261 | 49.8% | −$401 | 0 | 0 | 23/47, −$81 |
+| MACD 6/13/5 cross, chop exits | 264 | 42.8% | −$413 | 0 | 0 | 23/48, −$49 |
+| + RSI 14 confirm, 12/26/9, chop | 188 | 47.9% | −$150 | 3 | 0 | 13/33, −$70 |
+| + RSI 14 confirm, 12/26/9, trend | 197 | 49.2% | −$312 | 1 | 0 | 17/36, −$68 |
+| + RSI 14 confirm, 6/13/5, chop | 257 | 38.1% | −$755 | 1 | 0 | 22/43, +$1 |
+| + RSI 14 confirm, 6/13/5, trend | 262 | 46.2% | −$490 | 0 | 0 | 24/47, −$46 |
+| RSI 14 reclaim, N=5, 12/26/9, chop | 62 | 41.9% | −$66 | 2 | 0 | 8/13, +$39 |
+| RSI 14 reclaim, N=5, 12/26/9, trend | 62 | 45.2% | −$127 | 4 | 0 | 7/13, −$9 |
+| RSI 7 confirm, 6/13/5, chop | 258 | 38.8% | −$739 | 1 | 0 | 21/44, −$35 |
+| RSI 7 reclaim, N=3, 12/26/9, chop | 97 | 40.2% | −$126 | 2 | 0 | 7/18, $0 |
+
+Adding "RSI on the right side of 50" to a plain 12/26/9 cross does trim the MACD-only loss (chop exits: −$269 down to −$150, win rate 44% up to 48%). It is still worse than the rules on both win rate and dollars, and this week it is worse than the rules (−$70 vs −$27), including a 2-for-8 Thursday (−$63). Putting the same filter on the fast MACD makes that book worse, not better (−$755 vs −$413).
+
+### The one green cell
+
+Across all 24, win rate runs 37–52% (median 47%) and net runs −$755 to +$36 (median −$246). **Zero cells win more often than the rules.** One cell makes more money: 12/26/9, RSI 14, reversal within 3 bars, chop exits. It is 21 wins out of 44 trades (48%, 95% lower bound 34%), net **+$36**, 5 of 22 days above 70%, and 2 days with no trade. This week it is 6/9 and +$48, with Wednesday flat and only Monday above 70%.
+
+That cell was in the predeclared 24. It was not in the decision 8, and it does not survive the checks next to it:
+
+- The same signal with N=5 instead of N=3 loses **$66**. Two extra bars of patience flips the sign.
+- The same N=3 signal with the trend exit instead of the chop exit loses **$81**. The dollars depend on the fat +25% target, which is the proxy that over-credits fast favorable wicks.
+- Scoring a stop ahead of a target on the same bar does not change this cell (still +$36). The tie-break is not the source of the green number. It does make the 12/26/9 RSI-14 confirm book worse (−$150 becomes −$228).
+
+The highest "days above 70%" in the 24 is 7 of 22, on a fast-MACD reversal that loses $140. Seven is not close to every day. The rules themselves get 6.
+
+### This week, per day
+
+Win rate strictly above 70% is marked pass. A blank day had no trade.
+
+| Day | Rules | MACD 12/26/9 chop | RSI14 confirm, chop | RSI14 reclaim N=3, chop | RSI14 reclaim N=5, chop |
+| --- | --- | --- | --- | --- | --- |
+| 10/26 | 2/3, +$8 | 6/11, $0 | 4/7, +$4 | 3/3, +$34 pass | 3/4, +$19 pass |
+| 10/27 | 1/2, −$3 | 5/11, +$7 | 4/6, +$29 | 2/4, +$8 | 3/5, +$6 |
+| 10/28 | 2/3, −$2 | 5/12, −$9 | 3/12, −$40 | no trade | 1/2, +$8 |
+| 10/29 | 3/7, −$30 | 4/12, −$48 | 2/8, −$63 | 1/2, +$7 | 1/2, +$7 |
+| Week | 8/15, −$27 | 20/46, −$50 | 13/33, −$70 | 6/9, +$48 | 8/13, +$39 |
+
+No row is above 70% on all four days. The reversal's good week is real inside this sample and it is also the book that loses money once the window is 5 bars, and loses money over the full 22 days at N=5.
+
+### Per day, the three 12/26/9 + RSI 14 books people would actually look at
+
+Confirm, chop exits (188 trades, 48%, −$150, 3 days above 70%):
+
+| Day | W/L count | Win rate | Net | |
+| --- | --- | --- | --- | --- |
+| 09-30 | 3/11 | 27% | −$96 | |
+| 10-01 | 6/12 | 50% | −$3 | |
+| 10-02 | 5/10 | 50% | −$31 | |
+| 10-05 | 2/7 | 29% | −$14 | |
+| 10-06 | 3/6 | 50% | +$12 | |
+| 10-07 | 3/10 | 30% | −$26 | |
+| 10-08 | 1/6 | 17% | −$34 | |
+| 10-09 | 4/8 | 50% | +$18 | |
+| 10-12 | 3/7 | 43% | −$19 | |
+| 10-13 | 5/6 | 83% | +$38 | pass |
+| 10-14 | 6/11 | 55% | +$7 | |
+| 10-15 | 8/12 | 67% | +$38 | |
+| 10-16 | 6/8 | 75% | +$32 | pass |
+| 10-19 | 4/10 | 40% | −$39 | |
+| 10-20 | 4/7 | 57% | +$26 | |
+| 10-21 | 3/8 | 38% | −$29 | |
+| 10-22 | 5/8 | 62% | $0 | |
+| 10-23 | 6/8 | 75% | +$39 | pass |
+| 10-26 | 4/7 | 57% | +$4 | |
+| 10-27 | 4/6 | 67% | +$29 | |
+| 10-28 | 3/12 | 25% | −$40 | |
+| 10-29 | 2/8 | 25% | −$63 | |
+
+Reclaim within 3 bars, chop exits (44 trades, 48%, +$36, 5 days above 70%, 2 flat):
+
+| Day | W/L count | Win rate | Net | |
+| --- | --- | --- | --- | --- |
+| 09-30 | 2/2 | 100% | +$22 | pass |
+| 10-01 | 1/3 | 33% | −$26 | |
+| 10-02 | 1/2 | 50% | +$4 | |
+| 10-05 | 0/3 | 0% | −$10 | |
+| 10-06 | 1/2 | 50% | +$7 | |
+| 10-07 | 1/1 | 100% | +$11 | pass |
+| 10-08 | 0 | | $0 | flat |
+| 10-09 | 0/1 | 0% | −$5 | |
+| 10-12 | 0/1 | 0% | −$7 | |
+| 10-13 | 2/5 | 40% | +$2 | |
+| 10-14 | 0/1 | 0% | −$9 | |
+| 10-15 | 1/1 | 100% | +$11 | pass |
+| 10-16 | 2/4 | 50% | −$1 | |
+| 10-19 | 0/1 | 0% | −$11 | |
+| 10-20 | 1/3 | 33% | −$13 | |
+| 10-21 | 1/1 | 100% | +$11 | pass |
+| 10-22 | 1/2 | 50% | −$7 | |
+| 10-23 | 1/2 | 50% | +$6 | |
+| 10-26 | 3/3 | 100% | +$34 | pass |
+| 10-27 | 2/4 | 50% | +$8 | |
+| 10-28 | 0 | | $0 | flat |
+| 10-29 | 1/2 | 50% | +$7 | |
+
+Reclaim within 5 bars, chop exits (62 trades, 42%, −$66, 2 days above 70%). Same idea, two bars looser, and the 22-day result is red. Per day it is the N=3 list with extra trades on the days N=3 was flat or thin: 10/01 goes from 1/3 to 1/4, 10/08 from flat to 0/1, 10/26 from 3/3 to 3/4, 10/28 from flat to 1/2. The week stays green (+$39) while the full sample does not.
+
+Every other cell's per-day rows are in `research/macd_backtest_results.json`.
+
+### Multiple testing
+
+Twenty-four new cells, scored on the same 22 days as the earlier 48. The best cell in a list of 24 will look better than a typical cell from that list. Here the "best" dollars are +$36 on 44 trades, the lower bound on the win rate is 34%, and the next predeclared window (N=5) loses $66. That is what multiple testing looks like when you can check the neighbor: the green cell does not repeat. I would not trade it, and I would not add it to the paper book.
+
 ## MACD as a filter on the entries we already take
 
 Same fade and retest. Take the trade only when the histogram is already on that side (call with histogram > 0, put with histogram < 0).
@@ -181,7 +308,7 @@ The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the we
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.
 
-The 48-cell grid was scored on the same days it is reported on. That is why the decision uses the list written down first, and why the grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter, where moving one or two trades changes the sign of the dollars.
+The 48-cell MACD grid, and the later 24-cell MACD+RSI grid, were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
 
 The option proxy matches Thursday's adverse stops and over-credits fast favorable wicks. If anything, that bias helps the chop target, which is the framework MACD needed in order to lose the least. It did not produce a MACD book that wins.
 

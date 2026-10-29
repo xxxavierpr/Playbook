@@ -6,6 +6,12 @@ and EMA20 retest below are a transcription of the paper rules in trader.py
 (regime_mode, as of the 2026-10-29 dry-run state) so both books can be
 scored on the same bars.
 
+A follow-up grid (kind "macd_rsi") scores MACD signal-line crosses plus RSI
+only: RSI>50/<50 as a confirm, and an RSI 30/70 reclaim confirmed by a MACD
+cross within 3 or 5 bars. No EMA, VWAP, Heikin Ashi, or day label on those
+entries. The 24 names and the 8-name decision list (RSI_REFERENCE) are fixed
+in this file.
+
 Run from the repo root:
 
     python3 research/macd_only_backtest.py
@@ -356,6 +362,9 @@ def prepare(ordered: list[Bar]) -> list[dict]:
     ha_o = ha_c = None
     ema, ema_h, ema_l = EMA(20), EMA(20), EMA(20)
     rsi = RSI(14)
+    rsi_fast = RSI(7)
+    prev_rsi14 = None
+    prev_rsi7 = None
     macds = {}
     for fast, slow, sig in MACD_SPECS:
         macds[("close", fast, slow, sig)] = MACD(fast, slow, sig)
@@ -397,6 +406,7 @@ def prepare(ordered: list[Bar]) -> list[dict]:
         eh = ema_h.update(b.h)
         el = ema_l.update(b.l)
         rsi_v = rsi.update(b.c)
+        rsi7_v = rsi_fast.update(b.c)
 
         macd_now = {}
         for key, ind in macds.items():
@@ -454,6 +464,8 @@ def prepare(ordered: list[Bar]) -> list[dict]:
             "o": b.o, "h": b.h, "l": b.l, "c": b.c, "v": b.v,
             "ha_o": ha_o, "ha_c": ha_c, "color": color,
             "ema": ema_v, "ema_h": eh, "ema_l": el, "rsi": rsi_v, "vwap": vwap,
+            "rsi14": rsi_v, "rsi14_prev": prev_rsi14,
+            "rsi7": rsi7_v, "rsi7_prev": prev_rsi7,
             "label": label["label"],
             "day_dir": label.get("direction"),
             "base_side": base_side,
@@ -461,6 +473,8 @@ def prepare(ordered: list[Bar]) -> list[dict]:
             "macd": macd_now,
             "rth": is_rth,
         })
+        prev_rsi14 = rsi_v
+        prev_rsi7 = rsi7_v
     return out
 
 
@@ -603,6 +617,79 @@ def trend_ok(rec, side: str, use_filter: bool) -> bool:
     return rec["c"] < ema
 
 
+def fresh_mrsi_memory() -> dict:
+    """Last bar index of each MACD signal-line cross and each RSI 30/70 reclaim."""
+    mem = {
+        "macd": {(fast, slow, sig): {"CALL": None, "PUT": None} for fast, slow, sig in MACD_SPECS},
+        "rsi": {period: {"CALL": None, "PUT": None} for period in (7, 14)},
+    }
+    return mem
+
+
+def update_mrsi_memory(i: int, rec, mem) -> None:
+    """Record events on the whole tape, including while a position is open."""
+    for fast, slow, sig in MACD_SPECS:
+        state = rec["macd"][("close", fast, slow, sig)]
+        side = macd_trigger(state, "signal_cross")
+        if side:
+            mem["macd"][(fast, slow, sig)][side] = i
+    for period in (7, 14):
+        prev, cur = rec[f"rsi{period}_prev"], rec[f"rsi{period}"]
+        if prev is None or cur is None:
+            continue
+        # Reclaim: was at or through the band, now back inside.
+        if prev <= 30.0 < cur:
+            mem["rsi"][period]["CALL"] = i
+        if prev >= 70.0 > cur:
+            mem["rsi"][period]["PUT"] = i
+
+
+def mrsi_side(i: int, rec, spec, mem):
+    """MACD + RSI on regular closes. No EMA, VWAP, Heikin Ashi, or day label.
+
+    confirm: enter on the MACD signal-line cross if RSI is already >50 (call)
+    or <50 (put).
+
+    reversal: RSI crosses back above 30 (call) or back below 70 (put), and a
+    same-side MACD signal-line cross lands on that bar or within the previous
+    N tape bars. If the MACD cross comes second, enter on the MACD bar instead.
+    One entry, on the later event. N counts bars on this tape, so a cross a
+    few minutes before 08:30 can confirm the open.
+    """
+    key = (spec["fast"], spec["slow"], spec["sig"])
+    period = spec["rsi_n"]
+    state = rec["macd"][("close", *key)]
+    macd_side = macd_trigger(state, "signal_cross")
+    prev, cur = rec[f"rsi{period}_prev"], rec[f"rsi{period}"]
+    if spec["mode"] == "confirm":
+        if macd_side is None or cur is None:
+            return None
+        if macd_side == "CALL" and cur > 50.0:
+            return "CALL"
+        if macd_side == "PUT" and cur < 50.0:
+            return "PUT"
+        return None
+    rsi_side = None
+    if prev is not None and cur is not None:
+        if prev <= 30.0 < cur:
+            rsi_side = "CALL"
+        elif prev >= 70.0 > cur:
+            rsi_side = "PUT"
+    n = spec["n"]
+    if macd_side and rsi_side:
+        return macd_side if macd_side == rsi_side else None
+    if rsi_side:
+        last = mem["macd"][key][rsi_side]
+        if last is not None and last < i and i - last <= n:
+            return rsi_side
+        return None
+    if macd_side:
+        last = mem["rsi"][period][macd_side]
+        if last is not None and last < i and i - last <= n:
+            return macd_side
+    return None
+
+
 def desired_side(rec, spec) -> tuple[str | None, str | None]:
     """Return (side, exit style) or (None, None)."""
     kind = spec["kind"]
@@ -642,7 +729,8 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
     next_ok = None
     buys = 0
     day = None
-    for rec in recs:
+    mem = fresh_mrsi_memory()
+    for i, rec in enumerate(recs):
         d = rec["t"].date()
         if d != day:
             if pos is not None:
@@ -654,6 +742,9 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
             day = d
             buys = 0
             next_ok = None
+        if spec["kind"] == "macd_rsi":
+            # Events during a hold still count as confirmation for the next entry.
+            update_mrsi_memory(i, rec, mem)
         if pos is not None:
             hit = resolve_bar(pos, rec, path)
             if hit:
@@ -667,10 +758,19 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
             continue
         if buys >= MAX_BUYS:
             continue
-        side, style = desired_side(rec, spec)
+        if spec["kind"] == "macd_rsi":
+            side = mrsi_side(i, rec, spec, mem)
+            style = spec["exit"] if side else None
+        else:
+            side, style = desired_side(rec, spec)
         if side is None:
             continue
-        rec["_source"] = rec["base_source"] if spec["kind"] in ("baseline", "filter") else spec["trigger"]
+        if spec["kind"] == "macd_rsi":
+            rec["_source"] = spec["mode"]
+        elif spec["kind"] in ("baseline", "filter"):
+            rec["_source"] = rec["base_source"]
+        else:
+            rec["_source"] = spec["trigger"]
         opened = open_position(rec, side, style, delta)
         if opened is None:
             continue
@@ -830,6 +930,24 @@ def build_specs() -> list[dict]:
             "kind": "gated", "fast": fast, "slow": slow, "sig": sig, "series": series,
             "trigger": trigger, "trend_filter": filt, "exit": "native",
         })
+    # MACD + RSI only. Listed in full before any of these cells are scored.
+    # 2 speeds x 2 RSI lengths x 2 exits x (1 confirm + 2 reversal windows) = 24.
+    for fast, slow, sig in MACD_SPECS:
+        for rsi_n in (14, 7):
+            for exit_style in ("chop", "trend"):
+                specs.append({
+                    "name": f"mrsi_{fast}_{slow}_{sig}_rsi{rsi_n}_confirm50_{exit_style}",
+                    "kind": "macd_rsi", "fast": fast, "slow": slow, "sig": sig,
+                    "series": "close", "trigger": "signal_cross", "trend_filter": False,
+                    "exit": exit_style, "mode": "confirm", "rsi_n": rsi_n, "n": None,
+                })
+                for n in (3, 5):
+                    specs.append({
+                        "name": f"mrsi_{fast}_{slow}_{sig}_rsi{rsi_n}_rev_n{n}_{exit_style}",
+                        "kind": "macd_rsi", "fast": fast, "slow": slow, "sig": sig,
+                        "series": "close", "trigger": "signal_cross", "trend_filter": False,
+                        "exit": exit_style, "mode": "reversal", "rsi_n": rsi_n, "n": n,
+                    })
     return specs
 
 
@@ -846,6 +964,29 @@ REFERENCE = [
     "macd_12_26_9_close_hist_hook_none_chop",
     "macd_12_26_9_ha_signal_cross_none_chop",
     "macd_12_26_9_ha_signal_cross_none_trend",
+]
+
+# Decision set for the MACD+RSI follow-up, named before that run. The other
+# 16 cells in the 24 are the same ideas with the other RSI length or the
+# other N, reported as a sweep and not used to crown a winner.
+RSI_REFERENCE = [
+    "mrsi_12_26_9_rsi14_confirm50_chop",
+    "mrsi_12_26_9_rsi14_confirm50_trend",
+    "mrsi_6_13_5_rsi14_confirm50_chop",
+    "mrsi_6_13_5_rsi14_confirm50_trend",
+    "mrsi_12_26_9_rsi14_rev_n5_chop",
+    "mrsi_12_26_9_rsi14_rev_n5_trend",
+    "mrsi_6_13_5_rsi7_confirm50_chop",
+    "mrsi_12_26_9_rsi7_rev_n3_chop",
+]
+
+# MACD signal-line cross, regular close, no trend filter. The pair to beat
+# when asking whether RSI adds anything.
+MACD_ONLY_CROSS = [
+    "macd_12_26_9_close_signal_cross_none_chop",
+    "macd_12_26_9_close_signal_cross_none_trend",
+    "macd_6_13_5_close_signal_cross_none_chop",
+    "macd_6_13_5_close_signal_cross_none_trend",
 ]
 
 
@@ -890,7 +1031,7 @@ def run() -> dict:
     # intrabar tie-break is doing the work.
     stop_first = {}
     for spec in specs:
-        if spec["name"] != "current_rules" and spec["name"] not in REFERENCE and spec["kind"] not in ("filter", "gated"):
+        if spec["name"] != "current_rules" and spec["name"] not in REFERENCE and spec["name"] not in RSI_REFERENCE and spec["kind"] not in ("filter", "gated"):
             continue
         trades = simulate(recs, spec, DELTA, "stop_first")
         stop_first[spec["name"]] = summarize(trades, sess)["net"], summarize(trades, sess)["win_rate"], summarize(trades, sess)["trades"]
@@ -926,6 +1067,19 @@ def run() -> dict:
         r["win_rate"] if r["win_rate"] is not None else -1,
         r["net"],
     ), reverse=True)
+    mrsi = [r for r in results if r["kind"] == "macd_rsi"]
+    mrsi_wr = [r["win_rate"] for r in mrsi if r["win_rate"] is not None]
+    mrsi_net = [r["net"] for r in mrsi]
+    mrsi_ranked = sorted(mrsi, key=lambda r: (
+        r["days_above_70"],
+        r["win_rate"] if r["win_rate"] is not None else -1,
+        r["net"],
+    ), reverse=True)
+    mrsi_both = sum(
+        1 for r in mrsi
+        if r["win_rate"] is not None and base["win_rate"] is not None
+        and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
+    )
 
     payload = {
         "assumptions": {
@@ -960,6 +1114,23 @@ def run() -> dict:
                      "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"]} for r in ranked[:8]],
             "bottom": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
                         "days_above_70": r["days_above_70"]} for r in ranked[-3:]],
+        },
+        "mrsi_distribution": {
+            "variants": len(mrsi),
+            "predeclared_decision_set": RSI_REFERENCE,
+            "win_rate_min": None if not mrsi_wr else round(min(mrsi_wr), 4),
+            "win_rate_median": None if not mrsi_wr else round(statistics.median(mrsi_wr), 4),
+            "win_rate_max": None if not mrsi_wr else round(max(mrsi_wr), 4),
+            "net_min": None if not mrsi_net else round(min(mrsi_net), 2),
+            "net_median": None if not mrsi_net else round(statistics.median(mrsi_net), 2),
+            "net_max": None if not mrsi_net else round(max(mrsi_net), 2),
+            "n_higher_win_rate_than_baseline": sum(1 for r in mrsi if r["win_rate"] is not None and base["win_rate"] is not None and r["win_rate"] > base["win_rate"]),
+            "n_higher_net_than_baseline": sum(1 for r in mrsi if r["net"] > base["net"]),
+            "n_higher_win_rate_and_net": mrsi_both,
+            "n_any_day_sweep_above_70": sum(1 for r in mrsi if r["days_above_70"] == r["sessions"]),
+            "max_days_above_70": max((r["days_above_70"] for r in mrsi), default=0),
+            "top": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
+                     "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"]} for r in mrsi_ranked[:5]],
         },
         "stop_first": {k: {"net": v[0], "win_rate": v[1], "trades": v[2]} for k, v in stop_first.items()},
         "sensitivity": sensitivity,
@@ -1040,6 +1211,36 @@ def print_report(payload: dict) -> None:
     for day, counts in payload["regime_minutes_0900_1200"].items():
         if FOCUS_LO <= day <= FOCUS_HI:
             print(f"  {day} {counts}")
+    print()
+    md = payload["mrsi_distribution"]
+    print(f"MACD+RSI GRID  n={md['variants']}  win {md['win_rate_min']*100:.1f}/{md['win_rate_median']*100:.1f}/{md['win_rate_max']*100:.1f}% min/med/max")
+    print(f"  net ${md['net_min']:.0f} / ${md['net_median']:.0f} / ${md['net_max']:.0f} min/med/max")
+    print(f"  higher win rate than rules: {md['n_higher_win_rate_than_baseline']}    higher net: {md['n_higher_net_than_baseline']}    both: {md['n_higher_win_rate_and_net']}")
+    print(f"  cleared >70% every session: {md['n_any_day_sweep_above_70']}    most days>70 in any cell: {md['max_days_above_70']}/{base['sessions']}")
+    print("  in-sample top (not the decision):")
+    for row in md["top"]:
+        print(f"    {row['name']:48s}  n {row['trades']:3d}  {fmt_wr(row['win_rate'])}  ${row['net']:8.2f}  days>70 {row['days_above_70']}  flat {row['days_no_trade']}")
+    print("MACD+RSI ALL CELLS:")
+    for r in payload["results"]:
+        if r["kind"] != "macd_rsi":
+            continue
+        fw = r["focus_week"]
+        mark = " *" if r["name"] in RSI_REFERENCE else ""
+        print(f"  {r['name']:48s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
+              f"days>70 {r['days_above_70']:2d}  flat {r['days_no_trade']:2d}  "
+              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}{mark}")
+    print("MACD+RSI DECISION SET, per day (* = above 70%):")
+    for name in RSI_REFERENCE:
+        r = by[name]
+        bits = []
+        for d in r["days"]:
+            if d["trades"] == 0:
+                bits.append(f"{d['day'][5:]} flat")
+            else:
+                flag = "*" if d["above_70"] else ""
+                bits.append(f"{d['day'][5:]} {d['wins']}/{d['trades']}{flag} ${d['net']:.0f}")
+        print(f"  {name}")
+        print("    " + " | ".join(bits))
 
 
 if __name__ == "__main__":
