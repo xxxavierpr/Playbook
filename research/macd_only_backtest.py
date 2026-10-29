@@ -12,6 +12,11 @@ cross within 3 or 5 bars. No EMA, VWAP, Heikin Ashi, or day label on those
 entries. The 24 names and the 8-name decision list (RSI_REFERENCE) are fixed
 in this file.
 
+A second follow-up (kind "curve") enters on a signal-line cross after the
+MACD line hooks, and exits when the line curls the other way. No fixed
+target and no time stop. CURVE_REFERENCE is the four slope cells on
+regular closes. Histogram-shrink and Heikin Ashi rows are the checks.
+
 Run from the repo root:
 
     python3 research/macd_only_backtest.py
