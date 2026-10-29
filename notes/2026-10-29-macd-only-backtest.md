@@ -14,7 +14,7 @@ The current rules do not clear that bar either. They win 34 of 65 trades (52%) a
 
 **Entering the moment the line hooks, and getting out quickly, does not fix it.** A 13-cell in-and-out test wins as often as 66% and still loses money on every cell. The best dollars are about −$159, against −$63 for the rules. The high win rate is a small target: a +5% win is $1.20 after fees and a $0.30 stop is about an $8 loss. Today's 2:17 PM CT hook did fire, and the quick exit was out two minutes later for +$3.70, before the 2:30 PM push.
 
-**A Bollinger touch plus that hook, held until the MACD curls back, made money in this sample and still fails the win-rate test.** The main version wins 29% of 212 trades and nets about +$240. Average win about +$23, average loss about −$8. Zero days are above 70%. Three days (October 1, 15, and 23) carry more than the whole profit. Banking the reversal at the middle band, instead of holding it, loses about $455.
+**A Bollinger touch plus that hook, held until the MACD curls back, made money in this sample and still fails the win-rate test.** The main version wins 29% of 212 trades and nets about +$240. Average win about +$23, average loss about −$8. Zero days are above 70%. Three days (October 1, 15, and 23) carry more than the whole profit. Banking the reversal at the middle band, instead of holding it, loses about $455. Adding the chart's volume spike, wick, deep MACD, and stretch does not lift that win rate toward 70%. The stack of all four is 11 trades at 27%.
 
 ## What "the current rules" means here
 
@@ -38,7 +38,11 @@ On the overlap, Yahoo closes match that feed to well under a cent (median absolu
 
 Yahoo's 1-minute volume is not usable raw. A handful of bars print 10–20 million shares where the paper feed shows 15–30 thousand, and the 08:30 bar is several times too heavy. Session VWAP uses the attached volume on every bar that feed has. Leftover Yahoo regular-session volume is winsorized (08:30 capped at 5× the session median; any other bar above 8× the median is replaced with the median). That rule was set by matching the paper VWAP on Oct 27–29, before any strategy was scored.
 
-Check against `trader_state.dryrun.json` at 11:58 CT on Oct 29: EMA20 error is under $0.00001, session VWAP error is about −$0.0001, and the 12/26/9 MACD histogram error is under 0.00001. Extended-hours prices are in the EMA, MACD, and Heikin Ashi, which is how the signal engine runs with extended hours on. VWAP itself starts at 08:30.
+Check against `trader_state.dryrun.json` at 11:58 CT on Oct 29: EMA20 error is under $0.00001, session VWAP error is about −$0.0001, and the 12/26/9 MACD histogram error is under 0.00001.
+
+**Indicators use the extended-hours series.** EMA20, MACD (both speeds), RSI, Heikin Ashi, and Bollinger Bands are updated on every premarket and postmarket bar in the tape, then entries are still limited to the named window (08:30–12:00 or 08:30–14:59). That is how the signal engine runs with extended hours on, and it is how every cell in this note was scored. Nothing was regular-hours-only and then rerun. At 08:30 on Oct 29 the extended-hours Bollinger lower band is about $716.24 and EMA20 is about $717.55. The same two numbers built from regular-session bars only would be about $720.12 and $723.67. By 14:17 the last 20 closes are all regular-session bars, so the band is $712.43 either way, and EMA20 and the MACD line have converged. Session VWAP is the exception on purpose: it starts at 08:30 and does not include premarket, because that is the session VWAP on the chart.
+
+Premarket is in every session, about 300 bars from 3:00 CT. Postmarket is thin on Oct 7, 8, 9, 12, and 13 (Yahoo only returned the 15:00 bar those days). The volume-spike average is the prior 20 bars on this same tape. Yahoo's premarket volume is 0, so those minutes are left out of the average. The Oct 21–22 file has real premarket volume, and that volume is now used. Earlier, the overlay kept only regular-session prints from that file. Putting the premarket prints back changed the 1.5× volume cell from 47 trades and +$40 to 52 trades and −$7. It did not change the price indicators, and the unfiltered band-and-curl book is still 212 trades, 29%, +$240.
 
 ## How a trade becomes dollars
 
@@ -545,6 +549,30 @@ The other cells' per-day rows are in `research/macd_backtest_results.json`.
 ### Multiple testing
 
 Nineteen cells now. The first thirteen were named before any Bollinger result was looked at. The extra six are the stop check Xavier asked for after that: $0.30 on the latch and the middle-band exit, and a stop just past the touch bar, including on the full-session curl so today's trade is scored with it. Every cell has one of those stops. There is no naked hold. The green result is not one lucky exit: the curl, the +20% latch, and the far band agree at $0.50, and the fast MACD agrees. The bar stop keeps the curl and the latch green and does not lift the win rate over the rules. The $0.30 stop takes the curl's dollars away. The cells that tighten the signal (wider bands, same-bar touch) do not agree either. It is still a low-win-rate system whose profit sits in three days. Xavier ranks the win rate first, and this loses that comparison to the book he already has. I would not replace the rules with it. Twenty-two days is not enough to trust a reversal that is wrong most of the time, even when the winners are large.
+
+## Follow-up: the ingredients on the chart
+
+The plain band-and-curl book, held until the MACD curls back, with a $0.50 stop, is the comparison: 212 trades, 29%, about +$240, zero days above 70%. Xavier's example adds a volume spike, long wicks, MACD deep below zero, and a capitulation stretch. Each was added on its own, then all four together. Every cell still has a stop. There is no +20% target on these rows. The take-profit is the curl.
+
+Volume is the cleaned tape. Where the attached feed has a bar, including premarket on Oct 21–22, that volume is used. Everywhere else it is Yahoo, with the regular-session spikes capped. A spike is the touch bar, or any pierce inside the two-bar window, at 1.5× or 2× the average of the prior 20 bars. A wick passes when a pierce bar's rejection wick is at least half the range. Deep means the MACD line is through zero and in the outer 25% of its last 30 readings. Stretch means the close is at least $0.50 beyond both EMA20 and VWAP, or two band-piercing bars in a row. The stack needs all four.
+
+| Filter, morning, $0.50 stop | Trades | Win rate | Avg win / avg loss | Net | Days above 70% | Flat days | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| No extra filter | 212 | 29% | +$23.47 / −$7.89 | +$240 | 0 | 0 | 11/32, +$14 |
+| Volume ≥ 1.5× | 52 | 27% | +$18.76 / −$7.09 | −$7 | 2 | 0 | 3/9, +$30 |
+| Volume ≥ 2× | 24 | 21% | +$14.94 / −$6.90 | −$57 | 4 | 5 | 3/5, +$53 |
+| Rejection wick ≥ 50% | 78 | 22% | +$27.61 / −$7.91 | −$13 | 0 | 0 | 4/11, +$16 |
+| MACD deep | 130 | 31% | +$25.63 / −$7.59 | +$342 | 2 | 0 | 5/15, −$13 |
+| Stretch | 121 | 28% | +$21.61 / −$8.06 | +$34 | 0 | 0 | 6/22, −$57 |
+| All four | 11 | 27% | +$19.34 / −$5.21 | +$16 | 2 | 13 | 1/1, +$4 |
+| All four, full session | 22 | 27% | +$26.53 / −$6.09 | +$62 | 2 | 9 | 2/4, $0 |
+| No filter, $1.00 stop | 208 | 30% | +$23.12 / −$8.77 | +$185 | 0 | 0 | 11/31, +$41 |
+
+Nothing here moves the win rate toward 70%. The best single filter on win rate is MACD deep, at 31%, and it is the one that also keeps the dollars (+$342). Volume and the wick cut the book down and take the dollars away. The 2× volume cell is above 70% on 4 days only because it barely trades: 24 trades, 5 days with none, and the net is −$57. The stack is 11 trades in 22 mornings, 13 mornings with no trade, 27% wins, +$16. That is not a sample you can call 70%. The touch-bar stop on these filters does the same thing it did before: the win rate stays in the 20s and 30s. A $1.00 stop on the unfiltered curl is +$185 at 30%, a little worse than the $0.50 stop, and still no day above 70%.
+
+Today at 2:17 the hook passes volume (one pierce bar is 2.65× the prior 20), MACD deep, and the stretch (three band tags in a row; price is not $0.50 under the EMA). It fails the wick. The two pierce bars in the window have lower wicks of 36% and 18% of the range, under the 50% line. The stack therefore skips the trade. Volume, deep, and stretch would still take it, and with the $0.50 stop or the stop under the 2:16 low it is the same hold to 2:35, about +$22.
+
+These filters were named before this run, then scored on the same 22 days. Stacking four of them leaves 11 trades. A 2-for-2 or 3-for-3 on a handful of days is not a 70% system. I would not add the wick or the volume spike as a requirement. The deep-MACD filter is the only one that does not give the dollars back, and it does not fix the win rate.
 
 ## MACD as a filter on the entries we already take
 

@@ -202,7 +202,9 @@ def overlay_feed_volume(bars: dict[datetime, Bar]) -> int:
     with (TESTDATA / "qqq_1m_20261022.csv").open(newline="") as f:
         for row in csv.DictReader(f):
             bt = parse_ts(row["time"])
-            if bt in bars and rth(bt):
+            # Premarket prints in this file are real volume. Yahoo's premarket
+            # volume is 0, so the overlay has to cover extended hours too.
+            if bt in bars:
                 bars[bt].v = float(row["volume"])
                 bars[bt].vol_source = "feed"
                 n += 1
@@ -237,6 +239,32 @@ def clean_yahoo_volume(ordered: list[Bar]) -> None:
                 b.v = min(b.v, 5 * med)
             elif b.v > 8 * med:
                 b.v = med
+
+
+def assert_extended_hours(ordered: list[Bar]) -> dict:
+    """EMA, MACD, RSI, Heikin Ashi, and Bollinger walk this full list.
+
+    A session with no premarket would mean those indicators were regular-hours
+    only. Fail loud rather than publish that by accident.
+    """
+    pre = defaultdict(int)
+    post = defaultdict(int)
+    for b in ordered:
+        if b.t.weekday() >= 5:
+            continue
+        if dtime(3, 0) <= b.t.time() < dtime(8, 30):
+            pre[b.t.date()] += 1
+        elif b.t.time() >= dtime(15, 0):
+            post[b.t.date()] += 1
+    if not pre or min(pre.values()) < 100:
+        raise SystemExit(f"extended-hours tape is missing premarket bars: {dict(pre)}")
+    thin = [d.isoformat() for d, n in sorted(post.items()) if n < 30]
+    return {
+        "sessions_with_premarket": len(pre),
+        "premarket_bars_min": min(pre.values()),
+        "premarket_bars_max": max(pre.values()),
+        "thin_postmarket_days": thin,
+    }
 
 
 def load_bars() -> list[Bar]:
@@ -404,7 +432,9 @@ def prepare(ordered: list[Bar]) -> list[dict]:
             day_hist = []
             retest = []
 
-        # Heikin Ashi, carried across the whole tape including extended hours.
+        # Every bar, including premarket and postmarket. EMA20, MACD, RSI, and
+        # Heikin Ashi are the extended-hours series. Session VWAP is not:
+        # it starts at 08:30. Bollinger, built later, uses this same full list.
         new_c = (b.o + b.h + b.l + b.c) / 4.0
         new_o = (b.o + b.c) / 2.0 if ha_o is None else (ha_o + ha_c) / 2.0
         ha_o, ha_c = new_o, new_c
@@ -1033,6 +1063,51 @@ def bollinger(closes: list[float], nstd: float):
     return mid, mid + nstd * sd, mid - nstd * sd
 
 
+def wick_ok(bar, side: str) -> bool:
+    """Rejection wick at least half the bar. Lower wick for a call, upper for a put."""
+    rng = bar["h"] - bar["l"]
+    if rng <= 1e-9:
+        return False
+    if side == "CALL":
+        wick = min(bar["o"], bar["c"]) - bar["l"]
+    else:
+        wick = bar["h"] - max(bar["o"], bar["c"])
+    return wick / rng >= 0.50
+
+
+def vol_spike(recent: list[dict], pos: int, mult: float) -> bool:
+    """Touch-bar volume vs the prior 20 bars on the extended-hours tape.
+
+    Yahoo premarket volume is 0, so those minutes are skipped. The average
+    needs 10 positive prints. Attached-feed volume is used when we have it,
+    including premarket from the Oct 21-22 file.
+    """
+    if pos < 20:
+        return False
+    prior = [recent[j]["v"] for j in range(pos - 20, pos) if recent[j]["v"] > 0]
+    if len(prior) < 10:
+        return False
+    avg = sum(prior) / len(prior)
+    return avg > 0 and recent[pos]["v"] >= mult * avg
+
+
+def consecutive_pierce(recent: list[dict], touch_n: int, side: str) -> bool:
+    window = recent[-(touch_n + 1):]
+    key = "touch_lo" if side == "CALL" else "touch_hi"
+    flags = [b[key] for b in window]
+    return any(flags[j] and flags[j + 1] for j in range(len(flags) - 1))
+
+
+def far_extended(rec, side: str) -> bool:
+    """Close at least $0.50 beyond both EMA20 and VWAP."""
+    ema, vwap, close = rec["ema"], rec["vwap"], rec["c"]
+    if ema is None or vwap is None:
+        return False
+    if side == "CALL":
+        return close <= ema - 0.50 and close <= vwap - 0.50
+    return close >= ema + 0.50 and close >= vwap + 0.50
+
+
 def simulate_bband(recs, spec, delta: float) -> list[dict]:
     """Bollinger touch plus a MACD turn or signal-line cross.
 
@@ -1047,6 +1122,7 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
     hists: list[float] = []
     last_lower = None  # (bar index, low of the touch bar)
     last_upper = None
+    recent: list[dict] = []
     trades = []
     pos = None
     last_rth = None
@@ -1075,8 +1151,22 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
                 last_lower = (i, rec["l"])
             if rec["h"] >= upper:
                 last_upper = (i, rec["h"])
+            touch_lo = rec["l"] <= lower
+            touch_hi = rec["h"] >= upper
         else:
             mid = upper = lower = None
+            touch_lo = touch_hi = False
+        recent.append({
+            "v": rec["v"], "o": rec["o"], "h": rec["h"], "l": rec["l"], "c": rec["c"],
+            "touch_lo": touch_lo, "touch_hi": touch_hi,
+        })
+        if len(recent) > 80:
+            # Keep indexes aligned with `i` by not dropping the front. 80 is
+            # enough for a 20-bar volume average plus the touch window, and
+            # spike() uses positions inside this list. Rebuild positions from
+            # the tail only, so trim is safe if we recompute positions from
+            # the tail rather than from `i`.
+            del recent[:-80]
         turn_up, turn_down = curve_turns(lines, hists, "slope")
         prev_hist, hist = st["prev_hist"], st["hist"]
         bull_cross = prev_hist is not None and hist is not None and prev_hist <= 0 < hist
@@ -1141,6 +1231,21 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
                 if side == "PUT" and not macd_line > 0:
                     continue
             if spec["need_zero"] and macd_line is None:
+                continue
+            # Ingredient filters. Positions are into `recent`, whose tail is
+            # the touch window. Volume uses the cleaned tape (attached feed
+            # where we have it, winsorized Yahoo elsewhere).
+            window = recent[-(spec["touch_n"] + 1):]
+            base = len(recent) - len(window)
+            key_touch = "touch_lo" if side == "CALL" else "touch_hi"
+            pierces = [base + j for j, b in enumerate(window) if b[key_touch]]
+            if spec.get("vol_mult") and not any(vol_spike(recent, p, spec["vol_mult"]) for p in pierces):
+                continue
+            if spec.get("wick") and not any(wick_ok(recent[p], side) for p in pierces):
+                continue
+            if spec.get("deep") and not macd_extreme(lines, side):
+                continue
+            if spec.get("stretch") and not (far_extended(rec, side) or consecutive_pierce(recent, spec["touch_n"], side)):
                 continue
             entry = rec["c"]
             stop = spec["disaster"]
@@ -1419,6 +1524,39 @@ def build_specs() -> list[dict]:
         (12, 26, 9, "slope", 2.0, 2, False, "mid", "bar", "morning"),
         (12, 26, 9, "slope", 2.0, 2, False, "curl", "bar", "rth"),
     ]
+    # Chart ingredients, named before this run. Each filter alone at $0.50,
+    # then the stack, then the same stack at the touch-bar stop and at $1.
+    # Full session is the stack plus a $1 check on the plain curl. Filters
+    # do not remove the stop.
+    ingredient_rows = []
+    for tag, vol, wick, deep, stretch in (
+        ("vol15", 1.5, False, False, False),
+        ("vol20", 2.0, False, False, False),
+        ("wick", None, True, False, False),
+        ("deep", None, False, True, False),
+        ("stretch", None, False, False, True),
+        ("stack", 1.5, True, True, True),
+    ):
+        for stop, window in ((0.50, "morning"), ("bar", "morning")):
+            ingredient_rows.append((tag, vol, wick, deep, stretch, stop, window))
+    ingredient_rows.extend([
+        ("stack", 1.5, True, True, True, 1.00, "morning"),
+        ("stack", 1.5, True, True, True, 0.50, "rth"),
+        ("stack", 1.5, True, True, True, "bar", "rth"),
+        ("stack", 1.5, True, True, True, 1.00, "rth"),
+        ("any", None, False, False, False, 1.00, "morning"),
+        ("any", None, False, False, False, 1.00, "rth"),
+    ])
+    for tag, vol, wick, deep, stretch, stop, window in ingredient_rows:
+        sname = "bar" if stop == "bar" else str(int(round(float(stop) * 100)))
+        specs.append({
+            "name": f"bb_12_26_9_slope_k20_n2_{tag}_curl_s{sname}_{window}",
+            "kind": "bband", "fast": 12, "slow": 26, "sig": 9, "series": "close",
+            "trigger": "slope", "trend_filter": False, "exit": "curl",
+            "trigger_mode": "slope", "nstd": 2.0, "touch_n": 2,
+            "need_zero": False, "bb_exit": "curl", "disaster": stop, "window": window,
+            "vol_mult": vol, "wick": wick, "deep": deep, "stretch": stretch,
+        })
     for fast, slow, sig, trig, nstd, touch_n, need_zero, bb_exit, stop, window in bb_rows:
         kname = str(nstd).replace(".", "")
         zname = "zero" if need_zero else "any"
@@ -1634,14 +1772,76 @@ def oct29_bb_snapshot(recs, trade_bank) -> dict:
     return {"bars": bars, "trades": fired}
 
 
+def oct29_ingredients(recs) -> dict:
+    """Which chart ingredients the 14:17 CT hook would have passed."""
+    closes: list[float] = []
+    lines: list[float] = []
+    hists: list[float] = []
+    recent: list[dict] = []
+    for rec in recs:
+        if rec["t"].date().isoformat() != "2026-10-29":
+            continue
+        closes.append(rec["c"])
+        st = rec["macd"][("close", 12, 26, 9)]
+        if st["line"] is not None:
+            lines.append(st["line"])
+        if st["hist"] is not None:
+            hists.append(st["hist"])
+        band = bollinger(closes, 2.0)
+        touch_lo = bool(band and rec["l"] <= band[2])
+        touch_hi = bool(band and rec["h"] >= band[1])
+        recent.append({
+            "v": rec["v"], "o": rec["o"], "h": rec["h"], "l": rec["l"], "c": rec["c"],
+            "touch_lo": touch_lo, "touch_hi": touch_hi,
+        })
+        if rec["t"].strftime("%H:%M") != "14:17":
+            continue
+        turn_up, _turn_down = curve_turns(lines, hists, "slope")
+        window = recent[-3:]
+        base = len(recent) - len(window)
+        pierces = [base + j for j, b in enumerate(window) if b["touch_lo"]]
+        ratios = []
+        wick_fracs = []
+        for p in pierces:
+            b = recent[p]
+            rng = b["h"] - b["l"]
+            if rng > 0:
+                wick_fracs.append(round((min(b["o"], b["c"]) - b["l"]) / rng, 3))
+            if p >= 20:
+                prior = [recent[j]["v"] for j in range(p - 20, p) if recent[j]["v"] > 0]
+                if prior:
+                    ratios.append(round(b["v"] / (sum(prior) / len(prior)), 2))
+        return {
+            "t": "14:17",
+            "close": round(rec["c"], 2),
+            "turn_up": turn_up,
+            "n_pierces_in_window": len(pierces),
+            "wick_fractions": wick_fracs,
+            "wick_pass": any(wick_ok(recent[p], "CALL") for p in pierces),
+            "vol_ratios": ratios,
+            "vol15": any(vol_spike(recent, p, 1.5) for p in pierces),
+            "vol20": any(vol_spike(recent, p, 2.0) for p in pierces),
+            "deep": macd_extreme(lines, "CALL"),
+            "far_050": far_extended(rec, "CALL"),
+            "consecutive_pierce": consecutive_pierce(recent, 2, "CALL"),
+            "stretch": far_extended(rec, "CALL") or consecutive_pierce(recent, 2, "CALL"),
+            "ema": None if rec["ema"] is None else round(rec["ema"], 2),
+            "vwap": None if rec["vwap"] is None else round(rec["vwap"], 2),
+            "macd": None if not lines else round(lines[-1], 4),
+            "volume_note": "afternoon bars are winsorized Yahoo; the attached feed ends near 12:19 CT",
+        }
+    return {"t": "14:17", "missing": True}
+
+
 def run() -> dict:
     ordered = load_bars()
+    hours = assert_extended_hours(ordered)
     recs = prepare(ordered)
     checks = indicator_checks(recs)
     sess = sessions_of(recs)
     specs = build_specs()
     for spec in specs:
-        if spec["kind"] == "bband" and spec.get("disaster") not in (0.30, 0.50, "bar"):
+        if spec["kind"] == "bband" and spec.get("disaster") not in (0.30, 0.50, 1.00, "bar"):
             raise SystemExit(f"Bollinger cell missing a stop: {spec['name']}")
     results = []
     trade_bank = {}
@@ -1862,6 +2062,8 @@ def run() -> dict:
         },
         "oct29_afternoon": oct29_afternoon(recs, trade_bank),
         "oct29_bb": oct29_bb_snapshot(recs, trade_bank),
+        "oct29_ingredients": oct29_ingredients(recs),
+        "extended_hours": hours,
         "stop_first": {k: {"net": v[0], "win_rate": v[1], "trades": v[2]} for k, v in stop_first.items()},
         "sensitivity": sensitivity,
     }
@@ -1890,7 +2092,11 @@ def fmt_money(x):
 def print_report(payload: dict) -> None:
     a = payload["assumptions"]
     c = payload["checks"]
+    eh = payload.get("extended_hours") or {}
     print(f"Sessions: {len(payload['sessions'])}  {payload['sessions'][0]} .. {payload['sessions'][-1]}")
+    if eh:
+        print(f"Extended hours in the indicator tape: premarket {eh['premarket_bars_min']}-{eh['premarket_bars_max']} bars/session "
+              f"across {eh['sessions_with_premarket']} sessions. Thin postmarket days: {eh['thin_postmarket_days'] or 'none'}")
     print(f"Check 11:58 CT  EMA err {c['ema_err']:+.5f}  VWAP err {c['vwap_err']:+.5f}  MACD hist err {c['macd_hist_err']:+.5f}  label {c['label']}")
     print(f"Proxy: premium ${a['premium']:.2f}  delta {a['delta']}  fee ${a['fee_round_trip']:.2f} RT")
     print(f"Option target in QQQ points: chop +25% -> ${a['tp_chop_qqq']}   trend +12% -> ${a['tp_trend_qqq']}")
@@ -2070,6 +2276,7 @@ def print_report(payload: dict) -> None:
     print("  bb trades 14:10-14:45:")
     for tr in payload["oct29_bb"]["trades"]:
         print(f"    {tr['t']} {tr['name']} {tr['side']} -> {tr['exit']} pts {tr['pts']} net {tr['net']} exit {tr['exit_t']}")
+    print("OCT 29 14:17 INGREDIENTS", payload["oct29_ingredients"])
 
 
 if __name__ == "__main__":
