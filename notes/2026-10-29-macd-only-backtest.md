@@ -575,7 +575,7 @@ The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the we
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.
 
-The 48-cell MACD grid, the 24-cell MACD+RSI grid, the 12-cell curve-exit grid, the 13-cell in-and-out grid, and the 13-cell Bollinger grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
+The 48-cell MACD grid, the 24-cell MACD+RSI grid, the 12-cell curve-exit grid, the 13-cell in-and-out grid, and the Bollinger grid (13 cells, then 6 stop checks) were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
 
 The option proxy matches Thursday's adverse stops and over-credits fast favorable wicks. If anything, that bias helps the chop target, which is the framework MACD needed in order to lose the least. It did not produce a MACD book that wins.
 
