@@ -779,6 +779,119 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
     return trades
 
 
+def curve_turns(lines, hists, mode: str) -> tuple[bool, bool]:
+    """Bullish turn, bearish turn. The cross is separate.
+
+    slope: the MACD line's own slope flips. That is the hook in Xavier's words.
+    hist1: the histogram changes direction for one bar (white bar above zero,
+    pink bar below zero on his photo).
+    hist2: the histogram has shrunk for two bars in a row, starting from a turn.
+    """
+    if mode == "slope":
+        if len(lines) < 3 or None in lines[-3:]:
+            return False, False
+        d0 = lines[-2] - lines[-3]
+        d1 = lines[-1] - lines[-2]
+        return d1 > 0 and d0 <= 0, d1 < 0 and d0 >= 0
+    if mode == "hist1":
+        if len(hists) < 3 or None in hists[-3:]:
+            return False, False
+        turn_up = hists[-1] > hists[-2] and hists[-2] <= hists[-3]
+        turn_down = hists[-1] < hists[-2] and hists[-2] >= hists[-3]
+        return turn_up, turn_down
+    if mode == "hist2":
+        if len(hists) < 4 or None in hists[-4:]:
+            return False, False
+        turn_up = hists[-1] > hists[-2] > hists[-3] and hists[-3] <= hists[-4]
+        turn_down = hists[-1] < hists[-2] < hists[-3] and hists[-3] >= hists[-4]
+        return turn_up, turn_down
+    raise ValueError(mode)
+
+
+def simulate_curve(recs, spec, delta: float) -> list[dict]:
+    """Entry is a signal-line cross after a MACD turn. Exit is the turn back.
+
+    No fixed target and no time stop. A disaster stop, if set, is $0.50 of QQQ
+    and is filled when that bar's high/low trades through it, ahead of the
+    close-based curve exit. Anything still open on the last regular-session
+    bar of the day is marked there. One position. No 12-trade cap: this rule
+    is not the paper override. No same-bar reversal.
+    """
+    key = (spec["series"], spec["fast"], spec["slow"], spec["sig"])
+    mode = spec["curve"]
+    stop = spec["disaster"]
+    lines: list[float] = []
+    hists: list[float] = []
+    armed = {"CALL": False, "PUT": False}
+    trades = []
+    pos = None
+    last_rth = None
+
+    def shut(bar, reason, points):
+        nonlocal pos
+        trades.append(finish(pos, bar, reason, points, delta))
+        pos = None
+
+    for rec in recs:
+        if pos is not None and last_rth is not None and rec["t"].date() != last_rth["t"].date():
+            direction = 1 if pos["side"] == "CALL" else -1
+            shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+        st = rec["macd"][key]
+        if st["line"] is not None:
+            lines.append(st["line"])
+            del lines[:-4]
+        if st["hist"] is not None:
+            hists.append(st["hist"])
+            del hists[:-4]
+        turn_up, turn_down = curve_turns(lines, hists, mode)
+        prev_hist, hist = st["prev_hist"], st["hist"]
+        bull_cross = prev_hist is not None and hist is not None and prev_hist <= 0 < hist
+        bear_cross = prev_hist is not None and hist is not None and prev_hist >= 0 > hist
+        if turn_up:
+            armed["CALL"] = True
+            armed["PUT"] = False
+        if turn_down:
+            armed["PUT"] = True
+            armed["CALL"] = False
+        if rec["rth"]:
+            last_rth = rec
+        if pos is not None and rec["rth"] and rec["t"] > pos["entry_t"] and rec["t"].date() == pos["entry_t"].date():
+            if stop is not None:
+                hit = rec["l"] <= pos["stop_level"] if pos["side"] == "CALL" else rec["h"] >= pos["stop_level"]
+                if hit:
+                    shut(rec, "stop", -pos["stop_dist"])
+                    continue
+            adverse = (pos["side"] == "CALL" and turn_down) or (pos["side"] == "PUT" and turn_up)
+            if adverse:
+                direction = 1 if pos["side"] == "CALL" else -1
+                shut(rec, "curve", (rec["c"] - pos["entry"]) * direction)
+                continue
+        if pos is None and in_entry_window(rec["t"]):
+            side = None
+            if bull_cross and armed["CALL"]:
+                side = "CALL"
+            elif bear_cross and armed["PUT"]:
+                side = "PUT"
+            if side is None:
+                continue
+            armed[side] = False
+            entry = rec["c"]
+            if stop is None:
+                level, dist = None, None
+            else:
+                level = round(entry - stop if side == "CALL" else entry + stop, 2)
+                dist = abs(entry - level)
+            pos = {
+                "side": side, "style": "curve", "entry": entry, "entry_t": rec["t"],
+                "stop_dist": dist, "stop_level": level, "label": rec["label"],
+                "source": mode,
+            }
+    if pos is not None and last_rth is not None:
+        direction = 1 if pos["side"] == "CALL" else -1
+        shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+    return trades
+
+
 def finish(pos, rec, reason, points, delta) -> dict:
     gross, net = opt_dollars(points, delta)
     return {
@@ -948,6 +1061,33 @@ def build_specs() -> list[dict]:
                         "series": "close", "trigger": "signal_cross", "trend_filter": False,
                         "exit": exit_style, "mode": "reversal", "rsi_n": rsi_n, "n": n,
                     })
+    # MACD curve rule from Xavier's chart. Listed before this run.
+    # Decision cells are the four slope rows on regular closes (his words:
+    # hook, then signal cross; exit when the MACD line curls the other way).
+    # Histogram rows are the white/pink bars. HA is a check on the slope rule
+    # at 12/26/9 only. Not every combination: 12 cells, not 2x2x3x2.
+    curve_rows = [
+        (12, 26, 9, "close", "slope", None),
+        (12, 26, 9, "close", "slope", 0.50),
+        (6, 13, 5, "close", "slope", None),
+        (6, 13, 5, "close", "slope", 0.50),
+        (12, 26, 9, "close", "hist1", None),
+        (12, 26, 9, "close", "hist1", 0.50),
+        (12, 26, 9, "close", "hist2", None),
+        (12, 26, 9, "close", "hist2", 0.50),
+        (6, 13, 5, "close", "hist1", None),
+        (6, 13, 5, "close", "hist1", 0.50),
+        (12, 26, 9, "ha", "slope", None),
+        (12, 26, 9, "ha", "slope", 0.50),
+    ]
+    for fast, slow, sig, series, curve, disaster in curve_rows:
+        stop_name = "nostop" if disaster is None else "stop50"
+        specs.append({
+            "name": f"curve_{fast}_{slow}_{sig}_{series}_{curve}_{stop_name}",
+            "kind": "curve", "fast": fast, "slow": slow, "sig": sig, "series": series,
+            "trigger": "signal_cross", "trend_filter": False, "exit": "curve",
+            "curve": curve, "disaster": disaster,
+        })
     return specs
 
 
@@ -978,6 +1118,15 @@ RSI_REFERENCE = [
     "mrsi_12_26_9_rsi14_rev_n5_trend",
     "mrsi_6_13_5_rsi7_confirm50_chop",
     "mrsi_12_26_9_rsi7_rev_n3_chop",
+]
+
+# Decision set for the curve rule: MACD-line slope, regular closes, both
+# speeds, with and without the $0.50 disaster stop. Named before that run.
+CURVE_REFERENCE = [
+    "curve_12_26_9_close_slope_nostop",
+    "curve_12_26_9_close_slope_stop50",
+    "curve_6_13_5_close_slope_nostop",
+    "curve_6_13_5_close_slope_stop50",
 ]
 
 # MACD signal-line cross, regular close, no trend filter. The pair to beat
@@ -1021,7 +1170,10 @@ def run() -> dict:
     results = []
     trade_bank = {}
     for spec in specs:
-        trades = simulate(recs, spec, DELTA, "proximity")
+        if spec["kind"] == "curve":
+            trades = simulate_curve(recs, spec, DELTA)
+        else:
+            trades = simulate(recs, spec, DELTA, "proximity")
         summary = summarize(trades, sess)
         keep = spec["name"] == "current_rules" or spec["name"] in REFERENCE or spec["kind"] in ("filter", "gated")
         results.append({"name": spec["name"], "kind": spec["kind"], **pack(summary, trades, keep)})
@@ -1080,6 +1232,19 @@ def run() -> dict:
         if r["win_rate"] is not None and base["win_rate"] is not None
         and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
     )
+    curves = [r for r in results if r["kind"] == "curve"]
+    curve_wr = [r["win_rate"] for r in curves if r["win_rate"] is not None]
+    curve_net = [r["net"] for r in curves]
+    curve_ranked = sorted(curves, key=lambda r: (
+        r["days_above_70"],
+        r["win_rate"] if r["win_rate"] is not None else -1,
+        r["net"],
+    ), reverse=True)
+    curve_both = sum(
+        1 for r in curves
+        if r["win_rate"] is not None and base["win_rate"] is not None
+        and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
+    )
 
     payload = {
         "assumptions": {
@@ -1131,6 +1296,25 @@ def run() -> dict:
             "max_days_above_70": max((r["days_above_70"] for r in mrsi), default=0),
             "top": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
                      "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"]} for r in mrsi_ranked[:5]],
+        },
+        "curve_distribution": {
+            "variants": len(curves),
+            "predeclared_decision_set": CURVE_REFERENCE,
+            "win_rate_min": None if not curve_wr else round(min(curve_wr), 4),
+            "win_rate_median": None if not curve_wr else round(statistics.median(curve_wr), 4),
+            "win_rate_max": None if not curve_wr else round(max(curve_wr), 4),
+            "net_min": None if not curve_net else round(min(curve_net), 2),
+            "net_median": None if not curve_net else round(statistics.median(curve_net), 2),
+            "net_max": None if not curve_net else round(max(curve_net), 2),
+            "n_higher_win_rate_than_baseline": sum(1 for r in curves if r["win_rate"] is not None and base["win_rate"] is not None and r["win_rate"] > base["win_rate"]),
+            "n_higher_net_than_baseline": sum(1 for r in curves if r["net"] > base["net"]),
+            "n_higher_win_rate_and_net": curve_both,
+            "n_any_day_sweep_above_70": sum(1 for r in curves if r["days_above_70"] == r["sessions"]),
+            "max_days_above_70": max((r["days_above_70"] for r in curves), default=0),
+            "top": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
+                     "avg_win": r["avg_win"], "avg_loss": r["avg_loss"],
+                     "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"],
+                     "exits": r["exits"]} for r in curve_ranked[:5]],
         },
         "stop_first": {k: {"net": v[0], "win_rate": v[1], "trades": v[2]} for k, v in stop_first.items()},
         "sensitivity": sensitivity,
@@ -1231,6 +1415,33 @@ def print_report(payload: dict) -> None:
               f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}{mark}")
     print("MACD+RSI DECISION SET, per day (* = above 70%):")
     for name in RSI_REFERENCE:
+        r = by[name]
+        bits = []
+        for d in r["days"]:
+            if d["trades"] == 0:
+                bits.append(f"{d['day'][5:]} flat")
+            else:
+                flag = "*" if d["above_70"] else ""
+                bits.append(f"{d['day'][5:]} {d['wins']}/{d['trades']}{flag} ${d['net']:.0f}")
+        print(f"  {name}")
+        print("    " + " | ".join(bits))
+    print()
+    cd = payload["curve_distribution"]
+    print(f"CURVE GRID  n={cd['variants']}  win {cd['win_rate_min']*100:.1f}/{cd['win_rate_median']*100:.1f}/{cd['win_rate_max']*100:.1f}% min/med/max")
+    print(f"  net ${cd['net_min']:.0f} / ${cd['net_median']:.0f} / ${cd['net_max']:.0f}")
+    print(f"  higher win rate than rules: {cd['n_higher_win_rate_than_baseline']}  higher net: {cd['n_higher_net_than_baseline']}  both: {cd['n_higher_win_rate_and_net']}")
+    print(f"  cleared >70% every session: {cd['n_any_day_sweep_above_70']}  most days>70: {cd['max_days_above_70']}/{base['sessions']}")
+    print("CURVE ALL CELLS (* = decision set):")
+    for r in payload["results"]:
+        if r["kind"] != "curve":
+            continue
+        fw = r["focus_week"]
+        mark = " *" if r["name"] in CURVE_REFERENCE else ""
+        print(f"  {r['name']:46s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
+              f"avg {r['avg_win']}/{r['avg_loss']}  days>70 {r['days_above_70']:2d}  flat {r['days_no_trade']:2d}  "
+              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  exits {r['exits']}{mark}")
+    print("CURVE DECISION SET, per day (* = above 70%):")
+    for name in CURVE_REFERENCE:
         r = by[name]
         bits = []
         for d in r["days"]:

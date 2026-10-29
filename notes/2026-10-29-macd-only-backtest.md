@@ -10,6 +10,8 @@ The current rules do not clear that bar either. They win 34 of 65 trades (52%) a
 
 **MACD plus RSI, with no EMA20, no VWAP, no Heikin Ashi, and no day label, does not beat those rules and does not get near 70% every day.** On the same 22 mornings and the same two exit sets, a 24-cell grid runs 37–52% wins. Zero cells win more often than the rules. One cell is green on dollars (about +$36) and it wins less often than the rules (48%). The widest "days above 70%" count in the grid is 7 of 22. Details are in the follow-up section below.
 
+**The curve rule on Xavier's chart — enter on the signal-line cross after the MACD line hooks, and get out when the line curls the other way — is worse than both.** In a 12-cell test the win rate runs 29–38%. Every cell loses money. The least-bad cell loses about $172. Not one day in any cell is above 70%.
+
 ## What "the current rules" means here
 
 The paper book (`regime_mode` on the 2026-10-29 dry-run) was transcribed into `research/macd_only_backtest.py`. The trader itself was not imported and was not edited.
@@ -279,6 +281,86 @@ Every other cell's per-day rows are in `research/macd_backtest_results.json`.
 
 Twenty-four new cells, scored on the same 22 days as the earlier 48. The best cell in a list of 24 will look better than a typical cell from that list. Here the "best" dollars are +$36 on 44 trades, the lower bound on the win rate is 34%, and the next predeclared window (N=5) loses $66. That is what multiple testing looks like when you can check the neighbor: the green cell does not repeat. I would not trade it, and I would not add it to the paper book.
 
+## Follow-up: enter on the cross after the hook, exit on the curl
+
+Xavier's photo is the MACD panel: blue MACD line, orange signal line, histogram teal then white above zero and orange then pink below. The line curls up, crosses above the signal, peaks and curls over, then crosses down and flattens. His rule, in his words: when the MACD line starts to curve, take the position once it crosses the signal line, and get out when the line starts to curve the other way. The exit is the curl. There is no +25%, no +12%, and no 5- or 10-minute clock.
+
+How that was coded, before the run:
+
+- A bullish turn is the MACD line's slope flipping from flat or down to up. A bearish turn is the flip the other way.
+- Enter a call on the first bullish signal-line cross while that up-turn is still the latest turn. Enter a put the same way after a down-turn. The turn and the cross can be the same bar. A turn the other way cancels the setup. No same-bar reversal: the exit bar does not also open the opposite trade.
+- Exit on the first bar the slope flips against the open trade, at that bar's close.
+- Also tested the photo's histogram colors as the definition of "curve." One white or pink bar is the histogram changing direction for one bar. Two bars means it has shrunk for two bars in a row. Entry is still the signal cross after that turn. Exit is the same kind of turn against the trade.
+- Two risk versions: no stop at all, and a disaster stop at $0.50 of QQQ, filled if that bar's high or low trades through it. If the stop and the curl happen on the same bar, the stop fills.
+- Speeds 12/26/9 and 6/13/5. Regular closes for the rule. Heikin Ashi closes are a check on the 12/26/9 slope rule only.
+- That is 12 cells, not every combination. The decision set is the four slope cells on regular closes (both speeds, with and without the $0.50 stop). The histogram rows and the HA check are the sensitivity. One position. Entries 08:30–12:00 CT. No 12-trade cap, because this is not the paper override. A trade still open at the last regular-session bar is marked there. In this test the curl almost always arrived first. Same $0.50 premium, 0.22 delta, and $1.30 fees.
+
+### Does it beat the rules, or the earlier MACD tests?
+
+No. None of the 12 cells win more often than the rules, and none make more money. The rules are 52% and −$63, with 6 days above 70%. The earlier MACD-only grid bottomed out around −$105 and topped out around 53% wins. The one green MACD+RSI cell was +$36 at 48% wins. This rule's best win rate is 38%, and its best net is −$172.
+
+| Book | Trades | Win rate | Avg win / avg loss | Net | Days above 70% | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Current rules | 65 | 52% | +$6.66 / −$9.34 | −$63 | 6 | 8/15, −$27 |
+| 12/26/9 slope, no stop | 319 | 34% | +$18.33 / −$11.21 | −$356 | 0 | 17/59, −$44 |
+| 12/26/9 slope, $0.50 stop | 324 | 31% | +$17.62 / −$8.87 | −$172 | 0 | 16/60, −$23 |
+| 6/13/5 slope, no stop | 562 | 30% | +$13.42 / −$8.93 | −$1,286 | 0 | 37/97, −$134 |
+| 6/13/5 slope, $0.50 stop | 572 | 29% | +$13.03 / −$7.89 | −$1,081 | 0 | 33/97, −$166 |
+| 12/26/9, histogram shrinks 1 bar, no stop | 326 | 34% | +$13.38 / −$9.22 | −$496 | 0 | 18/59, −$130 |
+| 12/26/9, histogram shrinks 2 bars, no stop | 279 | 38% | +$16.68 / −$12.09 | −$323 | 0 | 20/53, +$11 |
+| 12/26/9 on Heikin Ashi, slope, no stop | 314 | 33% | +$20.79 / −$11.97 | −$318 | 0 | 18/57, −$2 |
+
+The curl does let winners run. A winning 12/26/9 trade averages about $18, against about $7 on the rules' fixed targets. That is not enough. You only win about a third of the time, the average loss is still about $11, and 319 trades cost about $415 in fees. Before fees that book is only about +$59. The $0.50 stop cuts the average loss to about $9 and cuts the 22-day loss from $356 to $172. It also drops the win rate from 34% to 31%, and $172 is still worse than the rules' $63. The fast MACD loses before fees as well (about −$555 on the no-stop version). The white/pink histogram definition is the same shape, a bit worse. Heikin Ashi does not rescue it.
+
+Across all 12 cells the win rate runs 29–38% (median 32%) and the net runs −$1,286 to −$172 (median −$373). **Zero cells have a single day above 70%.** Not one morning, in any version.
+
+### This week
+
+| Day | Rules | 12/26/9 slope, no stop | 12/26/9 slope, $0.50 stop |
+| --- | --- | --- | --- |
+| 10/26 | 2/3, +$8 | 3/11, +$50 | 3/12, +$56 |
+| 10/27 | 1/2, −$3 | 6/13, +$62 | 6/13, +$62 |
+| 10/28 | 2/3, −$2 | 5/18, −$40 | 5/18, −$32 |
+| 10/29 | 3/7, −$30 | 3/17, −$116 | 2/17, −$110 |
+| Week | 8/15, −$27 | 17/59, −$44 | 16/60, −$23 |
+
+Thursday is 3-for-17 or 2-for-17. Two of the non-decision cells are green on this week only (the 2-bar histogram with the $0.50 stop is about +$40 on the week, and the HA slope with the stop is about +$78). Both lose more than $230 over the 22 days, and neither has a day above 70%. A good week inside a losing rule is the trap.
+
+### Per day, the rule as he described it (12/26/9, regular close, slope)
+
+No day passes 70%. The best win rate on a single day in the no-stop book is 7/12 on October 23 (58%). October 13 makes +$124 and is still only 6/12.
+
+| Day | No stop | $0.50 stop |
+| --- | --- | --- |
+| 09-30 | 2/17, −$191 | 2/17, −$137 |
+| 10-01 | 9/20, −$40 | 6/20, −$106 |
+| 10-02 | 5/15, −$61 | 4/15, −$47 |
+| 10-05 | 5/15, +$11 | 5/15, +$11 |
+| 10-06 | 4/11, −$17 | 4/11, −$23 |
+| 10-07 | 5/14, −$45 | 5/14, −$41 |
+| 10-08 | 6/12, +$43 | 6/12, +$59 |
+| 10-09 | 5/14, −$32 | 5/14, −$31 |
+| 10-12 | 3/13, −$30 | 3/13, −$7 |
+| 10-13 | 6/12, +$124 | 6/12, +$132 |
+| 10-14 | 4/16, −$94 | 4/18, −$79 |
+| 10-15 | 9/19, −$38 | 9/20, +$1 |
+| 10-16 | 4/12, −$85 | 4/12, −$44 |
+| 10-19 | 5/18, −$7 | 5/18, +$22 |
+| 10-20 | 4/12, +$68 | 5/13, +$112 |
+| 10-21 | 5/16, −$62 | 4/16, −$45 |
+| 10-22 | 4/12, +$82 | 4/12, +$98 |
+| 10-23 | 7/12, +$61 | 5/12, −$24 |
+| 10-26 | 3/11, +$50 | 3/12, +$56 |
+| 10-27 | 6/13, +$62 | 6/13, +$62 |
+| 10-28 | 5/18, −$40 | 5/18, −$32 |
+| 10-29 | 3/17, −$116 | 2/17, −$110 |
+
+The other eight cells' per-day rows are in `research/macd_backtest_results.json`.
+
+### Multiple testing
+
+Twelve cells, chosen before the run, on the same 22 days. The best of 12 is the number a search would want to keep, and that number is −$172 with a 31% win rate and zero days above 70%. There is no green cell to talk ourselves into. The $0.50 stop is the version that loses the least, and it loses less by cutting losers, not by winning more often. I would not trade this, and I would not put it on the paper book.
+
 ## MACD as a filter on the entries we already take
 
 Same fade and retest. Take the trade only when the histogram is already on that side (call with histogram > 0, put with histogram < 0).
@@ -308,7 +390,7 @@ The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the we
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.
 
-The 48-cell MACD grid, and the later 24-cell MACD+RSI grid, were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
+The 48-cell MACD grid, the 24-cell MACD+RSI grid, and the 12-cell curve-exit grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
 
 The option proxy matches Thursday's adverse stops and over-credits fast favorable wicks. If anything, that bias helps the chop target, which is the framework MACD needed in order to lose the least. It did not produce a MACD book that wins.
 
