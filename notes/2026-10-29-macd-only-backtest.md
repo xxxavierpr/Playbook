@@ -14,6 +14,8 @@ The current rules do not clear that bar either. They win 34 of 65 trades (52%) a
 
 **Entering the moment the line hooks, and getting out quickly, does not fix it.** A 13-cell in-and-out test wins as often as 66% and still loses money on every cell. The best dollars are about −$159, against −$63 for the rules. The high win rate is a small target: a +5% win is $1.20 after fees and a $0.30 stop is about an $8 loss. Today's 2:17 PM CT hook did fire, and the quick exit was out two minutes later for +$3.70, before the 2:30 PM push.
 
+**A Bollinger touch plus that hook, held until the MACD curls back, made money in this sample and still fails the win-rate test.** The main version wins 29% of 212 trades and nets about +$240. Average win about +$23, average loss about −$8. Zero days are above 70%. Three days (October 1, 15, and 23) carry more than the whole profit. Banking the reversal at the middle band, instead of holding it, loses about $455.
+
 ## What "the current rules" means here
 
 The paper book (`regime_mode` on the 2026-10-29 dry-run) was transcribed into `research/macd_only_backtest.py`. The trader itself was not imported and was not edited.
@@ -24,7 +26,7 @@ The label moves during the morning. It is not one tag for the whole day. From 09
 
 ## Data
 
-Yahoo Finance 1-minute bars for QQQ, premarket and postmarket included, 2026-09-30 through 2026-10-29. That is the free 1-minute window (older requests come back as HTTP 422). **22 sessions, 18,975 bars.** Oct 29 stops around 13:41 CT because the cash session was still open when the file was pulled; 08:30–12:00 is complete. Oct 7 is short one regular-session minute.
+Yahoo Finance 1-minute bars for QQQ, premarket and postmarket included, 2026-09-30 through 2026-10-29. That is the free 1-minute window (older requests come back as HTTP 422). **22 sessions.** Oct 29 was refreshed through 14:35 CT so the afternoon hook could be scored. Oct 7 is short one regular-session minute.
 
 The attached feed is in the test:
 
@@ -448,6 +450,96 @@ The other cells' per-day rows are in `research/macd_backtest_results.json`.
 
 Thirteen cells, named before the run, on the same 22 days. Six of them beat the rules on win rate and every one of those six loses more money than the rules, most of them by hundreds of dollars. The best dollar figure in the list, −$159, is the photo filter, and its 95% lower bound on the 55% win rate is 48%. That is not a hidden winner. It is a small gross edge that a $1.30 ticket erases. I would not trade the hook as an in-and-out book, and I would not add it to the paper rules.
 
+## Follow-up: Bollinger touch plus the MACD hook
+
+Xavier's line: a MACD that is starting to cross, on a Bollinger Band touch, is the best sign of a reversal. The last test took today's 2:17 PM CT hook for +$3.70 and was flat before the push. Holding that same entry to 2:35 would have been worth keeping. So this test holds.
+
+Coded before the run. Thirteen cells.
+
+- Bands are the 20-bar average ± 2.0 standard deviations (population, same as the signal engine). One check uses 2.5.
+- A call needs the low through the lower band on this bar or within the previous N bars, and a MACD trigger. Puts use the upper band. N is 2 in the main test (the touch can be this bar or the two before it). One check requires the touch on the same bar.
+- Two triggers: the first bar the MACD line turns, and the signal-line cross.
+- Optional filter, one cell: MACD line still below zero for a call and above zero for a put.
+- Exits, each with a disaster stop: hold until the MACD line curls back against the trade; exit at the middle band; exit at the opposite band; or hold until the option is up 20% and then sell when the line curls back. The main stop is $0.50 of QQQ. One check uses $0.30.
+- 12/26/9, with 6/13/5 as a speed check. Regular closes. Morning entries, and two full-session cells (08:30–14:59). A trade entered in the morning can be held past noon until the exit or the last regular bar. One position. No 12-trade cap. Same $0.50 / 0.22 / $1.30 proxy.
+
+The decision set is the four morning 12/26/9 cells with the 2.0 bands, a touch within 2 bars, no zero filter, and the $0.50 stop: curl exit, signal-line cross with a curl exit, middle-band exit, and the +20% latch.
+
+### Today, 2:17 PM CT
+
+The lower band was tagged on the way down, then the line turned up one bar later.
+
+| Time | Low | Lower band (20, 2) | MACD line |
+| --- | --- | --- | --- |
+| 14:14 | 712.42 | 712.59 | −0.011, low through the band |
+| 14:15 | 712.46 | 712.51 | still through the band |
+| 14:16 | 712.41 | 712.44 | still through the band |
+| 14:17 | 712.44 | 712.43 | **line turns up**, −0.065, green Heikin Ashi. The low misses the band by a cent. |
+| 14:20 | 712.90 | 712.45 | signal line crosses up. The band touch is now four bars old. |
+| 14:35 | 713.83 | 712.45 | line turns down. |
+
+The hook-plus-touch rule, with N=2, takes the call at 14:17 because 14:16 was a touch. Requiring the touch on the same bar misses it. Waiting for the signal-line cross also misses it: by 14:20 the touch is too old. MACD is still below zero at 14:17, so the photo filter would have taken it too.
+
+On the full-session book, that trade scores:
+
+| Exit | Out | Result |
+| --- | --- | --- |
+| Curl back, at 14:35 | 713.83 | **+$21.91** |
+| +20% latch, then the same curl | 14:35 | **+$21.91** |
+| Middle band | 14:18 | +$2.07 |
+
+Holding to the curl is the trade on the chart. Selling at the middle band gives it back. The morning window does not take this trade at all. It is after noon.
+
+### Does it beat the rules?
+
+On dollars, several hold versions do. On win rate, none do. The rules win 52% and make −$63, with 6 days above 70%. Every Bollinger cell wins less often than that. The best win rate in the 13 is 49%.
+
+| Book | Trades | Win rate | Avg win / avg loss | Net | Days above 70% | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Current rules | 65 | 52% | +$6.66 / −$9.34 | −$63 | 6 | 8/15, −$27 |
+| Hook + band, hold to the curl, morning | 212 | 29% | +$23.47 / −$7.89 | +$240 | 0 | 11/32, +$14 |
+| Signal-line cross + band, hold to the curl | 53 | 34% | +$17.93 / −$9.86 | −$22 | 4 | 4/8, +$17 |
+| Hook + band, exit at the middle band | 220 | 47% | +$5.34 / −$8.71 | −$455 | 1 | 15/32, −$91 |
+| Hook + band, +20% then curl | 188 | 37% | +$23.41 / −$10.67 | +$345 | 0 | 12/28, +$32 |
+| Same hook, exit at the opposite band | 225 | 49% | +$17.75 / −$12.09 | +$562 | 1 | 16/32, +$23 |
+| Fast 6/13/5, hold to the curl | 325 | 34% | +$16.51 / −$7.93 | +$159 | 1 | 21/53, +$67 |
+| Stricter 2.5 band, hold to the curl | 74 | 24% | +$20.91 / −$8.02 | −$73 | 1 | 5/14, +$17 |
+| Touch must be the same bar | 67 | 34% | +$15.96 / −$8.38 | −$2 | 2 | 3/11, −$48 |
+| Also require MACD through zero | 199 | 29% | +$23.52 / −$7.81 | +$263 | 0 | 9/29, −$7 |
+| $0.30 stop instead of $0.50 | 220 | 24% | +$20.71 / −$6.57 | −$27 | 0 | 11/32, +$45 |
+| Full session, hold to the curl | 380 | 27% | +$19.71 / −$6.79 | +$175 | 0 | 17/63, −$68 |
+
+Holding is the part that pays, in this sample. The curl exit, the +20% latch, and the opposite-band exit are all green, on the standard speed and on the fast one. Selling at the middle band loses $455, and it loses before fees too. That is the same lesson as the scalp test, from the other direction: taking the first profit at the mean gives the reversal away.
+
+It still is not his bar. The profitable morning curl book is above 70% on **zero** days. You are wrong about 7 trades in 10. The average winner is large enough that the dollars come out ahead anyway. October 1 (+$149), October 15 (+$102), and October 23 (+$119) are more than the entire +$240. Drop those three days and the book is about −$130. This week the same book is 11/32 and +$14. Thursday morning is 2/5 and −$12.
+
+The checks that should have confirmed a real rule do not. A 2.5 band loses $73. Requiring the touch on the hook bar itself is flat. A $0.30 stop, which sounds safer, loses the dollars and drops the win rate to 24%. Opening it to the full session makes this week −$68 even though the 22-day total stays green. Requiring the MACD to still be through zero, which is today's photo, is about the same book (+$263, 29%, no day above 70%) and this week it is −$7.
+
+### Per day, hook plus the 2.0 band, hold until the line curls back
+
+Morning, 12/26/9, $0.50 stop. No day passes.
+
+| Day | Wins/trades | Net | Day | Wins/trades | Net |
+| --- | --- | --- | --- | --- | --- |
+| 09-30 | 0/6 | −$44 | 10-14 | 4/11 | +$22 |
+| 10-01 | 4/10 | +$149 | 10-15 | 5/12 | +$102 |
+| 10-02 | 2/14 | −$79 | 10-16 | 4/10 | +$35 |
+| 10-05 | 2/9 | −$19 | 10-19 | 1/12 | −$18 |
+| 10-06 | 2/14 | −$11 | 10-20 | 2/8 | +$13 |
+| 10-07 | 1/7 | −$22 | 10-21 | 2/8 | −$7 |
+| 10-08 | 3/10 | −$13 | 10-22 | 4/13 | +$24 |
+| 10-09 | 2/9 | −$42 | 10-23 | 6/9 | +$119 |
+| 10-12 | 3/8 | −$9 | 10-26 | 2/7 | −$17 |
+| 10-13 | 3/10 | +$25 | 10-27 | 2/8 | −$13 |
+| | | | 10-28 | 5/12 | +$56 |
+| | | | 10-29 | 2/5 | −$12 |
+
+The other cells' per-day rows are in `research/macd_backtest_results.json`.
+
+### Multiple testing
+
+Thirteen cells, named first, on the same 22 days as every earlier grid. Seven are green on dollars. Three more lose less than the rules' −$63 and are still red. The three that lose more than the rules are the two middle-band exits and the 2.5-band curl. The green result is not one lucky exit: the curl, the +20% latch, and the far band agree, and the fast MACD agrees. The cells that tighten the idea (wider bands, same-bar touch, tighter stop) do not. That is stronger than a single best cell, and it is still a 29% win-rate system whose profit sits in three days. Xavier ranks the win rate first, and this loses that comparison to the book he already has. I would not replace the rules with it. Twenty-two days is not enough to trust a reversal that is wrong most of the time, even when the winners are large.
+
 ## MACD as a filter on the entries we already take
 
 Same fade and retest. Take the trade only when the histogram is already on that side (call with histogram > 0, put with histogram < 0).
@@ -477,7 +569,7 @@ The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the we
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.
 
-The 48-cell MACD grid, the 24-cell MACD+RSI grid, the 12-cell curve-exit grid, and the 13-cell in-and-out grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
+The 48-cell MACD grid, the 24-cell MACD+RSI grid, the 12-cell curve-exit grid, the 13-cell in-and-out grid, and the 13-cell Bollinger grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
 
 The option proxy matches Thursday's adverse stops and over-credits fast favorable wicks. If anything, that bias helps the chop target, which is the framework MACD needed in order to lose the least. It did not produce a MACD book that wins.
 

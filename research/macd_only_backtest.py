@@ -21,6 +21,10 @@ A third follow-up (kind "quick") enters on the slope turn itself and exits
 on a small option target, an optional favorable HA bar, a 2- or 3-minute
 clock, and a $0.30 stop. QUICK_REFERENCE is the eight morning slope cells.
 
+A fourth follow-up (kind "bband") requires a Bollinger touch within N bars
+of a MACD slope turn or signal-line cross. BB_REFERENCE is the four morning
+12/26/9 cells.
+
 Run from the repo root:
 
     python3 research/macd_only_backtest.py
@@ -1018,6 +1022,141 @@ def simulate_quick(recs, spec, delta: float) -> list[dict]:
     return trades
 
 
+def bollinger(closes: list[float], nstd: float):
+    """SMA(20) ± nstd * population stdev, same construction as bar_signal.Bollinger."""
+    if len(closes) < 20:
+        return None
+    w = closes[-20:]
+    mid = sum(w) / 20.0
+    var = sum((x - mid) ** 2 for x in w) / 20.0
+    sd = var ** 0.5
+    return mid, mid + nstd * sd, mid - nstd * sd
+
+
+def simulate_bband(recs, spec, delta: float) -> list[dict]:
+    """Bollinger touch plus a MACD turn or signal-line cross.
+
+    A call needs the low through the lower band on this bar or within the
+    previous N bars, and the MACD trigger. Puts mirror off the upper band.
+    Entries only inside the window. A hold can last until the last regular
+    bar of that day. One position. No 12-trade cap. No same-bar re-entry.
+    """
+    key = (spec["series"], spec["fast"], spec["slow"], spec["sig"])
+    closes: list[float] = []
+    lines: list[float] = []
+    hists: list[float] = []
+    last_lower = None
+    last_upper = None
+    trades = []
+    pos = None
+    last_rth = None
+    i = -1
+
+    def shut(bar, reason, points):
+        nonlocal pos
+        trades.append(finish(pos, bar, reason, points, delta))
+        pos = None
+
+    for rec in recs:
+        i += 1
+        if pos is not None and last_rth is not None and rec["t"].date() != last_rth["t"].date():
+            direction = 1 if pos["side"] == "CALL" else -1
+            shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+        closes.append(rec["c"])
+        st = rec["macd"][key]
+        if st["line"] is not None:
+            lines.append(st["line"])
+        if st["hist"] is not None:
+            hists.append(st["hist"])
+        band = bollinger(closes, spec["nstd"])
+        if band is not None:
+            mid, upper, lower = band
+            if rec["l"] <= lower:
+                last_lower = i
+            if rec["h"] >= upper:
+                last_upper = i
+        else:
+            mid = upper = lower = None
+        turn_up, turn_down = curve_turns(lines, hists, "slope")
+        prev_hist, hist = st["prev_hist"], st["hist"]
+        bull_cross = prev_hist is not None and hist is not None and prev_hist <= 0 < hist
+        bear_cross = prev_hist is not None and hist is not None and prev_hist >= 0 > hist
+        if rec["rth"]:
+            last_rth = rec
+        if pos is not None and rec["rth"] and rec["t"] > pos["entry_t"] and rec["t"].date() == pos["entry_t"].date():
+            against = (pos["side"] == "CALL" and turn_down) or (pos["side"] == "PUT" and turn_up)
+            stop_hit = rec["l"] <= pos["stop_level"] if pos["side"] == "CALL" else rec["h"] >= pos["stop_level"]
+            mode = spec["bb_exit"]
+            target_hit = False
+            target_pts = None
+            if mode == "mid" and mid is not None:
+                if pos["side"] == "CALL" and mid > pos["entry"] and rec["h"] >= mid:
+                    target_hit, target_pts = True, mid - pos["entry"]
+                elif pos["side"] == "PUT" and mid < pos["entry"] and rec["l"] <= mid:
+                    target_hit, target_pts = True, pos["entry"] - mid
+            elif mode == "opp" and upper is not None:
+                if pos["side"] == "CALL" and upper > pos["entry"] and rec["h"] >= upper:
+                    target_hit, target_pts = True, upper - pos["entry"]
+                elif pos["side"] == "PUT" and lower < pos["entry"] and rec["l"] <= lower:
+                    target_hit, target_pts = True, pos["entry"] - lower
+            elif mode == "latch20":
+                fav = (rec["h"] - pos["entry"]) if pos["side"] == "CALL" else (pos["entry"] - rec["l"])
+                if fav >= pos["tp_dist"]:
+                    pos["latched"] = True
+            if stop_hit and (mode in ("curl", "latch20") or not target_hit):
+                shut(rec, "stop", -pos["stop_dist"])
+                continue
+            if stop_hit and target_hit:
+                tlevel = pos["entry"] + target_pts if pos["side"] == "CALL" else pos["entry"] - target_pts
+                if abs(rec["o"] - pos["stop_level"]) <= abs(rec["o"] - tlevel):
+                    shut(rec, "stop", -pos["stop_dist"])
+                else:
+                    shut(rec, mode, target_pts)
+                continue
+            if target_hit:
+                shut(rec, mode, target_pts)
+                continue
+            if mode == "curl" and against:
+                direction = 1 if pos["side"] == "CALL" else -1
+                shut(rec, "curl", (rec["c"] - pos["entry"]) * direction)
+                continue
+            if mode == "latch20" and pos.get("latched") and against:
+                direction = 1 if pos["side"] == "CALL" else -1
+                shut(rec, "fade", (rec["c"] - pos["entry"]) * direction)
+                continue
+        if pos is None and allows_quick_entry(rec["t"], spec["window"]) and band is not None:
+            if spec["trigger_mode"] == "slope":
+                side = "CALL" if turn_up else ("PUT" if turn_down else None)
+            else:
+                side = "CALL" if bull_cross else ("PUT" if bear_cross else None)
+            if side is None:
+                continue
+            touched = last_lower if side == "CALL" else last_upper
+            if touched is None or i - touched > spec["touch_n"]:
+                continue
+            macd_line = lines[-1] if lines else None
+            if spec["need_zero"] and macd_line is not None:
+                if side == "CALL" and not macd_line < 0:
+                    continue
+                if side == "PUT" and not macd_line > 0:
+                    continue
+            if spec["need_zero"] and macd_line is None:
+                continue
+            entry = rec["c"]
+            stop = spec["disaster"]
+            level = round(entry - stop if side == "CALL" else entry + stop, 2)
+            pos = {
+                "side": side, "style": "bband", "entry": entry, "entry_t": rec["t"],
+                "stop_dist": abs(entry - level), "stop_level": level,
+                "tp_dist": tp_points(0.20, delta), "latched": False,
+                "label": rec["label"], "source": spec["trigger_mode"],
+            }
+    if pos is not None and last_rth is not None:
+        direction = 1 if pos["side"] == "CALL" else -1
+        shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+    return trades
+
+
 def finish(pos, rec, reason, points, delta) -> dict:
     gross, net = opt_dollars(points, delta)
     return {
@@ -1241,6 +1380,35 @@ def build_specs() -> list[dict]:
             "curve": curve, "tp": tp, "time_min": minutes, "color_exit": color,
             "context": context, "window": window,
         })
+    # Bollinger touch plus MACD. Listed before this run.
+    # Decision cells are the first four: 12/26/9, band 20/2, touch within 2
+    # bars, morning, $0.50 stop, no zero filter, four exits.
+    # Touch is the low through the lower band, or the high through the upper.
+    bb_rows = [
+        (12, 26, 9, "slope", 2.0, 2, False, "curl", 0.50, "morning"),
+        (12, 26, 9, "cross", 2.0, 2, False, "curl", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "mid", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "latch20", 0.50, "morning"),
+        (6, 13, 5, "slope", 2.0, 2, False, "curl", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.5, 2, False, "curl", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 0, False, "curl", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, True, "curl", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "curl", 0.50, "rth"),
+        (12, 26, 9, "slope", 2.0, 2, False, "mid", 0.50, "rth"),
+        (12, 26, 9, "slope", 2.0, 2, False, "opp", 0.50, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "curl", 0.30, "morning"),
+        (12, 26, 9, "slope", 2.0, 2, False, "latch20", 0.50, "rth"),
+    ]
+    for fast, slow, sig, trig, nstd, touch_n, need_zero, bb_exit, stop, window in bb_rows:
+        kname = str(nstd).replace(".", "")
+        zname = "zero" if need_zero else "any"
+        specs.append({
+            "name": f"bb_{fast}_{slow}_{sig}_{trig}_k{kname}_n{touch_n}_{zname}_{bb_exit}_s{int(stop * 100)}_{window}",
+            "kind": "bband", "fast": fast, "slow": slow, "sig": sig, "series": "close",
+            "trigger": trig, "trend_filter": False, "exit": bb_exit,
+            "trigger_mode": trig, "nstd": nstd, "touch_n": touch_n,
+            "need_zero": need_zero, "bb_exit": bb_exit, "disaster": stop, "window": window,
+        })
     return specs
 
 
@@ -1293,6 +1461,14 @@ QUICK_REFERENCE = [
     "quick_6_13_5_slope_tp10_3m_color_raw_morning",
     "quick_6_13_5_slope_tp5_2m_nocolor_raw_morning",
     "quick_6_13_5_slope_tp15_3m_nocolor_raw_morning",
+]
+
+# Decision set for Bollinger plus MACD. Named before that run.
+BB_REFERENCE = [
+    "bb_12_26_9_slope_k20_n2_any_curl_s50_morning",
+    "bb_12_26_9_cross_k20_n2_any_curl_s50_morning",
+    "bb_12_26_9_slope_k20_n2_any_mid_s50_morning",
+    "bb_12_26_9_slope_k20_n2_any_latch20_s50_morning",
 ]
 
 # MACD signal-line cross, regular close, no trend filter. The pair to beat
@@ -1378,6 +1554,65 @@ def oct29_afternoon(recs, trade_bank) -> dict:
     return {"bars": bars, "trades": fired}
 
 
+def oct29_bb_snapshot(recs, trade_bank) -> dict:
+    """Bollinger(20, 2) and the 12/26/9 line around 14:10-14:40 CT on Oct 29."""
+    closes: list[float] = []
+    lines: list[float] = []
+    hists: list[float] = []
+    bars = []
+    for rec in recs:
+        if rec["t"].date().isoformat() != "2026-10-29":
+            continue
+        closes.append(rec["c"])
+        st = rec["macd"][("close", 12, 26, 9)]
+        if st["line"] is not None:
+            lines.append(st["line"])
+        if st["hist"] is not None:
+            hists.append(st["hist"])
+        turn_up, turn_down = curve_turns(lines, hists, "slope")
+        prev_hist, hist = st["prev_hist"], st["hist"]
+        bull = prev_hist is not None and hist is not None and prev_hist <= 0 < hist
+        band = bollinger(closes, 2.0)
+        band25 = bollinger(closes, 2.5)
+        if not (dtime(14, 10) <= rec["t"].time() <= dtime(14, 40)):
+            continue
+        row = {
+            "t": rec["t"].strftime("%H:%M"),
+            "close": round(rec["c"], 2),
+            "low": round(rec["l"], 2),
+            "high": round(rec["h"], 2),
+            "ha": rec["color"],
+            "macd": None if st["line"] is None else round(st["line"], 4),
+            "hist": None if hist is None else round(hist, 4),
+            "turn_up": turn_up,
+            "turn_down": turn_down,
+            "bull_cross": bull,
+        }
+        if band is not None:
+            mid, upper, lower = band
+            row.update({
+                "mid": round(mid, 2), "upper": round(upper, 2), "lower": round(lower, 2),
+                "touch_lower": rec["l"] <= lower, "touch_upper": rec["h"] >= upper,
+            })
+        if band25 is not None:
+            row["lower25"] = round(band25[2], 2)
+            row["touch_lower25"] = rec["l"] <= band25[2]
+        bars.append(row)
+    fired = []
+    for name, trades in trade_bank.items():
+        if not str(name).startswith("bb_"):
+            continue
+        for tr in trades:
+            et = datetime.fromisoformat(tr["entry_t"])
+            if et.date().isoformat() == "2026-10-29" and dtime(14, 10) <= et.time() <= dtime(14, 45):
+                fired.append({
+                    "name": name, "t": et.strftime("%H:%M"), "side": tr["side"],
+                    "exit": tr["exit_reason"], "pts": tr["qqq_points"], "net": tr["opt_net"],
+                    "entry": tr["entry"], "exit_t": tr["exit_t"][11:16],
+                })
+    return {"bars": bars, "trades": fired}
+
+
 def run() -> dict:
     ordered = load_bars()
     recs = prepare(ordered)
@@ -1391,6 +1626,8 @@ def run() -> dict:
             trades = simulate_curve(recs, spec, DELTA)
         elif spec["kind"] == "quick":
             trades = simulate_quick(recs, spec, DELTA)
+        elif spec["kind"] == "bband":
+            trades = simulate_bband(recs, spec, DELTA)
         else:
             trades = simulate(recs, spec, DELTA, "proximity")
         summary = summarize(trades, sess)
@@ -1474,6 +1711,19 @@ def run() -> dict:
     ), reverse=True)
     quick_both = sum(
         1 for r in quicks
+        if r["win_rate"] is not None and base["win_rate"] is not None
+        and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
+    )
+    bands = [r for r in results if r["kind"] == "bband"]
+    band_wr = [r["win_rate"] for r in bands if r["win_rate"] is not None]
+    band_net = [r["net"] for r in bands]
+    band_ranked = sorted(bands, key=lambda r: (
+        r["days_above_70"],
+        r["win_rate"] if r["win_rate"] is not None else -1,
+        r["net"],
+    ), reverse=True)
+    band_both = sum(
+        1 for r in bands
         if r["win_rate"] is not None and base["win_rate"] is not None
         and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
     )
@@ -1567,7 +1817,27 @@ def run() -> dict:
                      "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"],
                      "exits": r["exits"]} for r in quick_ranked[:5]],
         },
+        "bb_distribution": {
+            "variants": len(bands),
+            "predeclared_decision_set": BB_REFERENCE,
+            "win_rate_min": None if not band_wr else round(min(band_wr), 4),
+            "win_rate_median": None if not band_wr else round(statistics.median(band_wr), 4),
+            "win_rate_max": None if not band_wr else round(max(band_wr), 4),
+            "net_min": None if not band_net else round(min(band_net), 2),
+            "net_median": None if not band_net else round(statistics.median(band_net), 2),
+            "net_max": None if not band_net else round(max(band_net), 2),
+            "n_higher_win_rate_than_baseline": sum(1 for r in bands if r["win_rate"] is not None and base["win_rate"] is not None and r["win_rate"] > base["win_rate"]),
+            "n_higher_net_than_baseline": sum(1 for r in bands if r["net"] > base["net"]),
+            "n_higher_win_rate_and_net": band_both,
+            "n_any_day_sweep_above_70": sum(1 for r in bands if r["days_above_70"] == r["sessions"]),
+            "max_days_above_70": max((r["days_above_70"] for r in bands), default=0),
+            "top": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
+                     "avg_win": r["avg_win"], "avg_loss": r["avg_loss"], "gross": r["gross"],
+                     "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"],
+                     "exits": r["exits"]} for r in band_ranked[:5]],
+        },
         "oct29_afternoon": oct29_afternoon(recs, trade_bank),
+        "oct29_bb": oct29_bb_snapshot(recs, trade_bank),
         "stop_first": {k: {"net": v[0], "win_rate": v[1], "trades": v[2]} for k, v in stop_first.items()},
         "sensitivity": sensitivity,
     }
@@ -1738,6 +2008,43 @@ def print_report(payload: dict) -> None:
               f"turn {bar['turn']} below {bar['extended_below']} ema {bar['ema']} vwap {bar['vwap']}")
     print("  trades in 14:15-14:45:")
     for tr in payload["oct29_afternoon"]["trades"]:
+        print(f"    {tr['t']} {tr['name']} {tr['side']} -> {tr['exit']} pts {tr['pts']} net {tr['net']} exit {tr['exit_t']}")
+    print()
+    bd = payload["bb_distribution"]
+    print(f"BOLLINGER+MACD  n={bd['variants']}  win {bd['win_rate_min']*100:.1f}/{bd['win_rate_median']*100:.1f}/{bd['win_rate_max']*100:.1f}% min/med/max")
+    print(f"  net ${bd['net_min']:.0f} / ${bd['net_median']:.0f} / ${bd['net_max']:.0f}")
+    print(f"  higher win rate than rules: {bd['n_higher_win_rate_than_baseline']}  higher net: {bd['n_higher_net_than_baseline']}  both: {bd['n_higher_win_rate_and_net']}")
+    print(f"  cleared >70% every session: {bd['n_any_day_sweep_above_70']}  most days>70: {bd['max_days_above_70']}/{base['sessions']}")
+    print("BB ALL CELLS (* = decision set):")
+    for r in payload["results"]:
+        if r["kind"] != "bband":
+            continue
+        fw = r["focus_week"]
+        mark = " *" if r["name"] in BB_REFERENCE else ""
+        print(f"  {r['name']:62s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
+              f"avg {r['avg_win']}/{r['avg_loss']}  days>70 {r['days_above_70']:2d}  flat {r['days_no_trade']:2d}  "
+              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  {r['exits']}{mark}")
+    print("BB DECISION SET, per day:")
+    for name in BB_REFERENCE:
+        r = by[name]
+        bits = []
+        for d in r["days"]:
+            if d["trades"] == 0:
+                bits.append(f"{d['day'][5:]} flat")
+            else:
+                flag = "*" if d["above_70"] else ""
+                bits.append(f"{d['day'][5:]} {d['wins']}/{d['trades']}{flag} ${d['net']:.0f}")
+        print(f"  {name}")
+        print("    " + " | ".join(bits))
+    print("OCT 29 BB 14:10-14:40")
+    for bar in payload["oct29_bb"]["bars"]:
+        if bar["t"] < "14:14" or bar["t"] > "14:36":
+            continue
+        print(f"  {bar['t']} c {bar['close']} lo {bar['low']} {bar['ha']:5} macd {bar['macd']} "
+              f"up {bar['turn_up']} cross {bar['bull_cross']} lower {bar.get('lower')} touch {bar.get('touch_lower')} "
+              f"lower25 {bar.get('lower25')} touch25 {bar.get('touch_lower25')}")
+    print("  bb trades 14:10-14:45:")
+    for tr in payload["oct29_bb"]["trades"]:
         print(f"    {tr['t']} {tr['name']} {tr['side']} -> {tr['exit']} pts {tr['pts']} net {tr['net']} exit {tr['exit_t']}")
 
 

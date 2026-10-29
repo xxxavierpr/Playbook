@@ -1967,6 +1967,104 @@
       }
     ]
   },
+  "bb_distribution": {
+    "variants": 13,
+    "predeclared_decision_set": [
+      "bb_12_26_9_slope_k20_n2_any_curl_s50_morning",
+      "bb_12_26_9_cross_k20_n2_any_curl_s50_morning",
+      "bb_12_26_9_slope_k20_n2_any_mid_s50_morning",
+      "bb_12_26_9_slope_k20_n2_any_latch20_s50_morning"
+    ],
+    "win_rate_min": 0.2364,
+    "win_rate_median": 0.3433,
+    "win_rate_max": 0.4889,
+    "net_min": -747.22,
+    "net_median": 159.27,
+    "net_max": 561.65,
+    "n_higher_win_rate_than_baseline": 0,
+    "n_higher_net_than_baseline": 10,
+    "n_higher_win_rate_and_net": 0,
+    "n_any_day_sweep_above_70": 0,
+    "max_days_above_70": 4,
+    "top": [
+      {
+        "name": "bb_12_26_9_cross_k20_n2_any_curl_s50_morning",
+        "trades": 53,
+        "win_rate": 0.3396,
+        "net": -22.46,
+        "avg_win": 17.93,
+        "avg_loss": -9.86,
+        "gross": 46.44,
+        "days_above_70": 4,
+        "days_no_trade": 2,
+        "exits": {
+          "stop": 19,
+          "curl": 34
+        }
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n0_any_curl_s50_morning",
+        "trades": 67,
+        "win_rate": 0.3433,
+        "net": -1.81,
+        "avg_win": 15.96,
+        "avg_loss": -8.38,
+        "gross": 85.29,
+        "days_above_70": 2,
+        "days_no_trade": 0,
+        "exits": {
+          "curl": 47,
+          "stop": 20
+        }
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_opp_s50_morning",
+        "trades": 225,
+        "win_rate": 0.4889,
+        "net": 561.65,
+        "avg_win": 17.75,
+        "avg_loss": -12.09,
+        "gross": 854.15,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "exits": {
+          "opp": 112,
+          "stop": 113
+        }
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_mid_s50_rth",
+        "trades": 381,
+        "win_rate": 0.4856,
+        "net": -747.22,
+        "avg_win": 4.69,
+        "avg_loss": -8.24,
+        "gross": -251.92,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "exits": {
+          "mid": 249,
+          "stop": 126,
+          "session": 6
+        }
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_mid_s50_morning",
+        "trades": 220,
+        "win_rate": 0.4727,
+        "net": -455.13,
+        "avg_win": 5.34,
+        "avg_loss": -8.71,
+        "gross": -169.13,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "exits": {
+          "mid": 140,
+          "stop": 80
+        }
+      }
+    ]
+  },
   "oct29_afternoon": {
     "bars": [
       {
@@ -2191,6 +2289,536 @@
         "pts": -0.0,
         "net": -1.3,
         "entry": 713.825,
+        "exit_t": "14:35"
+      }
+    ]
+  },
+  "oct29_bb": {
+    "bars": [
+      {
+        "t": "14:10",
+        "close": 713.1,
+        "low": 712.75,
+        "high": 713.16,
+        "ha": "red",
+        "macd": 0.0857,
+        "hist": -0.0167,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.09,
+        "upper": 713.41,
+        "lower": 712.77,
+        "touch_lower": true,
+        "touch_upper": false,
+        "lower25": 712.69,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:11",
+        "close": 712.99,
+        "low": 712.98,
+        "high": 713.12,
+        "ha": "green",
+        "macd": 0.0746,
+        "hist": -0.0222,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.08,
+        "upper": 713.4,
+        "lower": 712.76,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.68,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:12",
+        "close": 712.9,
+        "low": 712.76,
+        "high": 712.94,
+        "ha": "red",
+        "macd": 0.0575,
+        "hist": -0.0314,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.07,
+        "upper": 713.4,
+        "lower": 712.74,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.66,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:13",
+        "close": 712.59,
+        "low": 712.54,
+        "high": 712.93,
+        "ha": "red",
+        "macd": 0.0187,
+        "hist": -0.0562,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.04,
+        "upper": 713.43,
+        "lower": 712.65,
+        "touch_lower": true,
+        "touch_upper": false,
+        "lower25": 712.56,
+        "touch_lower25": true
+      },
+      {
+        "t": "14:14",
+        "close": 712.6,
+        "low": 712.42,
+        "high": 712.62,
+        "ha": "red",
+        "macd": -0.0107,
+        "hist": -0.0685,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.02,
+        "upper": 713.45,
+        "lower": 712.59,
+        "touch_lower": true,
+        "touch_upper": false,
+        "lower25": 712.48,
+        "touch_lower25": true
+      },
+      {
+        "t": "14:15",
+        "close": 712.53,
+        "low": 712.46,
+        "high": 712.66,
+        "ha": "red",
+        "macd": -0.0396,
+        "hist": -0.0779,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.98,
+        "upper": 713.45,
+        "lower": 712.51,
+        "touch_lower": true,
+        "touch_upper": false,
+        "lower25": 712.4,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:16",
+        "close": 712.44,
+        "low": 712.41,
+        "high": 712.58,
+        "ha": "red",
+        "macd": -0.0689,
+        "hist": -0.0858,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.94,
+        "upper": 713.43,
+        "lower": 712.44,
+        "touch_lower": true,
+        "touch_upper": false,
+        "lower25": 712.32,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:17",
+        "close": 712.77,
+        "low": 712.44,
+        "high": 712.8,
+        "ha": "green",
+        "macd": -0.0648,
+        "hist": -0.0654,
+        "turn_up": true,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.93,
+        "upper": 713.42,
+        "lower": 712.43,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.3,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:18",
+        "close": 713.07,
+        "low": 712.7,
+        "high": 713.08,
+        "ha": "green",
+        "macd": -0.0374,
+        "hist": -0.0303,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.92,
+        "upper": 713.42,
+        "lower": 712.43,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.3,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:19",
+        "close": 712.97,
+        "low": 712.91,
+        "high": 713.19,
+        "ha": "green",
+        "macd": -0.023,
+        "hist": -0.0127,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.92,
+        "upper": 713.42,
+        "lower": 712.43,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.3,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:20",
+        "close": 713.17,
+        "low": 712.9,
+        "high": 713.26,
+        "ha": "green",
+        "macd": 0.0047,
+        "hist": 0.012,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": true,
+        "mid": 712.95,
+        "upper": 713.45,
+        "lower": 712.45,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.32,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:21",
+        "close": 713.34,
+        "low": 713.14,
+        "high": 713.45,
+        "ha": "green",
+        "macd": 0.0401,
+        "hist": 0.0379,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.97,
+        "upper": 713.5,
+        "lower": 712.45,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.32,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:22",
+        "close": 713.12,
+        "low": 713.06,
+        "high": 713.29,
+        "ha": "green",
+        "macd": 0.0494,
+        "hist": 0.0378,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.98,
+        "upper": 713.51,
+        "lower": 712.45,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.32,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:23",
+        "close": 713.26,
+        "low": 713.1,
+        "high": 713.38,
+        "ha": "green",
+        "macd": 0.0674,
+        "hist": 0.0445,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.99,
+        "upper": 713.52,
+        "lower": 712.45,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.31,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:24",
+        "close": 713.37,
+        "low": 713.23,
+        "high": 713.4,
+        "ha": "green",
+        "macd": 0.0894,
+        "hist": 0.0533,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 712.99,
+        "upper": 713.53,
+        "lower": 712.44,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.31,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:25",
+        "close": 713.51,
+        "low": 713.38,
+        "high": 713.78,
+        "ha": "green",
+        "macd": 0.1165,
+        "hist": 0.0643,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.0,
+        "upper": 713.58,
+        "lower": 712.42,
+        "touch_lower": false,
+        "touch_upper": true,
+        "lower25": 712.27,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:26",
+        "close": 713.61,
+        "low": 713.42,
+        "high": 713.62,
+        "ha": "green",
+        "macd": 0.1447,
+        "hist": 0.074,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.02,
+        "upper": 713.64,
+        "lower": 712.39,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.23,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:27",
+        "close": 713.49,
+        "low": 713.43,
+        "high": 713.66,
+        "ha": "green",
+        "macd": 0.1556,
+        "hist": 0.0679,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.04,
+        "upper": 713.7,
+        "lower": 712.38,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.21,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:28",
+        "close": 713.56,
+        "low": 713.49,
+        "high": 713.7,
+        "ha": "green",
+        "macd": 0.1675,
+        "hist": 0.0639,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.06,
+        "upper": 713.76,
+        "lower": 712.37,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.19,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:29",
+        "close": 713.64,
+        "low": 713.55,
+        "high": 713.74,
+        "ha": "green",
+        "macd": 0.1817,
+        "hist": 0.0625,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.1,
+        "upper": 713.83,
+        "lower": 712.37,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.19,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:30",
+        "close": 714.3,
+        "low": 713.59,
+        "high": 714.44,
+        "ha": "green",
+        "macd": 0.2434,
+        "hist": 0.0993,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.16,
+        "upper": 714.06,
+        "lower": 712.26,
+        "touch_lower": false,
+        "touch_upper": true,
+        "lower25": 712.04,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:31",
+        "close": 714.11,
+        "low": 714.09,
+        "high": 714.55,
+        "ha": "green",
+        "macd": 0.2739,
+        "hist": 0.1038,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.22,
+        "upper": 714.2,
+        "lower": 712.23,
+        "touch_lower": false,
+        "touch_upper": true,
+        "lower25": 711.99,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:32",
+        "close": 714.39,
+        "low": 714.1,
+        "high": 714.41,
+        "ha": "green",
+        "macd": 0.3169,
+        "hist": 0.1175,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.29,
+        "upper": 714.39,
+        "lower": 712.19,
+        "touch_lower": false,
+        "touch_upper": true,
+        "lower25": 711.92,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:33",
+        "close": 714.41,
+        "low": 714.25,
+        "high": 714.5,
+        "ha": "green",
+        "macd": 0.3486,
+        "hist": 0.1194,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.38,
+        "upper": 714.53,
+        "lower": 712.23,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 711.95,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:34",
+        "close": 714.32,
+        "low": 714.28,
+        "high": 714.4,
+        "ha": "green",
+        "macd": 0.3623,
+        "hist": 0.1064,
+        "turn_up": false,
+        "turn_down": false,
+        "bull_cross": false,
+        "mid": 713.47,
+        "upper": 714.63,
+        "lower": 712.31,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.02,
+        "touch_lower25": false
+      },
+      {
+        "t": "14:35",
+        "close": 713.83,
+        "low": 713.83,
+        "high": 713.83,
+        "ha": "red",
+        "macd": 0.3294,
+        "hist": 0.0588,
+        "turn_up": false,
+        "turn_down": true,
+        "bull_cross": false,
+        "mid": 713.53,
+        "upper": 714.62,
+        "lower": 712.45,
+        "touch_lower": false,
+        "touch_upper": false,
+        "lower25": 712.18,
+        "touch_lower25": false
+      }
+    ],
+    "trades": [
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_curl_s50_rth",
+        "t": "14:17",
+        "side": "CALL",
+        "exit": "curl",
+        "pts": 1.055,
+        "net": 21.91,
+        "entry": 712.77,
+        "exit_t": "14:35"
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_mid_s50_rth",
+        "t": "14:17",
+        "side": "CALL",
+        "exit": "mid",
+        "pts": 0.1533,
+        "net": 2.07,
+        "entry": 712.77,
+        "exit_t": "14:18"
+      },
+      {
+        "name": "bb_12_26_9_slope_k20_n2_any_latch20_s50_rth",
+        "t": "14:17",
+        "side": "CALL",
+        "exit": "fade",
+        "pts": 1.055,
+        "net": 21.91,
+        "entry": 712.77,
         "exit_t": "14:35"
       }
     ]
@@ -66723,6 +67351,6080 @@
             "wins": 6,
             "win_rate": 0.5,
             "net": -22.12,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_curl_s50_morning",
+      "kind": "bband",
+      "trades": 212,
+      "wins": 61,
+      "win_rate": 0.2877,
+      "wilson95_low": 0.231,
+      "gross_win_rate": 0.3066,
+      "point_win_rate": 0.3066,
+      "avg_win": 23.47,
+      "avg_loss": -7.89,
+      "net": 239.73,
+      "gross": 515.33,
+      "qqq_points": 23.424,
+      "exits": {
+        "curl": 158,
+        "stop": 54
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 6,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.1667,
+          "point_win_rate": 0.1667,
+          "net": -43.63,
+          "qqq_points": -1.629,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 149.48,
+          "qqq_points": 7.386,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 14,
+          "wins": 2,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -78.65,
+          "qqq_points": -2.748,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -18.97,
+          "qqq_points": -0.33,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 14,
+          "wins": 2,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.2143,
+          "point_win_rate": 0.2143,
+          "net": -10.81,
+          "qqq_points": 0.336,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 7,
+          "wins": 1,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -21.64,
+          "qqq_points": -0.57,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 10,
+          "wins": 3,
+          "win_rate": 0.3,
+          "gross_win_rate": 0.3,
+          "point_win_rate": 0.3,
+          "net": -12.78,
+          "qqq_points": 0.01,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -42.15,
+          "qqq_points": -1.385,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -9.47,
+          "qqq_points": 0.042,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 10,
+          "wins": 3,
+          "win_rate": 0.3,
+          "gross_win_rate": 0.3,
+          "point_win_rate": 0.3,
+          "net": 24.6,
+          "qqq_points": 1.709,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 11,
+          "wins": 4,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": 21.83,
+          "qqq_points": 1.642,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 12,
+          "wins": 5,
+          "win_rate": 0.4167,
+          "gross_win_rate": 0.4167,
+          "point_win_rate": 0.4167,
+          "net": 102.27,
+          "qqq_points": 5.357,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 34.52,
+          "qqq_points": 2.16,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 12,
+          "wins": 1,
+          "win_rate": 0.0833,
+          "gross_win_rate": 0.0833,
+          "point_win_rate": 0.0833,
+          "net": -17.63,
+          "qqq_points": -0.092,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": 13.1,
+          "qqq_points": 1.068,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -7.21,
+          "qqq_points": 0.145,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 13,
+          "wins": 4,
+          "win_rate": 0.3077,
+          "gross_win_rate": 0.3077,
+          "point_win_rate": 0.3077,
+          "net": 24.0,
+          "qqq_points": 1.859,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 9,
+          "wins": 6,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 118.66,
+          "qqq_points": 5.925,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": -17.03,
+          "qqq_points": -0.36,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -13.17,
+          "qqq_points": -0.126,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 12,
+          "wins": 5,
+          "win_rate": 0.4167,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 56.01,
+          "qqq_points": 3.255,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -11.6,
+          "qqq_points": -0.232,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 32,
+        "wins": 11,
+        "win_rate": 0.3438,
+        "net": 14.21,
+        "qqq_points": 2.537,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -17.03,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -13.17,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 12,
+            "wins": 5,
+            "win_rate": 0.4167,
+            "net": 56.01,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -11.6,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 180,
+        "wins": 50,
+        "win_rate": 0.2778,
+        "net": 225.52,
+        "qqq_points": 20.885,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 6,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -43.63,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 149.48,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 14,
+            "wins": 2,
+            "win_rate": 0.1429,
+            "net": -78.65,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -18.97,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 14,
+            "wins": 2,
+            "win_rate": 0.1429,
+            "net": -10.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 7,
+            "wins": 1,
+            "win_rate": 0.1429,
+            "net": -21.64,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 10,
+            "wins": 3,
+            "win_rate": 0.3,
+            "net": -12.78,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -42.15,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -9.47,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 10,
+            "wins": 3,
+            "win_rate": 0.3,
+            "net": 24.6,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 11,
+            "wins": 4,
+            "win_rate": 0.3636,
+            "net": 21.83,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 12,
+            "wins": 5,
+            "win_rate": 0.4167,
+            "net": 102.27,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 34.52,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 12,
+            "wins": 1,
+            "win_rate": 0.0833,
+            "net": -17.63,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": 13.1,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -7.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 13,
+            "wins": 4,
+            "win_rate": 0.3077,
+            "net": 24.0,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 9,
+            "wins": 6,
+            "win_rate": 0.6667,
+            "net": 118.66,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_cross_k20_n2_any_curl_s50_morning",
+      "kind": "bband",
+      "trades": 53,
+      "wins": 18,
+      "win_rate": 0.3396,
+      "wilson95_low": 0.2269,
+      "gross_win_rate": 0.3396,
+      "point_win_rate": 0.3396,
+      "avg_win": 17.93,
+      "avg_loss": -9.86,
+      "net": -22.46,
+      "gross": 46.44,
+      "qqq_points": 2.112,
+      "exits": {
+        "stop": 19,
+        "curl": 34
+      },
+      "sessions": 22,
+      "days_above_70": 4,
+      "days_no_trade": 2,
+      "days_traded": 20,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -22.82,
+          "qqq_points": -0.919,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 4,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -42.38,
+          "qqq_points": -1.69,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 4,
+          "wins": 2,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 4.92,
+          "qqq_points": 0.46,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 1.71,
+          "qqq_points": 0.196,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -23.52,
+          "qqq_points": -0.892,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -5.02,
+          "qqq_points": -0.11,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -17.23,
+          "qqq_points": -0.665,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 0,
+          "wins": 0,
+          "win_rate": null,
+          "gross_win_rate": null,
+          "point_win_rate": null,
+          "net": 0,
+          "qqq_points": 0,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 6.12,
+          "qqq_points": 0.337,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 58.67,
+          "qqq_points": 2.785,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -19.3,
+          "qqq_points": -0.7,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 5,
+          "wins": 3,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": 21.75,
+          "qqq_points": 1.284,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 18.06,
+          "qqq_points": 0.88,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -36.9,
+          "qqq_points": -1.5,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 42.48,
+          "qqq_points": 1.99,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -31.84,
+          "qqq_points": -1.27,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 4,
+          "wins": 2,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 22.96,
+          "qqq_points": 1.28,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -17.1,
+          "qqq_points": -0.6,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -10.97,
+          "qqq_points": -0.38,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 5.41,
+          "qqq_points": 0.305,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 22.54,
+          "qqq_points": 1.32,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 0,
+          "wins": 0,
+          "win_rate": null,
+          "gross_win_rate": null,
+          "point_win_rate": null,
+          "net": 0,
+          "qqq_points": 0,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 8,
+        "wins": 4,
+        "win_rate": 0.5,
+        "net": 16.98,
+        "qqq_points": 1.245,
+        "days_above_70": 1,
+        "days_no_trade": 1,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": -10.97,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 5.41,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": 22.54,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 0,
+            "wins": 0,
+            "win_rate": null,
+            "net": 0,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 45,
+        "wins": 14,
+        "win_rate": 0.3111,
+        "net": -39.44,
+        "qqq_points": 0.866,
+        "days_above_70": 3,
+        "days_no_trade": 1,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -22.82,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 4,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -42.38,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 4,
+            "wins": 2,
+            "win_rate": 0.5,
+            "net": 4.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": 1.71,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -23.52,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": -5.02,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -17.23,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 0,
+            "wins": 0,
+            "win_rate": null,
+            "net": 0,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 6.12,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": 58.67,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": -19.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "net": 21.75,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 18.06,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -36.9,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 42.48,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -31.84,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 4,
+            "wins": 2,
+            "win_rate": 0.5,
+            "net": 22.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -17.1,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_mid_s50_morning",
+      "kind": "bband",
+      "trades": 220,
+      "wins": 104,
+      "win_rate": 0.4727,
+      "wilson95_low": 0.4078,
+      "gross_win_rate": 0.6364,
+      "point_win_rate": 0.6364,
+      "avg_win": 5.34,
+      "avg_loss": -8.71,
+      "net": -455.13,
+      "gross": -169.13,
+      "qqq_points": -7.687,
+      "exits": {
+        "mid": 140,
+        "stop": 80
+      },
+      "sessions": 22,
+      "days_above_70": 1,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 6,
+          "wins": 3,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.8333,
+          "point_win_rate": 0.8333,
+          "net": -9.51,
+          "qqq_points": -0.078,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 12,
+          "wins": 6,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -10.04,
+          "qqq_points": 0.253,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.4615,
+          "point_win_rate": 0.4615,
+          "net": -46.21,
+          "qqq_points": -1.332,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 7,
+          "wins": 3,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.7143,
+          "point_win_rate": 0.7143,
+          "net": -18.71,
+          "qqq_points": -0.436,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.6923,
+          "point_win_rate": 0.6923,
+          "net": -25.13,
+          "qqq_points": -0.374,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 9,
+          "wins": 5,
+          "win_rate": 0.5556,
+          "gross_win_rate": 0.8889,
+          "point_win_rate": 0.8889,
+          "net": -1.95,
+          "qqq_points": 0.443,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 9,
+          "wins": 7,
+          "win_rate": 0.7778,
+          "gross_win_rate": 0.8889,
+          "point_win_rate": 0.8889,
+          "net": 9.11,
+          "qqq_points": 0.946,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 9,
+          "wins": 4,
+          "win_rate": 0.4444,
+          "gross_win_rate": 0.5556,
+          "point_win_rate": 0.5556,
+          "net": -40.65,
+          "qqq_points": -1.316,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 9,
+          "wins": 3,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": -26.19,
+          "qqq_points": -0.658,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -39.61,
+          "qqq_points": -1.21,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 12,
+          "wins": 6,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.75,
+          "point_win_rate": 0.75,
+          "net": -2.92,
+          "qqq_points": 0.577,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 14,
+          "wins": 8,
+          "win_rate": 0.5714,
+          "gross_win_rate": 0.7857,
+          "point_win_rate": 0.7857,
+          "net": 37.55,
+          "qqq_points": 2.534,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 11,
+          "wins": 3,
+          "win_rate": 0.2727,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": -56.16,
+          "qqq_points": -1.903,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 13,
+          "wins": 5,
+          "win_rate": 0.3846,
+          "gross_win_rate": 0.5385,
+          "point_win_rate": 0.5385,
+          "net": -57.47,
+          "qqq_points": -1.845,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 8,
+          "wins": 4,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -15.0,
+          "qqq_points": -0.209,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -38.3,
+          "qqq_points": -1.268,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 15,
+          "wins": 9,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -2.89,
+          "qqq_points": 0.755,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.7,
+          "point_win_rate": 0.7,
+          "net": -20.4,
+          "qqq_points": -0.336,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 3,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -32.69,
+          "qqq_points": -1.072,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -39.96,
+          "qqq_points": -1.402,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 13,
+          "wins": 7,
+          "win_rate": 0.5385,
+          "gross_win_rate": 0.8462,
+          "point_win_rate": 0.8462,
+          "net": -10.7,
+          "qqq_points": 0.282,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 5,
+          "wins": 3,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -7.3,
+          "qqq_points": -0.037,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 32,
+        "wins": 15,
+        "win_rate": 0.4688,
+        "net": -90.65,
+        "qqq_points": -2.229,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 3,
+            "win_rate": 0.4286,
+            "net": -32.69,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -39.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 13,
+            "wins": 7,
+            "win_rate": 0.5385,
+            "net": -10.7,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "net": -7.3,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 188,
+        "wins": 89,
+        "win_rate": 0.4734,
+        "net": -364.48,
+        "qqq_points": -5.457,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 6,
+            "wins": 3,
+            "win_rate": 0.5,
+            "net": -9.51,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 12,
+            "wins": 6,
+            "win_rate": 0.5,
+            "net": -10.04,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": -46.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 7,
+            "wins": 3,
+            "win_rate": 0.4286,
+            "net": -18.71,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": -25.13,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 9,
+            "wins": 5,
+            "win_rate": 0.5556,
+            "net": -1.95,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 9,
+            "wins": 7,
+            "win_rate": 0.7778,
+            "net": 9.11,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 9,
+            "wins": 4,
+            "win_rate": 0.4444,
+            "net": -40.65,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 9,
+            "wins": 3,
+            "win_rate": 0.3333,
+            "net": -26.19,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": -39.61,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 12,
+            "wins": 6,
+            "win_rate": 0.5,
+            "net": -2.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 14,
+            "wins": 8,
+            "win_rate": 0.5714,
+            "net": 37.55,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 11,
+            "wins": 3,
+            "win_rate": 0.2727,
+            "net": -56.16,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 13,
+            "wins": 5,
+            "win_rate": 0.3846,
+            "net": -57.47,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 8,
+            "wins": 4,
+            "win_rate": 0.5,
+            "net": -15.0,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -38.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 15,
+            "wins": 9,
+            "win_rate": 0.6,
+            "net": -2.89,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": -20.4,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_latch20_s50_morning",
+      "kind": "bband",
+      "trades": 188,
+      "wins": 69,
+      "win_rate": 0.367,
+      "wilson95_low": 0.3014,
+      "gross_win_rate": 0.3777,
+      "point_win_rate": 0.3777,
+      "avg_win": 23.41,
+      "avg_loss": -10.67,
+      "net": 344.89,
+      "gross": 589.29,
+      "qqq_points": 26.785,
+      "exits": {
+        "fade": 94,
+        "stop": 94
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 6,
+          "wins": 1,
+          "win_rate": 0.1667,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -29.47,
+          "qqq_points": -0.985,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 145.96,
+          "qqq_points": 7.226,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 12,
+          "wins": 3,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -68.07,
+          "qqq_points": -2.385,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 5,
+          "wins": 3,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -4.52,
+          "qqq_points": 0.09,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 10,
+          "wins": 2,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -36.13,
+          "qqq_points": -1.052,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 6,
+          "wins": 2,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -16.82,
+          "qqq_points": -0.41,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -11.86,
+          "qqq_points": -0.066,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 7,
+          "wins": 3,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -32.07,
+          "qqq_points": -1.044,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -19.37,
+          "qqq_points": -0.408,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 31.97,
+          "qqq_points": 2.044,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 11,
+          "wins": 4,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": 21.83,
+          "qqq_points": 1.642,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 11,
+          "wins": 6,
+          "win_rate": 0.5455,
+          "gross_win_rate": 0.5455,
+          "point_win_rate": 0.5455,
+          "net": 105.99,
+          "qqq_points": 5.468,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 17.14,
+          "qqq_points": 1.37,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 11,
+          "wins": 1,
+          "win_rate": 0.0909,
+          "gross_win_rate": 0.0909,
+          "point_win_rate": 0.0909,
+          "net": -38.37,
+          "qqq_points": -1.094,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 6,
+          "wins": 2,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 23.81,
+          "qqq_points": 1.436,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -11.63,
+          "qqq_points": -0.056,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 12,
+          "wins": 4,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 117.15,
+          "qqq_points": 6.034,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 9,
+          "wins": 6,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 117.78,
+          "qqq_points": 5.885,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": -21.21,
+          "qqq_points": -0.55,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 7,
+          "wins": 3,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": 31.84,
+          "qqq_points": 1.861,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 9,
+          "wins": 5,
+          "win_rate": 0.5556,
+          "gross_win_rate": 0.5556,
+          "point_win_rate": 0.5556,
+          "net": 35.73,
+          "qqq_points": 2.156,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -14.79,
+          "qqq_points": -0.377,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 28,
+        "wins": 12,
+        "win_rate": 0.4286,
+        "net": 31.57,
+        "qqq_points": 3.09,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -21.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 7,
+            "wins": 3,
+            "win_rate": 0.4286,
+            "net": 31.84,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 9,
+            "wins": 5,
+            "win_rate": 0.5556,
+            "net": 35.73,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -14.79,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 160,
+        "wins": 57,
+        "win_rate": 0.3563,
+        "net": 313.32,
+        "qqq_points": 23.695,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 6,
+            "wins": 1,
+            "win_rate": 0.1667,
+            "net": -29.47,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 145.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 12,
+            "wins": 3,
+            "win_rate": 0.25,
+            "net": -68.07,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "net": -4.52,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 10,
+            "wins": 2,
+            "win_rate": 0.2,
+            "net": -36.13,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 6,
+            "wins": 2,
+            "win_rate": 0.3333,
+            "net": -16.82,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -11.86,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 7,
+            "wins": 3,
+            "win_rate": 0.4286,
+            "net": -32.07,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -19.37,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 31.97,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 11,
+            "wins": 4,
+            "win_rate": 0.3636,
+            "net": 21.83,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 11,
+            "wins": 6,
+            "win_rate": 0.5455,
+            "net": 105.99,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 17.14,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 11,
+            "wins": 1,
+            "win_rate": 0.0909,
+            "net": -38.37,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 6,
+            "wins": 2,
+            "win_rate": 0.3333,
+            "net": 23.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -11.63,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 12,
+            "wins": 4,
+            "win_rate": 0.3333,
+            "net": 117.15,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 9,
+            "wins": 6,
+            "win_rate": 0.6667,
+            "net": 117.78,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_6_13_5_slope_k20_n2_any_curl_s50_morning",
+      "kind": "bband",
+      "trades": 325,
+      "wins": 112,
+      "win_rate": 0.3446,
+      "wilson95_low": 0.295,
+      "gross_win_rate": 0.3815,
+      "point_win_rate": 0.3815,
+      "avg_win": 16.51,
+      "avg_loss": -7.93,
+      "net": 159.27,
+      "gross": 581.77,
+      "qqq_points": 26.445,
+      "exits": {
+        "curl": 249,
+        "stop": 76
+      },
+      "sessions": 22,
+      "days_above_70": 1,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 12,
+          "wins": 4,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.4167,
+          "point_win_rate": 0.4167,
+          "net": 0.5,
+          "qqq_points": 0.732,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.4615,
+          "point_win_rate": 0.4615,
+          "net": 90.34,
+          "qqq_points": 4.874,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 15,
+          "wins": 5,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -34.92,
+          "qqq_points": -0.701,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 16,
+          "wins": 3,
+          "win_rate": 0.1875,
+          "gross_win_rate": 0.1875,
+          "point_win_rate": 0.1875,
+          "net": -57.9,
+          "qqq_points": -1.686,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 17,
+          "wins": 5,
+          "win_rate": 0.2941,
+          "gross_win_rate": 0.4118,
+          "point_win_rate": 0.4118,
+          "net": 7.89,
+          "qqq_points": 1.363,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 11,
+          "wins": 8,
+          "win_rate": 0.7273,
+          "gross_win_rate": 0.7273,
+          "point_win_rate": 0.7273,
+          "net": 57.33,
+          "qqq_points": 3.256,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 15,
+          "wins": 4,
+          "win_rate": 0.2667,
+          "gross_win_rate": 0.2667,
+          "point_win_rate": 0.2667,
+          "net": -57.75,
+          "qqq_points": -1.738,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 14,
+          "wins": 4,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -50.48,
+          "qqq_points": -1.467,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 16,
+          "wins": 6,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -29.8,
+          "qqq_points": -0.409,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 16,
+          "wins": 5,
+          "win_rate": 0.3125,
+          "gross_win_rate": 0.3125,
+          "point_win_rate": 0.3125,
+          "net": -10.05,
+          "qqq_points": 0.489,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 15,
+          "wins": 6,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 51.71,
+          "qqq_points": 3.237,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 15,
+          "wins": 7,
+          "win_rate": 0.4667,
+          "gross_win_rate": 0.5333,
+          "point_win_rate": 0.5333,
+          "net": 119.02,
+          "qqq_points": 6.296,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 16,
+          "wins": 5,
+          "win_rate": 0.3125,
+          "gross_win_rate": 0.3125,
+          "point_win_rate": 0.3125,
+          "net": 7.87,
+          "qqq_points": 1.303,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 19,
+          "wins": 3,
+          "win_rate": 0.1579,
+          "gross_win_rate": 0.2105,
+          "point_win_rate": 0.2105,
+          "net": -33.0,
+          "qqq_points": -0.377,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 13,
+          "wins": 3,
+          "win_rate": 0.2308,
+          "gross_win_rate": 0.3846,
+          "point_win_rate": 0.3846,
+          "net": -40.89,
+          "qqq_points": -1.091,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 14,
+          "wins": 6,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": 65.31,
+          "qqq_points": 3.796,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 18,
+          "wins": 5,
+          "win_rate": 0.2778,
+          "gross_win_rate": 0.2778,
+          "point_win_rate": 0.2778,
+          "net": -14.45,
+          "qqq_points": 0.406,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 17,
+          "wins": 6,
+          "win_rate": 0.3529,
+          "gross_win_rate": 0.4706,
+          "point_win_rate": 0.4706,
+          "net": 21.98,
+          "qqq_points": 2.004,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 10,
+          "wins": 5,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 27.26,
+          "qqq_points": 1.83,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 15,
+          "wins": 4,
+          "win_rate": 0.2667,
+          "gross_win_rate": 0.2667,
+          "point_win_rate": 0.2667,
+          "net": 3.69,
+          "qqq_points": 1.054,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 18,
+          "wins": 8,
+          "win_rate": 0.4444,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 19.84,
+          "qqq_points": 1.966,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 15.77,
+          "qqq_points": 1.308,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 53,
+        "wins": 21,
+        "win_rate": 0.3962,
+        "net": 66.56,
+        "qqq_points": 6.158,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 10,
+            "wins": 5,
+            "win_rate": 0.5,
+            "net": 27.26,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 15,
+            "wins": 4,
+            "win_rate": 0.2667,
+            "net": 3.69,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 18,
+            "wins": 8,
+            "win_rate": 0.4444,
+            "net": 19.84,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 15.77,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 272,
+        "wins": 91,
+        "win_rate": 0.3346,
+        "net": 92.71,
+        "qqq_points": 20.287,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 12,
+            "wins": 4,
+            "win_rate": 0.3333,
+            "net": 0.5,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": 90.34,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 15,
+            "wins": 5,
+            "win_rate": 0.3333,
+            "net": -34.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 16,
+            "wins": 3,
+            "win_rate": 0.1875,
+            "net": -57.9,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 17,
+            "wins": 5,
+            "win_rate": 0.2941,
+            "net": 7.89,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 11,
+            "wins": 8,
+            "win_rate": 0.7273,
+            "net": 57.33,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 15,
+            "wins": 4,
+            "win_rate": 0.2667,
+            "net": -57.75,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 14,
+            "wins": 4,
+            "win_rate": 0.2857,
+            "net": -50.48,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 16,
+            "wins": 6,
+            "win_rate": 0.375,
+            "net": -29.8,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 16,
+            "wins": 5,
+            "win_rate": 0.3125,
+            "net": -10.05,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "net": 51.71,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 15,
+            "wins": 7,
+            "win_rate": 0.4667,
+            "net": 119.02,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 16,
+            "wins": 5,
+            "win_rate": 0.3125,
+            "net": 7.87,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 19,
+            "wins": 3,
+            "win_rate": 0.1579,
+            "net": -33.0,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 13,
+            "wins": 3,
+            "win_rate": 0.2308,
+            "net": -40.89,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 14,
+            "wins": 6,
+            "win_rate": 0.4286,
+            "net": 65.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 18,
+            "wins": 5,
+            "win_rate": 0.2778,
+            "net": -14.45,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 17,
+            "wins": 6,
+            "win_rate": 0.3529,
+            "net": 21.98,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k25_n2_any_curl_s50_morning",
+      "kind": "bband",
+      "trades": 74,
+      "wins": 18,
+      "win_rate": 0.2432,
+      "wilson95_low": 0.1598,
+      "gross_win_rate": 0.2838,
+      "point_win_rate": 0.2838,
+      "avg_win": 20.91,
+      "avg_loss": -8.02,
+      "net": -72.74,
+      "gross": 23.46,
+      "qqq_points": 1.066,
+      "exits": {
+        "curl": 50,
+        "stop": 24
+      },
+      "sessions": 22,
+      "days_above_70": 1,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -4.92,
+          "qqq_points": -0.165,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 18.76,
+          "qqq_points": 1.03,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 4,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -38.82,
+          "qqq_points": -1.528,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -9.76,
+          "qqq_points": -0.266,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -8.96,
+          "qqq_points": -0.23,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 4,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -7.95,
+          "qqq_points": -0.125,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -24.18,
+          "qqq_points": -0.804,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -19.26,
+          "qqq_points": -0.758,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -24.69,
+          "qqq_points": -0.945,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 4,
+          "wins": 2,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 47.38,
+          "qqq_points": 2.39,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 5,
+          "wins": 3,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": 11.76,
+          "qqq_points": 0.83,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 27.54,
+          "qqq_points": 1.37,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 0.7,
+          "qqq_points": 0.15,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 3,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -31.62,
+          "qqq_points": -1.26,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 46.0,
+          "qqq_points": 2.15,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 5,
+          "wins": 1,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -20.6,
+          "qqq_points": -0.641,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 6,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -57.96,
+          "qqq_points": -2.28,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 4,
+          "wins": 1,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": 6.35,
+          "qqq_points": 0.525,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -23.27,
+          "qqq_points": -0.88,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -8.06,
+          "qqq_points": -0.189,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 6,
+          "wins": 3,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 51.31,
+          "qqq_points": 2.687,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -2.49,
+          "qqq_points": 0.005,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 14,
+        "wins": 5,
+        "win_rate": 0.3571,
+        "net": 17.49,
+        "qqq_points": 1.623,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": -23.27,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": -8.06,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 6,
+            "wins": 3,
+            "win_rate": 0.5,
+            "net": 51.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -2.49,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 60,
+        "wins": 13,
+        "win_rate": 0.2167,
+        "net": -90.23,
+        "qqq_points": -0.557,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 1,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -4.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": 18.76,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 4,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -38.82,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -9.76,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -8.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 4,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -7.95,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -24.18,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -19.26,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -24.69,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 4,
+            "wins": 2,
+            "win_rate": 0.5,
+            "net": 47.38,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "net": 11.76,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": 27.54,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": 0.7,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -31.62,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 46.0,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 5,
+            "wins": 1,
+            "win_rate": 0.2,
+            "net": -20.6,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 6,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -57.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 4,
+            "wins": 1,
+            "win_rate": 0.25,
+            "net": 6.35,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n0_any_curl_s50_morning",
+      "kind": "bband",
+      "trades": 67,
+      "wins": 23,
+      "win_rate": 0.3433,
+      "wilson95_low": 0.2409,
+      "gross_win_rate": 0.3881,
+      "point_win_rate": 0.3881,
+      "avg_win": 15.96,
+      "avg_loss": -8.38,
+      "net": -1.81,
+      "gross": 85.29,
+      "qqq_points": 3.877,
+      "exits": {
+        "curl": 47,
+        "stop": 20
+      },
+      "sessions": 22,
+      "days_above_70": 2,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -12.72,
+          "qqq_points": -0.46,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 4,
+          "wins": 2,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 20.21,
+          "qqq_points": 1.155,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 1.81,
+          "qqq_points": 0.2,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 1,
+          "wins": 1,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 6.1,
+          "qqq_points": 0.336,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 2,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -6.78,
+          "qqq_points": -0.19,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -2.18,
+          "qqq_points": -0.04,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -16.88,
+          "qqq_points": -0.59,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -3.51,
+          "qqq_points": -0.101,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 3,
+          "wins": 2,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": -6.16,
+          "qqq_points": -0.103,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 44.98,
+          "qqq_points": 2.34,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -0.78,
+          "qqq_points": 0.26,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 3,
+          "wins": 2,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 35.66,
+          "qqq_points": 1.798,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 2,
+          "wins": 2,
+          "win_rate": 1.0,
+          "gross_win_rate": 1.0,
+          "point_win_rate": 1.0,
+          "net": 24.68,
+          "qqq_points": 1.24,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 4,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -33.79,
+          "qqq_points": -1.3,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 3,
+          "wins": 1,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 25.31,
+          "qqq_points": 1.328,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 6,
+          "wins": 2,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 12.97,
+          "qqq_points": 0.944,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 5,
+          "wins": 1,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -21.02,
+          "qqq_points": -0.66,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 4,
+          "wins": 1,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -21.59,
+          "qqq_points": -0.745,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -12.3,
+          "qqq_points": -0.5,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 4,
+          "wins": 1,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -16.84,
+          "qqq_points": -0.529,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -9.98,
+          "qqq_points": -0.158,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -9.0,
+          "qqq_points": -0.35,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 11,
+        "wins": 3,
+        "win_rate": 0.2727,
+        "net": -48.12,
+        "qqq_points": -1.537,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 1,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -12.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 4,
+            "wins": 1,
+            "win_rate": 0.25,
+            "net": -16.84,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -9.98,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 1,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -9.0,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 56,
+        "wins": 20,
+        "win_rate": 0.3571,
+        "net": 46.31,
+        "qqq_points": 5.412,
+        "days_above_70": 2,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -12.72,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 4,
+            "wins": 2,
+            "win_rate": 0.5,
+            "net": 20.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 2,
+            "wins": 1,
+            "win_rate": 0.5,
+            "net": 1.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 1,
+            "wins": 1,
+            "win_rate": 1.0,
+            "net": 6.1,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 2,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -6.78,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 1,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -2.18,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": -16.88,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 1,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -3.51,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 3,
+            "wins": 2,
+            "win_rate": 0.6667,
+            "net": -6.16,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": 44.98,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -0.78,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 3,
+            "wins": 2,
+            "win_rate": 0.6667,
+            "net": 35.66,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 2,
+            "wins": 2,
+            "win_rate": 1.0,
+            "net": 24.68,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 4,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -33.79,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "net": 25.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 6,
+            "wins": 2,
+            "win_rate": 0.3333,
+            "net": 12.97,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 5,
+            "wins": 1,
+            "win_rate": 0.2,
+            "net": -21.02,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 4,
+            "wins": 1,
+            "win_rate": 0.25,
+            "net": -21.59,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_zero_curl_s50_morning",
+      "kind": "bband",
+      "trades": 199,
+      "wins": 58,
+      "win_rate": 0.2915,
+      "wilson95_low": 0.2327,
+      "gross_win_rate": 0.3166,
+      "point_win_rate": 0.3166,
+      "avg_win": 23.52,
+      "avg_loss": -7.81,
+      "net": 262.59,
+      "gross": 521.29,
+      "qqq_points": 23.694,
+      "exits": {
+        "curl": 152,
+        "stop": 47
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 6,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.1667,
+          "point_win_rate": 0.1667,
+          "net": -43.63,
+          "qqq_points": -1.629,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 149.48,
+          "qqq_points": 7.386,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 13,
+          "wins": 2,
+          "win_rate": 0.1538,
+          "gross_win_rate": 0.1538,
+          "point_win_rate": 0.1538,
+          "net": -66.35,
+          "qqq_points": -2.248,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -18.97,
+          "qqq_points": -0.33,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 13,
+          "wins": 2,
+          "win_rate": 0.1538,
+          "gross_win_rate": 0.2308,
+          "point_win_rate": 0.2308,
+          "net": -3.57,
+          "qqq_points": 0.606,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 7,
+          "wins": 1,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -21.64,
+          "qqq_points": -0.57,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 9,
+          "wins": 3,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -1.8,
+          "qqq_points": 0.45,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -38.32,
+          "qqq_points": -1.27,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -9.47,
+          "qqq_points": 0.042,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 9,
+          "wins": 3,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 36.9,
+          "qqq_points": 2.209,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 34.13,
+          "qqq_points": 2.142,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 66.26,
+          "qqq_points": 3.603,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 9,
+          "wins": 4,
+          "win_rate": 0.4444,
+          "gross_win_rate": 0.4444,
+          "point_win_rate": 0.4444,
+          "net": 38.02,
+          "qqq_points": 2.26,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 11,
+          "wins": 1,
+          "win_rate": 0.0909,
+          "gross_win_rate": 0.0909,
+          "point_win_rate": 0.0909,
+          "net": 0.39,
+          "qqq_points": 0.668,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": 13.1,
+          "qqq_points": 1.068,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -7.21,
+          "qqq_points": 0.145,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 13,
+          "wins": 4,
+          "win_rate": 0.3077,
+          "gross_win_rate": 0.3077,
+          "point_win_rate": 0.3077,
+          "net": 24.0,
+          "qqq_points": 1.859,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 9,
+          "wins": 6,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 118.66,
+          "qqq_points": 5.925,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": -17.03,
+          "qqq_points": -0.36,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 7,
+          "wins": 1,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -39.48,
+          "qqq_points": -1.381,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 10,
+          "wins": 5,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": 62.81,
+          "qqq_points": 3.446,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 5,
+          "wins": 1,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -13.69,
+          "qqq_points": -0.327,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 29,
+        "wins": 9,
+        "win_rate": 0.3103,
+        "net": -7.39,
+        "qqq_points": 1.378,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -17.03,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 7,
+            "wins": 1,
+            "win_rate": 0.1429,
+            "net": -39.48,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 10,
+            "wins": 5,
+            "win_rate": 0.5,
+            "net": 62.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 5,
+            "wins": 1,
+            "win_rate": 0.2,
+            "net": -13.69,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 170,
+        "wins": 49,
+        "win_rate": 0.2882,
+        "net": 269.98,
+        "qqq_points": 22.316,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 6,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -43.63,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 149.48,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 13,
+            "wins": 2,
+            "win_rate": 0.1538,
+            "net": -66.35,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -18.97,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 13,
+            "wins": 2,
+            "win_rate": 0.1538,
+            "net": -3.57,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 7,
+            "wins": 1,
+            "win_rate": 0.1429,
+            "net": -21.64,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 9,
+            "wins": 3,
+            "win_rate": 0.3333,
+            "net": -1.8,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -38.32,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -9.47,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 9,
+            "wins": 3,
+            "win_rate": 0.3333,
+            "net": 36.9,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 34.13,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 66.26,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 9,
+            "wins": 4,
+            "win_rate": 0.4444,
+            "net": 38.02,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 11,
+            "wins": 1,
+            "win_rate": 0.0909,
+            "net": 0.39,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": 13.1,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -7.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 13,
+            "wins": 4,
+            "win_rate": 0.3077,
+            "net": 24.0,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 9,
+            "wins": 6,
+            "win_rate": 0.6667,
+            "net": 118.66,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_curl_s50_rth",
+      "kind": "bband",
+      "trades": 380,
+      "wins": 104,
+      "win_rate": 0.2737,
+      "wilson95_low": 0.2313,
+      "gross_win_rate": 0.3079,
+      "point_win_rate": 0.3079,
+      "avg_win": 19.71,
+      "avg_loss": -6.79,
+      "net": 175.07,
+      "gross": 669.07,
+      "qqq_points": 30.413,
+      "exits": {
+        "curl": 304,
+        "stop": 67,
+        "session": 9
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 10,
+          "wins": 2,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.3,
+          "point_win_rate": 0.3,
+          "net": -53.85,
+          "qqq_points": -1.857,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 17,
+          "wins": 7,
+          "win_rate": 0.4118,
+          "gross_win_rate": 0.4706,
+          "point_win_rate": 0.4706,
+          "net": 237.14,
+          "qqq_points": 11.784,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 21,
+          "wins": 5,
+          "win_rate": 0.2381,
+          "gross_win_rate": 0.2381,
+          "point_win_rate": 0.2381,
+          "net": -79.63,
+          "qqq_points": -2.379,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 18,
+          "wins": 3,
+          "win_rate": 0.1667,
+          "gross_win_rate": 0.1667,
+          "point_win_rate": 0.1667,
+          "net": -30.21,
+          "qqq_points": -0.309,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 25,
+          "wins": 4,
+          "win_rate": 0.16,
+          "gross_win_rate": 0.28,
+          "point_win_rate": 0.28,
+          "net": -19.81,
+          "qqq_points": 0.576,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 14,
+          "wins": 4,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": -37.51,
+          "qqq_points": -0.878,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 14,
+          "wins": 4,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": 8.31,
+          "qqq_points": 1.205,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 16,
+          "wins": 4,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -51.14,
+          "qqq_points": -1.379,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 13,
+          "wins": 3,
+          "win_rate": 0.2308,
+          "gross_win_rate": 0.3077,
+          "point_win_rate": 0.3077,
+          "net": -23.94,
+          "qqq_points": -0.32,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 15,
+          "wins": 5,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 35.5,
+          "qqq_points": 2.5,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 21,
+          "wins": 7,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": 35.42,
+          "qqq_points": 2.851,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 16,
+          "wins": 7,
+          "win_rate": 0.4375,
+          "gross_win_rate": 0.4375,
+          "point_win_rate": 0.4375,
+          "net": 147.56,
+          "qqq_points": 7.653,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 20,
+          "wins": 6,
+          "win_rate": 0.3,
+          "gross_win_rate": 0.3,
+          "point_win_rate": 0.3,
+          "net": 7.66,
+          "qqq_points": 1.53,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 23,
+          "wins": 1,
+          "win_rate": 0.0435,
+          "gross_win_rate": 0.1739,
+          "point_win_rate": 0.1739,
+          "net": -59.31,
+          "qqq_points": -1.336,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 15,
+          "wins": 3,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -12.94,
+          "qqq_points": 0.298,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 13,
+          "wins": 4,
+          "win_rate": 0.3077,
+          "gross_win_rate": 0.3077,
+          "point_win_rate": 0.3077,
+          "net": -3.15,
+          "qqq_points": 0.625,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 18,
+          "wins": 7,
+          "win_rate": 0.3889,
+          "gross_win_rate": 0.3889,
+          "point_win_rate": 0.3889,
+          "net": 94.17,
+          "qqq_points": 5.344,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 28,
+          "wins": 11,
+          "win_rate": 0.3929,
+          "gross_win_rate": 0.3929,
+          "point_win_rate": 0.3929,
+          "net": 48.63,
+          "qqq_points": 3.865,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 12,
+          "wins": 4,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 20.49,
+          "qqq_points": 1.641,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 16,
+          "wins": 3,
+          "win_rate": 0.1875,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -40.95,
+          "qqq_points": -0.916,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 22,
+          "wins": 7,
+          "win_rate": 0.3182,
+          "gross_win_rate": 0.3636,
+          "point_win_rate": 0.3636,
+          "net": -16.12,
+          "qqq_points": 0.567,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 13,
+          "wins": 3,
+          "win_rate": 0.2308,
+          "gross_win_rate": 0.2308,
+          "point_win_rate": 0.2308,
+          "net": -31.25,
+          "qqq_points": -0.652,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 63,
+        "wins": 17,
+        "win_rate": 0.2698,
+        "net": -67.83,
+        "qqq_points": 0.64,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 12,
+            "wins": 4,
+            "win_rate": 0.3333,
+            "net": 20.49,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 16,
+            "wins": 3,
+            "win_rate": 0.1875,
+            "net": -40.95,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 22,
+            "wins": 7,
+            "win_rate": 0.3182,
+            "net": -16.12,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 13,
+            "wins": 3,
+            "win_rate": 0.2308,
+            "net": -31.25,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 317,
+        "wins": 87,
+        "win_rate": 0.2744,
+        "net": 242.9,
+        "qqq_points": 29.773,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 10,
+            "wins": 2,
+            "win_rate": 0.2,
+            "net": -53.85,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 17,
+            "wins": 7,
+            "win_rate": 0.4118,
+            "net": 237.14,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 21,
+            "wins": 5,
+            "win_rate": 0.2381,
+            "net": -79.63,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 18,
+            "wins": 3,
+            "win_rate": 0.1667,
+            "net": -30.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 25,
+            "wins": 4,
+            "win_rate": 0.16,
+            "net": -19.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 14,
+            "wins": 4,
+            "win_rate": 0.2857,
+            "net": -37.51,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 14,
+            "wins": 4,
+            "win_rate": 0.2857,
+            "net": 8.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 16,
+            "wins": 4,
+            "win_rate": 0.25,
+            "net": -51.14,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 13,
+            "wins": 3,
+            "win_rate": 0.2308,
+            "net": -23.94,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 15,
+            "wins": 5,
+            "win_rate": 0.3333,
+            "net": 35.5,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 21,
+            "wins": 7,
+            "win_rate": 0.3333,
+            "net": 35.42,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 16,
+            "wins": 7,
+            "win_rate": 0.4375,
+            "net": 147.56,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 20,
+            "wins": 6,
+            "win_rate": 0.3,
+            "net": 7.66,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 23,
+            "wins": 1,
+            "win_rate": 0.0435,
+            "net": -59.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 15,
+            "wins": 3,
+            "win_rate": 0.2,
+            "net": -12.94,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 13,
+            "wins": 4,
+            "win_rate": 0.3077,
+            "net": -3.15,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 18,
+            "wins": 7,
+            "win_rate": 0.3889,
+            "net": 94.17,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 28,
+            "wins": 11,
+            "win_rate": 0.3929,
+            "net": 48.63,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_mid_s50_rth",
+      "kind": "bband",
+      "trades": 381,
+      "wins": 185,
+      "win_rate": 0.4856,
+      "wilson95_low": 0.4358,
+      "gross_win_rate": 0.6562,
+      "point_win_rate": 0.6562,
+      "avg_win": 4.69,
+      "avg_loss": -8.24,
+      "net": -747.22,
+      "gross": -251.92,
+      "qqq_points": -11.45,
+      "exits": {
+        "mid": 249,
+        "stop": 126,
+        "session": 6
+      },
+      "sessions": 22,
+      "days_above_70": 1,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 10,
+          "wins": 6,
+          "win_rate": 0.6,
+          "gross_win_rate": 0.8,
+          "point_win_rate": 0.8,
+          "net": -16.87,
+          "qqq_points": -0.176,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 18,
+          "wins": 10,
+          "win_rate": 0.5556,
+          "gross_win_rate": 0.6111,
+          "point_win_rate": 0.6111,
+          "net": -2.37,
+          "qqq_points": 0.956,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 23,
+          "wins": 14,
+          "win_rate": 0.6087,
+          "gross_win_rate": 0.6522,
+          "point_win_rate": 0.6522,
+          "net": -49.89,
+          "qqq_points": -0.909,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 15,
+          "wins": 6,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.7333,
+          "point_win_rate": 0.7333,
+          "net": -36.94,
+          "qqq_points": -0.792,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 22,
+          "wins": 7,
+          "win_rate": 0.3182,
+          "gross_win_rate": 0.6818,
+          "point_win_rate": 0.6818,
+          "net": -54.1,
+          "qqq_points": -1.159,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 17,
+          "wins": 8,
+          "win_rate": 0.4706,
+          "gross_win_rate": 0.8824,
+          "point_win_rate": 0.8824,
+          "net": -12.76,
+          "qqq_points": 0.424,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 13,
+          "wins": 11,
+          "win_rate": 0.8462,
+          "gross_win_rate": 0.9231,
+          "point_win_rate": 0.9231,
+          "net": 43.48,
+          "qqq_points": 2.745,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.6154,
+          "point_win_rate": 0.6154,
+          "net": -49.69,
+          "qqq_points": -1.491,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 13,
+          "wins": 4,
+          "win_rate": 0.3077,
+          "gross_win_rate": 0.6923,
+          "point_win_rate": 0.6923,
+          "net": -36.3,
+          "qqq_points": -0.882,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 15,
+          "wins": 6,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.6,
+          "point_win_rate": 0.6,
+          "net": -58.39,
+          "qqq_points": -1.767,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 22,
+          "wins": 10,
+          "win_rate": 0.4545,
+          "gross_win_rate": 0.5909,
+          "point_win_rate": 0.5909,
+          "net": -47.32,
+          "qqq_points": -0.85,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 18,
+          "wins": 10,
+          "win_rate": 0.5556,
+          "gross_win_rate": 0.7778,
+          "point_win_rate": 0.7778,
+          "net": 36.81,
+          "qqq_points": 2.737,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 22,
+          "wins": 8,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.5455,
+          "point_win_rate": 0.5455,
+          "net": -68.53,
+          "qqq_points": -1.815,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 22,
+          "wins": 10,
+          "win_rate": 0.4545,
+          "gross_win_rate": 0.5909,
+          "point_win_rate": 0.5909,
+          "net": -71.86,
+          "qqq_points": -1.967,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 15,
+          "wins": 6,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4667,
+          "point_win_rate": 0.4667,
+          "net": -42.78,
+          "qqq_points": -1.058,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 13,
+          "wins": 5,
+          "win_rate": 0.3846,
+          "gross_win_rate": 0.4615,
+          "point_win_rate": 0.4615,
+          "net": -68.6,
+          "qqq_points": -2.35,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 22,
+          "wins": 13,
+          "win_rate": 0.5909,
+          "gross_win_rate": 0.6364,
+          "point_win_rate": 0.6364,
+          "net": -7.7,
+          "qqq_points": 0.95,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 25,
+          "wins": 13,
+          "win_rate": 0.52,
+          "gross_win_rate": 0.64,
+          "point_win_rate": 0.64,
+          "net": -57.12,
+          "qqq_points": -1.119,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 13,
+          "wins": 7,
+          "win_rate": 0.5385,
+          "gross_win_rate": 0.6154,
+          "point_win_rate": 0.6154,
+          "net": -35.03,
+          "qqq_points": -0.824,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 15,
+          "wins": 4,
+          "win_rate": 0.2667,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -93.25,
+          "qqq_points": -3.352,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 23,
+          "wins": 15,
+          "win_rate": 0.6522,
+          "gross_win_rate": 0.8261,
+          "point_win_rate": 0.8261,
+          "net": -5.7,
+          "qqq_points": 1.1,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 12,
+          "wins": 6,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.75,
+          "point_win_rate": 0.75,
+          "net": -12.31,
+          "qqq_points": 0.15,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 63,
+        "wins": 32,
+        "win_rate": 0.5079,
+        "net": -146.29,
+        "qqq_points": -2.926,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 13,
+            "wins": 7,
+            "win_rate": 0.5385,
+            "net": -35.03,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 15,
+            "wins": 4,
+            "win_rate": 0.2667,
+            "net": -93.25,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 23,
+            "wins": 15,
+            "win_rate": 0.6522,
+            "net": -5.7,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 12,
+            "wins": 6,
+            "win_rate": 0.5,
+            "net": -12.31,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 318,
+        "wins": 153,
+        "win_rate": 0.4811,
+        "net": -600.93,
+        "qqq_points": -8.523,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 10,
+            "wins": 6,
+            "win_rate": 0.6,
+            "net": -16.87,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 18,
+            "wins": 10,
+            "win_rate": 0.5556,
+            "net": -2.37,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 23,
+            "wins": 14,
+            "win_rate": 0.6087,
+            "net": -49.89,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "net": -36.94,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 22,
+            "wins": 7,
+            "win_rate": 0.3182,
+            "net": -54.1,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 17,
+            "wins": 8,
+            "win_rate": 0.4706,
+            "net": -12.76,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 13,
+            "wins": 11,
+            "win_rate": 0.8462,
+            "net": 43.48,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": -49.69,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 13,
+            "wins": 4,
+            "win_rate": 0.3077,
+            "net": -36.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "net": -58.39,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 22,
+            "wins": 10,
+            "win_rate": 0.4545,
+            "net": -47.32,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 18,
+            "wins": 10,
+            "win_rate": 0.5556,
+            "net": 36.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 22,
+            "wins": 8,
+            "win_rate": 0.3636,
+            "net": -68.53,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 22,
+            "wins": 10,
+            "win_rate": 0.4545,
+            "net": -71.86,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "net": -42.78,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 13,
+            "wins": 5,
+            "win_rate": 0.3846,
+            "net": -68.6,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 22,
+            "wins": 13,
+            "win_rate": 0.5909,
+            "net": -7.7,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 25,
+            "wins": 13,
+            "win_rate": 0.52,
+            "net": -57.12,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_opp_s50_morning",
+      "kind": "bband",
+      "trades": 225,
+      "wins": 110,
+      "win_rate": 0.4889,
+      "wilson95_low": 0.4243,
+      "gross_win_rate": 0.4978,
+      "point_win_rate": 0.4978,
+      "avg_win": 17.75,
+      "avg_loss": -12.09,
+      "net": 561.65,
+      "gross": 854.15,
+      "qqq_points": 38.829,
+      "exits": {
+        "opp": 112,
+        "stop": 113
+      },
+      "sessions": 22,
+      "days_above_70": 1,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 7,
+          "wins": 3,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -14.91,
+          "qqq_points": -0.264,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 12,
+          "wins": 6,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 109.46,
+          "qqq_points": 5.685,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 13,
+          "wins": 5,
+          "win_rate": 0.3846,
+          "gross_win_rate": 0.3846,
+          "point_win_rate": 0.3846,
+          "net": -13.81,
+          "qqq_points": 0.141,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 8,
+          "wins": 6,
+          "win_rate": 0.75,
+          "gross_win_rate": 0.875,
+          "point_win_rate": 0.875,
+          "net": 34.94,
+          "qqq_points": 2.062,
+          "above_70": true
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.4615,
+          "point_win_rate": 0.4615,
+          "net": -24.59,
+          "qqq_points": -0.35,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 9,
+          "wins": 6,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 14.98,
+          "qqq_points": 1.213,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 9,
+          "wins": 5,
+          "win_rate": 0.5556,
+          "gross_win_rate": 0.5556,
+          "point_win_rate": 0.5556,
+          "net": 36.56,
+          "qqq_points": 2.194,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 9,
+          "wins": 4,
+          "win_rate": 0.4444,
+          "gross_win_rate": 0.4444,
+          "point_win_rate": 0.4444,
+          "net": -10.31,
+          "qqq_points": 0.064,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 9,
+          "wins": 3,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": -45.16,
+          "qqq_points": -1.521,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 11,
+          "wins": 5,
+          "win_rate": 0.4545,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": -1.96,
+          "qqq_points": 0.562,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 12,
+          "wins": 6,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 45.23,
+          "qqq_points": 2.764,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 13,
+          "wins": 7,
+          "win_rate": 0.5385,
+          "gross_win_rate": 0.5385,
+          "point_win_rate": 0.5385,
+          "net": 204.91,
+          "qqq_points": 10.082,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 11,
+          "wins": 5,
+          "win_rate": 0.4545,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": 51.26,
+          "qqq_points": 2.98,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 14,
+          "wins": 6,
+          "win_rate": 0.4286,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -30.32,
+          "qqq_points": -0.551,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -4.51,
+          "qqq_points": 0.268,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 9,
+          "wins": 4,
+          "win_rate": 0.4444,
+          "gross_win_rate": 0.4444,
+          "point_win_rate": 0.4444,
+          "net": 42.03,
+          "qqq_points": 2.442,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 16,
+          "wins": 7,
+          "win_rate": 0.4375,
+          "gross_win_rate": 0.4375,
+          "point_win_rate": 0.4375,
+          "net": 58.3,
+          "qqq_points": 3.596,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 10,
+          "wins": 7,
+          "win_rate": 0.7,
+          "gross_win_rate": 0.7,
+          "point_win_rate": 0.7,
+          "net": 86.59,
+          "qqq_points": 4.527,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": -25.4,
+          "qqq_points": -0.741,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.4286,
+          "point_win_rate": 0.4286,
+          "net": -11.66,
+          "qqq_points": -0.116,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 12,
+          "wins": 8,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 22.92,
+          "qqq_points": 1.751,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 6,
+          "wins": 4,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 37.1,
+          "qqq_points": 2.041,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 32,
+        "wins": 16,
+        "win_rate": 0.5,
+        "net": 22.96,
+        "qqq_points": 2.935,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -25.4,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": -11.66,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 12,
+            "wins": 8,
+            "win_rate": 0.6667,
+            "net": 22.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 6,
+            "wins": 4,
+            "win_rate": 0.6667,
+            "net": 37.1,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 193,
+        "wins": 94,
+        "win_rate": 0.487,
+        "net": 538.69,
+        "qqq_points": 35.894,
+        "days_above_70": 1,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 7,
+            "wins": 3,
+            "win_rate": 0.4286,
+            "net": -14.91,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 12,
+            "wins": 6,
+            "win_rate": 0.5,
+            "net": 109.46,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 13,
+            "wins": 5,
+            "win_rate": 0.3846,
+            "net": -13.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 8,
+            "wins": 6,
+            "win_rate": 0.75,
+            "net": 34.94,
+            "above_70": true
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": -24.59,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 9,
+            "wins": 6,
+            "win_rate": 0.6667,
+            "net": 14.98,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 9,
+            "wins": 5,
+            "win_rate": 0.5556,
+            "net": 36.56,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 9,
+            "wins": 4,
+            "win_rate": 0.4444,
+            "net": -10.31,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 9,
+            "wins": 3,
+            "win_rate": 0.3333,
+            "net": -45.16,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 11,
+            "wins": 5,
+            "win_rate": 0.4545,
+            "net": -1.96,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 12,
+            "wins": 6,
+            "win_rate": 0.5,
+            "net": 45.23,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 13,
+            "wins": 7,
+            "win_rate": 0.5385,
+            "net": 204.91,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 11,
+            "wins": 5,
+            "win_rate": 0.4545,
+            "net": 51.26,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 14,
+            "wins": 6,
+            "win_rate": 0.4286,
+            "net": -30.32,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -4.51,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 9,
+            "wins": 4,
+            "win_rate": 0.4444,
+            "net": 42.03,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 16,
+            "wins": 7,
+            "win_rate": 0.4375,
+            "net": 58.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 10,
+            "wins": 7,
+            "win_rate": 0.7,
+            "net": 86.59,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_curl_s30_morning",
+      "kind": "bband",
+      "trades": 220,
+      "wins": 52,
+      "win_rate": 0.2364,
+      "wilson95_low": 0.185,
+      "gross_win_rate": 0.25,
+      "point_win_rate": 0.25,
+      "avg_win": 20.71,
+      "avg_loss": -6.57,
+      "net": -26.68,
+      "gross": 259.32,
+      "qqq_points": 11.787,
+      "exits": {
+        "curl": 106,
+        "stop": 114
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 6,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.1667,
+          "point_win_rate": 0.1667,
+          "net": -32.21,
+          "qqq_points": -1.109,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 11,
+          "wins": 4,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.3636,
+          "point_win_rate": 0.3636,
+          "net": 160.6,
+          "qqq_points": 7.95,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 14,
+          "wins": 2,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -59.07,
+          "qqq_points": -1.858,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -15.45,
+          "qqq_points": -0.17,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 15,
+          "wins": 2,
+          "win_rate": 0.1333,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -23.99,
+          "qqq_points": -0.204,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 7,
+          "wins": 1,
+          "win_rate": 0.1429,
+          "gross_win_rate": 0.1429,
+          "point_win_rate": 0.1429,
+          "net": -19.88,
+          "qqq_points": -0.49,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 11,
+          "wins": 2,
+          "win_rate": 0.1818,
+          "gross_win_rate": 0.1818,
+          "point_win_rate": 0.1818,
+          "net": -23.98,
+          "qqq_points": -0.44,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -31.82,
+          "qqq_points": -0.914,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 8,
+          "wins": 3,
+          "win_rate": 0.375,
+          "gross_win_rate": 0.375,
+          "point_win_rate": 0.375,
+          "net": -0.56,
+          "qqq_points": 0.447,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 10,
+          "wins": 2,
+          "win_rate": 0.2,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -42.28,
+          "qqq_points": -1.331,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 11,
+          "wins": 4,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.3636,
+          "point_win_rate": 0.3636,
+          "net": 34.59,
+          "qqq_points": 2.222,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 13,
+          "wins": 3,
+          "win_rate": 0.2308,
+          "gross_win_rate": 0.2308,
+          "point_win_rate": 0.2308,
+          "net": 3.83,
+          "qqq_points": 0.942,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 47.94,
+          "qqq_points": 2.77,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 13,
+          "wins": 0,
+          "win_rate": 0.0,
+          "gross_win_rate": 0.0,
+          "point_win_rate": 0.0,
+          "net": -88.1,
+          "qqq_points": -3.236,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 8,
+          "wins": 1,
+          "win_rate": 0.125,
+          "gross_win_rate": 0.125,
+          "point_win_rate": 0.125,
+          "net": -9.37,
+          "qqq_points": 0.047,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 9,
+          "wins": 2,
+          "win_rate": 0.2222,
+          "gross_win_rate": 0.2222,
+          "point_win_rate": 0.2222,
+          "net": -2.81,
+          "qqq_points": 0.404,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 14,
+          "wins": 3,
+          "win_rate": 0.2143,
+          "gross_win_rate": 0.2143,
+          "point_win_rate": 0.2143,
+          "net": -8.76,
+          "qqq_points": 0.429,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 10,
+          "wins": 4,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": 39.48,
+          "qqq_points": 2.385,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 7,
+          "wins": 2,
+          "win_rate": 0.2857,
+          "gross_win_rate": 0.2857,
+          "point_win_rate": 0.2857,
+          "net": 0.79,
+          "qqq_points": 0.45,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 8,
+          "wins": 2,
+          "win_rate": 0.25,
+          "gross_win_rate": 0.25,
+          "point_win_rate": 0.25,
+          "net": -14.45,
+          "qqq_points": -0.184,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 12,
+          "wins": 5,
+          "win_rate": 0.4167,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 64.81,
+          "qqq_points": 3.655,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4,
+          "point_win_rate": 0.4,
+          "net": -5.99,
+          "qqq_points": 0.023,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 32,
+        "wins": 11,
+        "win_rate": 0.3438,
+        "net": 45.16,
+        "qqq_points": 3.944,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 7,
+            "wins": 2,
+            "win_rate": 0.2857,
+            "net": 0.79,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 8,
+            "wins": 2,
+            "win_rate": 0.25,
+            "net": -14.45,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 12,
+            "wins": 5,
+            "win_rate": 0.4167,
+            "net": 64.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 5,
+            "wins": 2,
+            "win_rate": 0.4,
+            "net": -5.99,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 188,
+        "wins": 41,
+        "win_rate": 0.2181,
+        "net": -71.84,
+        "qqq_points": 7.844,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 6,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -32.21,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 11,
+            "wins": 4,
+            "win_rate": 0.3636,
+            "net": 160.6,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 14,
+            "wins": 2,
+            "win_rate": 0.1429,
+            "net": -59.07,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -15.45,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 15,
+            "wins": 2,
+            "win_rate": 0.1333,
+            "net": -23.99,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 7,
+            "wins": 1,
+            "win_rate": 0.1429,
+            "net": -19.88,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 11,
+            "wins": 2,
+            "win_rate": 0.1818,
+            "net": -23.98,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -31.82,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 8,
+            "wins": 3,
+            "win_rate": 0.375,
+            "net": -0.56,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 10,
+            "wins": 2,
+            "win_rate": 0.2,
+            "net": -42.28,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 11,
+            "wins": 4,
+            "win_rate": 0.3636,
+            "net": 34.59,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 13,
+            "wins": 3,
+            "win_rate": 0.2308,
+            "net": 3.83,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 47.94,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 13,
+            "wins": 0,
+            "win_rate": 0.0,
+            "net": -88.1,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 8,
+            "wins": 1,
+            "win_rate": 0.125,
+            "net": -9.37,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 9,
+            "wins": 2,
+            "win_rate": 0.2222,
+            "net": -2.81,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 14,
+            "wins": 3,
+            "win_rate": 0.2143,
+            "net": -8.76,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 10,
+            "wins": 4,
+            "win_rate": 0.4,
+            "net": 39.48,
+            "above_70": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bb_12_26_9_slope_k20_n2_any_latch20_s50_rth",
+      "kind": "bband",
+      "trades": 308,
+      "wins": 120,
+      "win_rate": 0.3896,
+      "wilson95_low": 0.3368,
+      "gross_win_rate": 0.4123,
+      "point_win_rate": 0.4123,
+      "avg_win": 19.65,
+      "avg_loss": -10.59,
+      "net": 368.46,
+      "gross": 768.86,
+      "qqq_points": 34.948,
+      "exits": {
+        "fade": 150,
+        "stop": 149,
+        "session": 9
+      },
+      "sessions": 22,
+      "days_above_70": 0,
+      "days_no_trade": 0,
+      "days_traded": 22,
+      "days": [
+        {
+          "day": "2026-09-30",
+          "trades": 9,
+          "wins": 3,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.4444,
+          "point_win_rate": 0.4444,
+          "net": -39.48,
+          "qqq_points": -1.263,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-01",
+          "trades": 15,
+          "wins": 6,
+          "win_rate": 0.4,
+          "gross_win_rate": 0.4667,
+          "point_win_rate": 0.4667,
+          "net": 214.55,
+          "qqq_points": 10.639,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-02",
+          "trades": 17,
+          "wins": 5,
+          "win_rate": 0.2941,
+          "gross_win_rate": 0.2941,
+          "point_win_rate": 0.2941,
+          "net": -93.49,
+          "qqq_points": -3.244,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-05",
+          "trades": 9,
+          "wins": 6,
+          "win_rate": 0.6667,
+          "gross_win_rate": 0.6667,
+          "point_win_rate": 0.6667,
+          "net": 24.3,
+          "qqq_points": 1.636,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-06",
+          "trades": 16,
+          "wins": 3,
+          "win_rate": 0.1875,
+          "gross_win_rate": 0.1875,
+          "point_win_rate": 0.1875,
+          "net": -70.11,
+          "qqq_points": -2.242,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-07",
+          "trades": 10,
+          "wins": 5,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -13.99,
+          "qqq_points": -0.045,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-08",
+          "trades": 11,
+          "wins": 5,
+          "win_rate": 0.4545,
+          "gross_win_rate": 0.4545,
+          "point_win_rate": 0.4545,
+          "net": 20.32,
+          "qqq_points": 1.574,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-09",
+          "trades": 10,
+          "wins": 5,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": -28.38,
+          "qqq_points": -0.699,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-12",
+          "trades": 11,
+          "wins": 3,
+          "win_rate": 0.2727,
+          "gross_win_rate": 0.3636,
+          "point_win_rate": 0.3636,
+          "net": -44.66,
+          "qqq_points": -1.38,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-13",
+          "trades": 13,
+          "wins": 6,
+          "win_rate": 0.4615,
+          "gross_win_rate": 0.4615,
+          "point_win_rate": 0.4615,
+          "net": 38.54,
+          "qqq_points": 2.52,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-14",
+          "trades": 20,
+          "wins": 7,
+          "win_rate": 0.35,
+          "gross_win_rate": 0.45,
+          "point_win_rate": 0.45,
+          "net": 20.25,
+          "qqq_points": 2.102,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-15",
+          "trades": 15,
+          "wins": 8,
+          "win_rate": 0.5333,
+          "gross_win_rate": 0.5333,
+          "point_win_rate": 0.5333,
+          "net": 142.92,
+          "qqq_points": 7.383,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-16",
+          "trades": 19,
+          "wins": 6,
+          "win_rate": 0.3158,
+          "gross_win_rate": 0.3158,
+          "point_win_rate": 0.3158,
+          "net": -10.38,
+          "qqq_points": 0.651,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-19",
+          "trades": 20,
+          "wins": 2,
+          "win_rate": 0.1,
+          "gross_win_rate": 0.2,
+          "point_win_rate": 0.2,
+          "net": -102.78,
+          "qqq_points": -3.49,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-20",
+          "trades": 12,
+          "wins": 4,
+          "win_rate": 0.3333,
+          "gross_win_rate": 0.3333,
+          "point_win_rate": 0.3333,
+          "net": 8.75,
+          "qqq_points": 1.106,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-21",
+          "trades": 13,
+          "wins": 4,
+          "win_rate": 0.3077,
+          "gross_win_rate": 0.3077,
+          "point_win_rate": 0.3077,
+          "net": -16.15,
+          "qqq_points": 0.034,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-22",
+          "trades": 17,
+          "wins": 7,
+          "win_rate": 0.4118,
+          "gross_win_rate": 0.4118,
+          "point_win_rate": 0.4118,
+          "net": 179.07,
+          "qqq_points": 9.144,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-23",
+          "trades": 20,
+          "wins": 10,
+          "win_rate": 0.5,
+          "gross_win_rate": 0.5,
+          "point_win_rate": 0.5,
+          "net": 36.16,
+          "qqq_points": 2.825,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-26",
+          "trades": 11,
+          "wins": 4,
+          "win_rate": 0.3636,
+          "gross_win_rate": 0.3636,
+          "point_win_rate": 0.3636,
+          "net": 20.14,
+          "qqq_points": 1.565,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-27",
+          "trades": 12,
+          "wins": 5,
+          "win_rate": 0.4167,
+          "gross_win_rate": 0.4167,
+          "point_win_rate": 0.4167,
+          "net": 22.92,
+          "qqq_points": 1.751,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-28",
+          "trades": 17,
+          "wins": 9,
+          "win_rate": 0.5294,
+          "gross_win_rate": 0.5294,
+          "point_win_rate": 0.5294,
+          "net": 20.82,
+          "qqq_points": 1.951,
+          "above_70": false
+        },
+        {
+          "day": "2026-10-29",
+          "trades": 11,
+          "wins": 7,
+          "win_rate": 0.6364,
+          "gross_win_rate": 0.6364,
+          "point_win_rate": 0.6364,
+          "net": 39.14,
+          "qqq_points": 2.429,
+          "above_70": false
+        }
+      ],
+      "focus_week": {
+        "sessions": 4,
+        "trades": 51,
+        "wins": 25,
+        "win_rate": 0.4902,
+        "net": 103.02,
+        "qqq_points": 7.696,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-10-26",
+            "trades": 11,
+            "wins": 4,
+            "win_rate": 0.3636,
+            "net": 20.14,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-27",
+            "trades": 12,
+            "wins": 5,
+            "win_rate": 0.4167,
+            "net": 22.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-28",
+            "trades": 17,
+            "wins": 9,
+            "win_rate": 0.5294,
+            "net": 20.82,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-29",
+            "trades": 11,
+            "wins": 7,
+            "win_rate": 0.6364,
+            "net": 39.14,
+            "above_70": false
+          }
+        ]
+      },
+      "before_focus": {
+        "sessions": 18,
+        "trades": 257,
+        "wins": 95,
+        "win_rate": 0.3696,
+        "net": 265.44,
+        "qqq_points": 27.251,
+        "days_above_70": 0,
+        "days_no_trade": 0,
+        "days": [
+          {
+            "day": "2026-09-30",
+            "trades": 9,
+            "wins": 3,
+            "win_rate": 0.3333,
+            "net": -39.48,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-01",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "net": 214.55,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-02",
+            "trades": 17,
+            "wins": 5,
+            "win_rate": 0.2941,
+            "net": -93.49,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-05",
+            "trades": 9,
+            "wins": 6,
+            "win_rate": 0.6667,
+            "net": 24.3,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-06",
+            "trades": 16,
+            "wins": 3,
+            "win_rate": 0.1875,
+            "net": -70.11,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-07",
+            "trades": 10,
+            "wins": 5,
+            "win_rate": 0.5,
+            "net": -13.99,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-08",
+            "trades": 11,
+            "wins": 5,
+            "win_rate": 0.4545,
+            "net": 20.32,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-09",
+            "trades": 10,
+            "wins": 5,
+            "win_rate": 0.5,
+            "net": -28.38,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-12",
+            "trades": 11,
+            "wins": 3,
+            "win_rate": 0.2727,
+            "net": -44.66,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-13",
+            "trades": 13,
+            "wins": 6,
+            "win_rate": 0.4615,
+            "net": 38.54,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-14",
+            "trades": 20,
+            "wins": 7,
+            "win_rate": 0.35,
+            "net": 20.25,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-15",
+            "trades": 15,
+            "wins": 8,
+            "win_rate": 0.5333,
+            "net": 142.92,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-16",
+            "trades": 19,
+            "wins": 6,
+            "win_rate": 0.3158,
+            "net": -10.38,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-19",
+            "trades": 20,
+            "wins": 2,
+            "win_rate": 0.1,
+            "net": -102.78,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-20",
+            "trades": 12,
+            "wins": 4,
+            "win_rate": 0.3333,
+            "net": 8.75,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-21",
+            "trades": 13,
+            "wins": 4,
+            "win_rate": 0.3077,
+            "net": -16.15,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-22",
+            "trades": 17,
+            "wins": 7,
+            "win_rate": 0.4118,
+            "net": 179.07,
+            "above_70": false
+          },
+          {
+            "day": "2026-10-23",
+            "trades": 20,
+            "wins": 10,
+            "win_rate": 0.5,
+            "net": 36.16,
             "above_70": false
           }
         ]
