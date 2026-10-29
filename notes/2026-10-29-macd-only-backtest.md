@@ -12,6 +12,8 @@ The current rules do not clear that bar either. They win 34 of 65 trades (52%) a
 
 **The curve rule on Xavier's chart — enter on the signal-line cross after the MACD line hooks, and get out when the line curls the other way — is worse than both.** In a 12-cell test the win rate runs 29–38%. Every cell loses money. The least-bad cell loses about $172. Not one day in any cell is above 70%.
 
+**Entering the moment the line hooks, and getting out quickly, does not fix it.** A 13-cell in-and-out test wins as often as 66% and still loses money on every cell. The best dollars are about −$159, against −$63 for the rules. The high win rate is a small target: a +5% win is $1.20 after fees and a $0.30 stop is about an $8 loss. Today's 2:17 PM CT hook did fire, and the quick exit was out two minutes later for +$3.70, before the 2:30 PM push.
+
 ## What "the current rules" means here
 
 The paper book (`regime_mode` on the 2026-10-29 dry-run) was transcribed into `research/macd_only_backtest.py`. The trader itself was not imported and was not edited.
@@ -361,6 +363,91 @@ The other eight cells' per-day rows are in `research/macd_backtest_results.json`
 
 Twelve cells, chosen before the run, on the same 22 days. The best of 12 is the number a search would want to keep, and that number is −$172 with a 31% win rate and zero days above 70%. There is no green cell to talk ourselves into. The $0.50 stop is the version that loses the least, and it loses less by cutting losers, not by winning more often. I would not trade this, and I would not put it on the paper book.
 
+## Follow-up: enter on the hook, get out quickly
+
+Xavier clarified the rule after the 2:30 PM CT chart on October 29. The MACD was curling up from below zero into a discount zone, a green Heikin Ashi candle printed, and his BUY mark was on. He would enter as soon as the MACD line starts to curve, not after it crosses the signal line, and he would be in and out, taking whatever profit is there.
+
+Coded before this run, 13 cells:
+
+- Entry is the slope flip itself. Call on the first bar the MACD line turns up. Put on the first bar it turns down. One check uses a one-bar histogram turn instead (the white/pink bar).
+- Quick exit, every cell: a $0.30 QQQ disaster stop, plus one of +5% in 2 minutes, +10% in 3 minutes, +15% in 3 minutes, or +10% in 3 minutes or the first Heikin Ashi bar in the trade's direction, whichever comes first.
+- Speeds 12/26/9 and 6/13/5, regular closes. The eight morning slope cells are the decision set.
+- A context filter meant to match the photo: MACD line still on the right side of zero and in the outer 25% of its last 30 values, and price beyond both VWAP and EMA20. Tested in the morning and across the full session, 08:30–14:59 CT.
+- One position. No 12-trade cap. Same $0.50 premium, 0.22 delta, $1.30 round trip.
+
+What the fees do to a book this fast: +5% of a $0.50 option is $2.50, which is **$1.20 after the $1.30 fee**. +10% nets $3.70. +15% nets $6.20. The $0.30 stop is 0.30 × 0.22 × 100 = $6.60, **about $7.90 after fees**. A time exit that goes nowhere is a $1.30 loss. You need roughly a 5-to-1 win rate just to tread water at +5%, because one stop eats five of those wins.
+
+### Today, 2:17 PM CT
+
+The hook is real, and it is not at 2:30. On the 12/26/9 line:
+
+| Time | QQQ | HA | MACD line | Histogram | What happened |
+| --- | --- | --- | --- | --- | --- |
+| 14:16 | 712.44 | red | −0.069 | −0.086 | Still falling. Under EMA and under VWAP. |
+| 14:17 | 712.77 | green | −0.065 | −0.065 | **Line turns up.** Still below zero, bottom fifth of the last 30 readings, price under both EMA20 (712.83) and VWAP (714.46). |
+| 14:18 | 713.07 | green | −0.037 | −0.030 | The +10% target is hit. Quick book is out, **+$3.70**. |
+| 14:20 | 713.17 | green | +0.005 | +0.012 | This is the signal-line cross the older rule waited for. |
+| 14:30 | 714.30 | green | +0.243 | +0.099 | The push on the photo. No new hook. |
+| 14:33 | 714.41 | green | +0.349 | +0.119 | Still the same upswing. |
+| 14:35 | 713.83 | red | +0.329 | +0.059 | Line turns down. |
+
+The 14:17 bar is the photo: discount, MACD curling up from below zero, green Heikin Ashi. The in-and-out rule took it and was flat at 14:18. Holding that same entry to the 14:33 close is 712.77 to 714.41, about +$35 on this proxy, before any giveback. That is why the chart feels like a winner. The rule he asked to test does not hold it. Nothing between 14:25 and 14:35 is a new curl-up.
+
+### Does the quick book beat the rules?
+
+No. Six of the 13 cells win more often than the rules' 52%. **None make more money.** The best net in the grid is −$159. The rules are −$63. The highest win rate is 66%, on the +5% / 2-minute package, and that cell loses **$1,065**. Its average win is $1.20 and its average loss is $6.66. October 29 on that package is 26 wins out of 34 (76%) and still −$32. A day can clear 70% and lose money when the win is a fee-sized scalp and the loss is a $0.30 stop.
+
+| Book | Trades | Win rate | Avg win / avg loss | Fees | Net | Days above 70% | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Current rules | 65 | 52% | +$6.66 / −$9.34 | $85 | −$63 | 6 | 8/15, −$27 |
+| 12/26/9 hook, +10%, 3 min, morning | 675 | 56% | +$3.56 / −$7.05 | $878 | −$781 | 2 | 58/114, −$179 |
+| same, also exit on the first green/red bar | 745 | 46% | +$3.22 / −$5.29 | $968 | −$1,049 | 0 | 52/123, −$210 |
+| 12/26/9 hook, +5%, 2 min, morning | 719 | 66% | +$1.20 / −$6.66 | $935 | −$1,065 | 8 | 76/120, −$190 |
+| 12/26/9 hook, +15%, 3 min, morning | 650 | 45% | +$5.48 / −$6.96 | $845 | −$905 | 0 | 51/111, −$133 |
+| 6/13/5 hook, +10%, 3 min, morning | 913 | 55% | +$3.56 / −$7.18 | $1,187 | −$1,174 | 1 | 76/152, −$271 |
+| Photo filter, 12/26/9, morning | 185 | 55% | +$3.09 / −$5.72 | $240 | −$159 | 4 | 16/31, −$46 |
+| Photo filter, full session | 336 | 48% | +$2.93 / −$4.82 | $437 | −$371 | 0 | 26/60, −$89 |
+| No filter, full session, 12/26/9 | 1,348 | 43% | +$2.97 / −$4.58 | $1,752 | −$1,781 | 0 | 94/228, −$341 |
+
+The photo filter is the least-bad version. It cuts the morning from 745 trades to 185 and from −$1,049 to −$159. Before fees that filtered book is about +$81. The fees are $240, so the edge it has is smaller than the commission. Four of 22 days are above 70%. This week it is 16/31 and −$46, and Thursday's filtered morning is 4/8, −$7. Opening the same filter to the afternoon makes it worse (−$371, no day above 70%).
+
+The unfiltered hook, morning only, on the +10% target with the color exit, loses money every single day of the 22. Per day it runs from about −$2 to −$114. There is no day to point at.
+
+### Per day, the photo filter in the morning
+
+12/26/9, enter on the hook only when MACD is extended through zero and price is beyond VWAP and EMA20, out at +10% or the first favorable Heikin Ashi bar or 3 minutes or the $0.30 stop.
+
+| Day | Wins/trades | Win rate | Net | |
+| --- | --- | --- | --- | --- |
+| 09-30 | 2/5 | 40% | −$14 | |
+| 10-01 | 2/6 | 33% | −$12 | |
+| 10-02 | 4/12 | 33% | −$35 | |
+| 10-05 | 6/9 | 67% | −$1 | |
+| 10-06 | 5/9 | 56% | +$2 | |
+| 10-07 | 5/8 | 62% | −$8 | |
+| 10-08 | 6/10 | 60% | −$3 | |
+| 10-09 | 5/11 | 45% | −$31 | |
+| 10-12 | 3/8 | 38% | −$20 | |
+| 10-13 | 5/9 | 56% | −$10 | |
+| 10-14 | 7/9 | 78% | +$10 | pass |
+| 10-15 | 7/8 | 88% | +$24 | pass |
+| 10-16 | 4/7 | 57% | −$5 | |
+| 10-19 | 4/7 | 57% | −$3 | |
+| 10-20 | 3/6 | 50% | −$1 | |
+| 10-21 | 7/13 | 54% | −$9 | |
+| 10-22 | 6/7 | 86% | +$14 | pass |
+| 10-23 | 5/10 | 50% | −$12 | |
+| 10-26 | 2/3 | 67% | −$1 | |
+| 10-27 | 5/13 | 38% | −$46 | |
+| 10-28 | 5/7 | 71% | +$8 | pass |
+| 10-29 | 4/8 | 50% | −$7 | |
+
+The other cells' per-day rows are in `research/macd_backtest_results.json`.
+
+### Multiple testing
+
+Thirteen cells, named before the run, on the same 22 days. Six of them beat the rules on win rate and every one of those six loses more money than the rules, most of them by hundreds of dollars. The best dollar figure in the list, −$159, is the photo filter, and its 95% lower bound on the 55% win rate is 48%. That is not a hidden winner. It is a small gross edge that a $1.30 ticket erases. I would not trade the hook as an in-and-out book, and I would not add it to the paper rules.
+
 ## MACD as a filter on the entries we already take
 
 Same fade and retest. Take the trade only when the histogram is already on that side (call with histogram > 0, put with histogram < 0).
@@ -390,7 +477,7 @@ The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the we
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.
 
-The 48-cell MACD grid, the 24-cell MACD+RSI grid, and the 12-cell curve-exit grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
+The 48-cell MACD grid, the 24-cell MACD+RSI grid, the 12-cell curve-exit grid, and the 13-cell in-and-out grid were scored on the same days they are reported on. That is why each test uses a list written down first, and why a grid maximum is quoted and then ignored. Nothing was held out. A later month can disagree, especially on the filter and on the one green RSI-reversal cell, where moving one or two trades, or widening the confirmation window from 3 bars to 5, changes the sign of the dollars.
 
 The option proxy matches Thursday's adverse stops and over-credits fast favorable wicks. If anything, that bias helps the chop target, which is the framework MACD needed in order to lose the least. It did not produce a MACD book that wins.
 

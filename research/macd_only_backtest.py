@@ -897,6 +897,123 @@ def simulate_curve(recs, spec, delta: float) -> list[dict]:
     return trades
 
 
+def allows_quick_entry(t: datetime, window: str) -> bool:
+    if t.weekday() >= 5:
+        return False
+    if window == "morning":
+        return ENTRY_LO <= t.time() <= ENTRY_HI
+    return ENTRY_LO <= t.time() < dtime(15, 0)
+
+
+def macd_extreme(lines: list[float], side: str) -> bool:
+    """Bottom/top 25% of the last 30 MACD-line values, and on the correct side of zero."""
+    if len(lines) < 30:
+        return False
+    window = lines[-30:]
+    cur = window[-1]
+    rank = sum(1 for x in window if x <= cur) / 30.0
+    if side == "CALL":
+        return cur < 0 and rank <= 0.25
+    return cur > 0 and rank >= 0.75
+
+
+def price_extended(rec, side: str) -> bool:
+    ema, vwap, close = rec["ema"], rec["vwap"], rec["c"]
+    if ema is None or vwap is None:
+        return False
+    if side == "CALL":
+        return close < vwap and close < ema
+    return close > vwap and close > ema
+
+
+def quick_resolve(pos, rec, spec):
+    """Stop and target on the bar's range; color and the clock at the close.
+
+    If the $0.30 stop and the small target both print, the level closer to
+    the open is filled. A tie is the stop.
+    """
+    side = pos["side"]
+    stop_hit = rec["l"] <= pos["stop_level"] if side == "CALL" else rec["h"] >= pos["stop_level"]
+    tp_hit = rec["h"] >= pos["tp_level"] if side == "CALL" else rec["l"] <= pos["tp_level"]
+    if stop_hit or tp_hit:
+        if stop_hit and tp_hit:
+            take_stop = abs(rec["o"] - pos["stop_level"]) <= abs(rec["o"] - pos["tp_level"])
+        else:
+            take_stop = stop_hit
+        if take_stop:
+            return "stop", -pos["stop_dist"]
+        return "tp", pos["tp_dist"]
+    if spec["color_exit"]:
+        want = "green" if side == "CALL" else "red"
+        if rec["color"] == want:
+            direction = 1 if side == "CALL" else -1
+            return "color", (rec["c"] - pos["entry"]) * direction
+    if rec["t"] >= pos["deadline"]:
+        direction = 1 if side == "CALL" else -1
+        return "time", (rec["c"] - pos["entry"]) * direction
+    return None
+
+
+def simulate_quick(recs, spec, delta: float) -> list[dict]:
+    """Enter the moment the MACD curls. Do not wait for the signal line.
+
+    Exit is a small option target, optionally the first HA bar in the trade's
+    direction, a 2- or 3-minute clock, and a $0.30 QQQ disaster stop. One
+    position. No 12-trade cap. No same-bar re-entry.
+    """
+    key = (spec["series"], spec["fast"], spec["slow"], spec["sig"])
+    mode = spec["curve"]
+    lines: list[float] = []
+    hists: list[float] = []
+    trades = []
+    pos = None
+    last_rth = None
+
+    def shut(bar, reason, points):
+        nonlocal pos
+        trades.append(finish(pos, bar, reason, points, delta))
+        pos = None
+
+    for rec in recs:
+        if pos is not None and last_rth is not None and rec["t"].date() != last_rth["t"].date():
+            direction = 1 if pos["side"] == "CALL" else -1
+            shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+        st = rec["macd"][key]
+        if st["line"] is not None:
+            lines.append(st["line"])
+        if st["hist"] is not None:
+            hists.append(st["hist"])
+        turn_up, turn_down = curve_turns(lines, hists, mode)
+        if rec["rth"]:
+            last_rth = rec
+        if pos is not None and rec["rth"] and rec["t"] > pos["entry_t"] and rec["t"].date() == pos["entry_t"].date():
+            hit = quick_resolve(pos, rec, spec)
+            if hit:
+                shut(rec, hit[0], hit[1])
+                continue
+        if pos is None and allows_quick_entry(rec["t"], spec["window"]):
+            side = "CALL" if turn_up else ("PUT" if turn_down else None)
+            if side is None:
+                continue
+            if spec["context"] and not (macd_extreme(lines, side) and price_extended(rec, side)):
+                continue
+            entry = rec["c"]
+            level = round(entry - 0.30 if side == "CALL" else entry + 0.30, 2)
+            dist = abs(entry - level)
+            tp = tp_points(spec["tp"], delta)
+            pos = {
+                "side": side, "style": "quick", "entry": entry, "entry_t": rec["t"],
+                "stop_dist": dist, "stop_level": level,
+                "tp_dist": tp, "tp_level": entry + tp if side == "CALL" else entry - tp,
+                "deadline": rec["t"] + timedelta(minutes=spec["time_min"]),
+                "label": rec["label"], "source": mode,
+            }
+    if pos is not None and last_rth is not None:
+        direction = 1 if pos["side"] == "CALL" else -1
+        shut(last_rth, "session", (last_rth["c"] - pos["entry"]) * direction)
+    return trades
+
+
 def finish(pos, rec, reason, points, delta) -> dict:
     gross, net = opt_dollars(points, delta)
     return {
@@ -1093,6 +1210,33 @@ def build_specs() -> list[dict]:
             "trigger": "signal_cross", "trend_filter": False, "exit": "curve",
             "curve": curve, "disaster": disaster,
         })
+    # In-and-out curl. Listed before this run. Enter on the turn itself.
+    # Decision cells are the eight unfiltered slope rows in the morning.
+    # tp is the option percent. color_exit takes the first HA bar with the trade.
+    # context is the photo: MACD in the outer 25% of its last 30 bars and beyond
+    # zero, and price beyond both VWAP and EMA20.
+    quick_rows = []
+    for fast, slow, sig in ((12, 26, 9), (6, 13, 5)):
+        for tp, minutes, color in ((0.10, 3, False), (0.10, 3, True), (0.05, 2, False), (0.15, 3, False)):
+            quick_rows.append((fast, slow, sig, "slope", tp, minutes, color, False, "morning"))
+    quick_rows.extend([
+        (12, 26, 9, "hist1", 0.10, 3, True, False, "morning"),
+        (12, 26, 9, "slope", 0.10, 3, True, True, "morning"),
+        (12, 26, 9, "slope", 0.10, 3, True, True, "rth"),
+        (12, 26, 9, "slope", 0.10, 3, True, False, "rth"),
+        (6, 13, 5, "slope", 0.10, 3, True, True, "morning"),
+    ])
+    for fast, slow, sig, curve, tp, minutes, color, context, window in quick_rows:
+        color_name = "color" if color else "nocolor"
+        ctx_name = "ctx" if context else "raw"
+        tp_name = f"tp{int(tp * 100)}"
+        specs.append({
+            "name": f"quick_{fast}_{slow}_{sig}_{curve}_{tp_name}_{minutes}m_{color_name}_{ctx_name}_{window}",
+            "kind": "quick", "fast": fast, "slow": slow, "sig": sig, "series": "close",
+            "trigger": "slope_turn", "trend_filter": False, "exit": "quick",
+            "curve": curve, "tp": tp, "time_min": minutes, "color_exit": color,
+            "context": context, "window": window,
+        })
     return specs
 
 
@@ -1134,6 +1278,19 @@ CURVE_REFERENCE = [
     "curve_6_13_5_close_slope_stop50",
 ]
 
+# Decision set for the in-and-out curl: slope turn, no context filter,
+# morning window, both speeds, the four exit packages. Named before that run.
+QUICK_REFERENCE = [
+    "quick_12_26_9_slope_tp10_3m_nocolor_raw_morning",
+    "quick_12_26_9_slope_tp10_3m_color_raw_morning",
+    "quick_12_26_9_slope_tp5_2m_nocolor_raw_morning",
+    "quick_12_26_9_slope_tp15_3m_nocolor_raw_morning",
+    "quick_6_13_5_slope_tp10_3m_nocolor_raw_morning",
+    "quick_6_13_5_slope_tp10_3m_color_raw_morning",
+    "quick_6_13_5_slope_tp5_2m_nocolor_raw_morning",
+    "quick_6_13_5_slope_tp15_3m_nocolor_raw_morning",
+]
+
 # MACD signal-line cross, regular close, no trend filter. The pair to beat
 # when asking whether RSI adds anything.
 MACD_ONLY_CROSS = [
@@ -1166,6 +1323,57 @@ def pack(summary: dict, trades: list[dict] | None, keep_trades: bool) -> dict:
     return body
 
 
+def oct29_afternoon(recs, trade_bank) -> dict:
+    """What the 12/26/9 MACD was doing on Oct 29 from 14:20 to 14:40 CT."""
+    bars = []
+    prev_line = None
+    prev_d = None
+    for rec in recs:
+        if rec["t"].date().isoformat() != "2026-10-29":
+            continue
+        st = rec["macd"][("close", 12, 26, 9)]
+        line = st["line"]
+        d = None if line is None or prev_line is None else line - prev_line
+        turn = None
+        if d is not None and prev_d is not None:
+            if d > 0 and prev_d <= 0:
+                turn = "up"
+            elif d < 0 and prev_d >= 0:
+                turn = "down"
+        if dtime(14, 20) <= rec["t"].time() <= dtime(14, 40):
+            below = (rec["ema"] is not None and rec["vwap"] is not None
+                     and rec["c"] < rec["ema"] and rec["c"] < rec["vwap"])
+            above = (rec["ema"] is not None and rec["vwap"] is not None
+                     and rec["c"] > rec["ema"] and rec["c"] > rec["vwap"])
+            bars.append({
+                "t": rec["t"].strftime("%H:%M"),
+                "close": round(rec["c"], 2),
+                "ha": rec["color"],
+                "ema": None if rec["ema"] is None else round(rec["ema"], 2),
+                "vwap": None if rec["vwap"] is None else round(rec["vwap"], 2),
+                "macd": None if line is None else round(line, 4),
+                "hist": None if st["hist"] is None else round(st["hist"], 4),
+                "turn": turn,
+                "extended_below": below,
+                "extended_above": above,
+            })
+        prev_d = d
+        prev_line = line
+    fired = []
+    for name, trades in trade_bank.items():
+        if not str(name).startswith("quick_"):
+            continue
+        for tr in trades:
+            et = datetime.fromisoformat(tr["entry_t"])
+            if et.date().isoformat() == "2026-10-29" and dtime(14, 15) <= et.time() <= dtime(14, 45):
+                fired.append({
+                    "name": name, "t": et.strftime("%H:%M"), "side": tr["side"],
+                    "exit": tr["exit_reason"], "pts": tr["qqq_points"], "net": tr["opt_net"],
+                    "entry": tr["entry"], "exit_t": tr["exit_t"][11:16],
+                })
+    return {"bars": bars, "trades": fired}
+
+
 def run() -> dict:
     ordered = load_bars()
     recs = prepare(ordered)
@@ -1177,6 +1385,8 @@ def run() -> dict:
     for spec in specs:
         if spec["kind"] == "curve":
             trades = simulate_curve(recs, spec, DELTA)
+        elif spec["kind"] == "quick":
+            trades = simulate_quick(recs, spec, DELTA)
         else:
             trades = simulate(recs, spec, DELTA, "proximity")
         summary = summarize(trades, sess)
@@ -1247,6 +1457,19 @@ def run() -> dict:
     ), reverse=True)
     curve_both = sum(
         1 for r in curves
+        if r["win_rate"] is not None and base["win_rate"] is not None
+        and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
+    )
+    quicks = [r for r in results if r["kind"] == "quick"]
+    quick_wr = [r["win_rate"] for r in quicks if r["win_rate"] is not None]
+    quick_net = [r["net"] for r in quicks]
+    quick_ranked = sorted(quicks, key=lambda r: (
+        r["days_above_70"],
+        r["win_rate"] if r["win_rate"] is not None else -1,
+        r["net"],
+    ), reverse=True)
+    quick_both = sum(
+        1 for r in quicks
         if r["win_rate"] is not None and base["win_rate"] is not None
         and r["win_rate"] > base["win_rate"] and r["net"] > base["net"]
     )
@@ -1321,6 +1544,26 @@ def run() -> dict:
                      "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"],
                      "exits": r["exits"]} for r in curve_ranked[:5]],
         },
+        "quick_distribution": {
+            "variants": len(quicks),
+            "predeclared_decision_set": QUICK_REFERENCE,
+            "win_rate_min": None if not quick_wr else round(min(quick_wr), 4),
+            "win_rate_median": None if not quick_wr else round(statistics.median(quick_wr), 4),
+            "win_rate_max": None if not quick_wr else round(max(quick_wr), 4),
+            "net_min": None if not quick_net else round(min(quick_net), 2),
+            "net_median": None if not quick_net else round(statistics.median(quick_net), 2),
+            "net_max": None if not quick_net else round(max(quick_net), 2),
+            "n_higher_win_rate_than_baseline": sum(1 for r in quicks if r["win_rate"] is not None and base["win_rate"] is not None and r["win_rate"] > base["win_rate"]),
+            "n_higher_net_than_baseline": sum(1 for r in quicks if r["net"] > base["net"]),
+            "n_higher_win_rate_and_net": quick_both,
+            "n_any_day_sweep_above_70": sum(1 for r in quicks if r["days_above_70"] == r["sessions"]),
+            "max_days_above_70": max((r["days_above_70"] for r in quicks), default=0),
+            "top": [{"name": r["name"], "trades": r["trades"], "win_rate": r["win_rate"], "net": r["net"],
+                     "avg_win": r["avg_win"], "avg_loss": r["avg_loss"], "gross": r["gross"],
+                     "days_above_70": r["days_above_70"], "days_no_trade": r["days_no_trade"],
+                     "exits": r["exits"]} for r in quick_ranked[:5]],
+        },
+        "oct29_afternoon": oct29_afternoon(recs, trade_bank),
         "stop_first": {k: {"net": v[0], "win_rate": v[1], "trades": v[2]} for k, v in stop_first.items()},
         "sensitivity": sensitivity,
     }
@@ -1457,6 +1700,41 @@ def print_report(payload: dict) -> None:
                 bits.append(f"{d['day'][5:]} {d['wins']}/{d['trades']}{flag} ${d['net']:.0f}")
         print(f"  {name}")
         print("    " + " | ".join(bits))
+    print()
+    qd = payload["quick_distribution"]
+    print(f"QUICK CURL  n={qd['variants']}  win {qd['win_rate_min']*100:.1f}/{qd['win_rate_median']*100:.1f}/{qd['win_rate_max']*100:.1f}% min/med/max")
+    print(f"  net ${qd['net_min']:.0f} / ${qd['net_median']:.0f} / ${qd['net_max']:.0f}")
+    print(f"  higher win rate than rules: {qd['n_higher_win_rate_than_baseline']}  higher net: {qd['n_higher_net_than_baseline']}  both: {qd['n_higher_win_rate_and_net']}")
+    print(f"  cleared >70% every session: {qd['n_any_day_sweep_above_70']}  most days>70: {qd['max_days_above_70']}/{base['sessions']}")
+    print("QUICK ALL CELLS (* = decision set):")
+    for r in payload["results"]:
+        if r["kind"] != "quick":
+            continue
+        fw = r["focus_week"]
+        mark = " *" if r["name"] in QUICK_REFERENCE else ""
+        fees = r["gross"] - r["net"]
+        print(f"  {r['name']:62s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
+              f"avg {r['avg_win']}/{r['avg_loss']}  fees ${fees:.0f}  days>70 {r['days_above_70']:2d}  "
+              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  {r['exits']}{mark}")
+    print("QUICK DECISION SET, per day:")
+    for name in QUICK_REFERENCE:
+        r = by[name]
+        bits = []
+        for d in r["days"]:
+            if d["trades"] == 0:
+                bits.append(f"{d['day'][5:]} flat")
+            else:
+                flag = "*" if d["above_70"] else ""
+                bits.append(f"{d['day'][5:]} {d['wins']}/{d['trades']}{flag} ${d['net']:.0f}")
+        print(f"  {name}")
+        print("    " + " | ".join(bits))
+    print("OCT 29 14:20-14:40 CT  12/26/9")
+    for bar in payload["oct29_afternoon"]["bars"]:
+        print(f"  {bar['t']} c {bar['close']} {bar['ha']:5} macd {bar['macd']} hist {bar['hist']} "
+              f"turn {bar['turn']} below {bar['extended_below']} ema {bar['ema']} vwap {bar['vwap']}")
+    print("  trades in 14:15-14:45:")
+    for tr in payload["oct29_afternoon"]["trades"]:
+        print(f"    {tr['t']} {tr['name']} {tr['side']} -> {tr['exit']} pts {tr['pts']} net {tr['net']} exit {tr['exit_t']}")
 
 
 if __name__ == "__main__":
