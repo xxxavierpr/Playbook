@@ -17,6 +17,10 @@ MACD line hooks, and exits when the line curls the other way. No fixed
 target and no time stop. CURVE_REFERENCE is the four slope cells on
 regular closes. Histogram-shrink and Heikin Ashi rows are the checks.
 
+A third follow-up (kind "quick") enters on the slope turn itself and exits
+on a small option target, an optional favorable HA bar, a 2- or 3-minute
+clock, and a $0.30 stop. QUICK_REFERENCE is the eight morning slope cells.
+
 Run from the repo root:
 
     python3 research/macd_only_backtest.py
