@@ -599,6 +599,52 @@ Same CHOP/TREND/MIXED gate and the same exits. The signal inside CHOP and TREND 
 
 The one green cell (+$32 on 125 trades, about $0.25 a trade) loses $60 on the week that prompted the question. Its 95% lower bound is 44%. I would not turn it on.
 
+## Follow-up: entries stop at 11:30
+
+Same 1-minute bars, same extended-hours indicators, same fees and proxy. The only clock change: no new trade after the 11:30 bar. A trade may still exit after 11:30. Anything left open is flattened at the 11:59 close, so the book is flat at noon. In this run nothing needed that flatten. The holds finished on their own.
+
+| Book | Trades | Win rate | Avg win / avg loss | Net | Days above 70% | Flat days | Oct 26–29 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Current rules | 57 | 53% | +$6.71 / −$9.50 | −$55 | 6 | 1 | 8/14, −$15 |
+| Band + curl, $0.50 stop | 178 | 28% | +$23.32 / −$8.42 | +$88 | 0 | 0 | 8/25, −$30 |
+| Same, MACD deep | 111 | 30% | +$24.49 / −$8.02 | +$183 | 2 | 0 | 4/12, −$48 |
+| Same, stop past the touch bar | 175 | 30% | +$22.91 / −$9.55 | +$17 | 0 | 0 | 8/24, −$5 |
+| +20% latch, then curl, touch-bar stop | 157 | 41% | +$23.11 / −$13.15 | +$256 | 1 | 0 | 12/22, +$173 |
+| Exit at the opposite band, $0.50 stop | 195 | 47% | +$18.44 / −$12.07 | +$423 | 1 | 0 | 11/26, −$25 |
+
+Against the full morning window, the rules go from 65 trades and −$63 to 57 trades and −$55. Still about 53%, still 6 days above 70%, still red. The plain curl book goes from +$240 to +$88. The deep filter goes from +$342 to +$183, and this week it loses $48. Cutting the last half hour does not create a 70% book.
+
+By win rate, the rules are the best of these six. By dollars, the opposite-band exit is the best of the other five: 47% and +$423. That is still under the rules' win rate, and it is above 70% on one day (October 5, 5-for-7). October 15 alone is +$203, about half the profit. This week that book is 11-for-26 and −$25.
+
+Per day for the win-rate winner, the rules with the 11:30 cutoff. One morning had no trade.
+
+| Day | Wins/trades | Win rate | Net | |
+| --- | --- | --- | --- | --- |
+| 09-30 | 2/4 | 50% | −$3 | |
+| 10-01 | 1/2 | 50% | −$15 | |
+| 10-02 | 1/2 | 50% | +$3 | |
+| 10-05 | 0 | | $0 | flat |
+| 10-06 | 1/3 | 33% | −$4 | |
+| 10-07 | 1/1 | 100% | +$3 | pass |
+| 10-08 | 1/2 | 50% | −$3 | |
+| 10-09 | 2/3 | 67% | +$7 | |
+| 10-12 | 1/2 | 50% | −$3 | |
+| 10-13 | 1/4 | 25% | −$24 | |
+| 10-14 | 1/6 | 17% | −$35 | |
+| 10-15 | 1/1 | 100% | +$11 | pass |
+| 10-16 | 0/1 | 0% | −$8 | |
+| 10-19 | 2/2 | 100% | +$9 | pass |
+| 10-20 | 1/1 | 100% | +$5 | pass |
+| 10-21 | 4/5 | 80% | +$17 | pass |
+| 10-22 | 2/2 | 100% | +$16 | pass |
+| 10-23 | 0/2 | 0% | −$16 | |
+| 10-26 | 2/3 | 67% | +$8 | |
+| 10-27 | 1/2 | 50% | −$3 | |
+| 10-28 | 2/3 | 67% | −$2 | |
+| 10-29 | 3/6 | 50% | −$18 | |
+
+The opposite-band book's per-day rows are in `research/macd_backtest_results.json` under `bb_12_26_9_slope_k20_n2_any_opp_s50_am1130`. Six cells, one window, same 22 days. The ranking did not change: the rules still win more often, and the hold that reaches the far band still makes the money without clearing 70%.
+
 ## What this sample can and cannot say
 
 Twenty-two mornings and 65 rule-trades is a small sample. A real 70%-every-day book would be obvious here, and it is not, for the rules or for MACD. The bar is also harsher than the sample size: with two or three trades, one loss fails the day. Passing days in the table are often 1-for-1.

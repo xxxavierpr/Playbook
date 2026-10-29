@@ -772,6 +772,7 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
     next_ok = None
     buys = 0
     day = None
+    last_pre_noon = None
     mem = fresh_mrsi_memory()
     for i, rec in enumerate(recs):
         d = rec["t"].date()
@@ -788,6 +789,15 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
         if spec["kind"] == "macd_rsi":
             # Events during a hold still count as confirmation for the next entry.
             update_mrsi_memory(i, rec, mem)
+        if pos is not None and spec.get("window") == "am1130" and rec["t"].time() >= dtime(12, 0) and rec["t"].date() == pos["entry_t"].date():
+            if last_pre_noon is not None and last_pre_noon["t"] >= pos["entry_t"]:
+                direction = 1 if pos["side"] == "CALL" else -1
+                trades.append(finish(pos, last_pre_noon, "noon", (last_pre_noon["c"] - pos["entry"]) * direction, delta))
+                pos = None
+                next_ok = rec["t"] + timedelta(minutes=2)
+            continue
+        if rec["rth"] and rec["t"].time() < dtime(12, 0):
+            last_pre_noon = rec
         if pos is not None:
             hit = resolve_bar(pos, rec, path)
             if hit:
@@ -795,7 +805,10 @@ def simulate(recs, spec, delta: float, path: str) -> list[dict]:
                 pos = None
                 next_ok = rec["t"] + timedelta(minutes=2)
             continue
-        if not in_entry_window(rec["t"]):
+        if spec.get("window") == "am1130":
+            if not allows_quick_entry(rec["t"], "am1130"):
+                continue
+        elif not in_entry_window(rec["t"]):
             continue
         if next_ok is not None and rec["t"] < next_ok:
             continue
@@ -938,6 +951,9 @@ def simulate_curve(recs, spec, delta: float) -> list[dict]:
 def allows_quick_entry(t: datetime, window: str) -> bool:
     if t.weekday() >= 5:
         return False
+    if window == "am1130":
+        # Entries through the 11:30 bar. Exits may run until the noon flat.
+        return ENTRY_LO <= t.time() <= dtime(11, 30)
     if window == "morning":
         return ENTRY_LO <= t.time() <= ENTRY_HI
     return ENTRY_LO <= t.time() < dtime(15, 0)
@@ -1126,6 +1142,7 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
     trades = []
     pos = None
     last_rth = None
+    last_pre_noon = None
     i = -1
 
     def shut(bar, reason, points):
@@ -1173,6 +1190,14 @@ def simulate_bband(recs, spec, delta: float) -> list[dict]:
         bear_cross = prev_hist is not None and hist is not None and prev_hist >= 0 > hist
         if rec["rth"]:
             last_rth = rec
+        if rec["rth"] and rec["t"].time() < dtime(12, 0):
+            last_pre_noon = rec
+        if (spec.get("window") == "am1130" and pos is not None and rec["t"].time() >= dtime(12, 0)
+                and rec["t"].date() == pos["entry_t"].date()):
+            if last_pre_noon is not None and last_pre_noon["t"] >= pos["entry_t"]:
+                direction = 1 if pos["side"] == "CALL" else -1
+                shut(last_pre_noon, "noon", (last_pre_noon["c"] - pos["entry"]) * direction)
+            continue
         if pos is not None and rec["rth"] and rec["t"] > pos["entry_t"] and rec["t"].date() == pos["entry_t"].date():
             against = (pos["side"] == "CALL" and turn_down) or (pos["side"] == "PUT" and turn_up)
             stop_hit = rec["l"] <= pos["stop_level"] if pos["side"] == "CALL" else rec["h"] >= pos["stop_level"]
@@ -1568,6 +1593,24 @@ def build_specs() -> list[dict]:
             "trigger_mode": trig, "nstd": nstd, "touch_n": touch_n,
             "need_zero": need_zero, "bb_exit": bb_exit, "disaster": stop, "window": window,
         })
+    # 08:30-11:30 entries, flat by noon. Indicators stay on extended hours.
+    specs.append({"name": "current_rules_1130", "kind": "baseline", "window": "am1130"})
+    for tag, vol, wick, deep, stretch, stop, bb_exit in (
+        ("any", None, False, False, False, 0.50, "curl"),
+        ("deep", None, False, True, False, 0.50, "curl"),
+        ("any", None, False, False, False, "bar", "curl"),
+        ("any", None, False, False, False, "bar", "latch20"),
+        ("any", None, False, False, False, 0.50, "opp"),
+    ):
+        sname = "bar" if stop == "bar" else str(int(round(float(stop) * 100)))
+        specs.append({
+            "name": f"bb_12_26_9_slope_k20_n2_{tag}_{bb_exit}_s{sname}_am1130",
+            "kind": "bband", "fast": 12, "slow": 26, "sig": 9, "series": "close",
+            "trigger": "slope", "trend_filter": False, "exit": bb_exit,
+            "trigger_mode": "slope", "nstd": 2.0, "touch_n": 2,
+            "need_zero": False, "bb_exit": bb_exit, "disaster": stop, "window": "am1130",
+            "vol_mult": vol, "wick": wick, "deep": deep, "stretch": stretch,
+        })
     return specs
 
 
@@ -1628,6 +1671,15 @@ BB_REFERENCE = [
     "bb_12_26_9_cross_k20_n2_any_curl_s50_morning",
     "bb_12_26_9_slope_k20_n2_any_mid_s50_morning",
     "bb_12_26_9_slope_k20_n2_any_latch20_s50_morning",
+]
+
+AM1130 = [
+    "current_rules_1130",
+    "bb_12_26_9_slope_k20_n2_any_curl_s50_am1130",
+    "bb_12_26_9_slope_k20_n2_deep_curl_s50_am1130",
+    "bb_12_26_9_slope_k20_n2_any_curl_sbar_am1130",
+    "bb_12_26_9_slope_k20_n2_any_latch20_sbar_am1130",
+    "bb_12_26_9_slope_k20_n2_any_opp_s50_am1130",
 ]
 
 # MACD signal-line cross, regular close, no trend filter. The pair to beat
@@ -2277,6 +2329,22 @@ def print_report(payload: dict) -> None:
     for tr in payload["oct29_bb"]["trades"]:
         print(f"    {tr['t']} {tr['name']} {tr['side']} -> {tr['exit']} pts {tr['pts']} net {tr['net']} exit {tr['exit_t']}")
     print("OCT 29 14:17 INGREDIENTS", payload["oct29_ingredients"])
+    print()
+    print("ENTRIES 08:30-11:30, FLAT BY 12:00")
+    for name in AM1130:
+        r = by[name]
+        fw = r["focus_week"]
+        print(f"  {name:62s}  n {r['trades']:3d}  {fmt_wr(r['win_rate'])}  ${r['net']:8.2f}  "
+              f"avg {r['avg_win']}/{r['avg_loss']}  days>70 {r['days_above_70']:2d}  flat {r['days_no_trade']:2d}  "
+              f"focus {fw['wins']}/{fw['trades']} ${fw['net']:.0f}  {r['exits']}")
+    ranked = sorted((by[n] for n in AM1130), key=lambda r: (
+        r["win_rate"] if r["win_rate"] is not None else -1, r["net"]), reverse=True)
+    best = ranked[0]
+    print(f"BEST BY WIN RATE THEN NET: {best['name']}")
+    for d in best["days"]:
+        wr = "flat" if d["trades"] == 0 else f"{d['wins']}/{d['trades']} {d['win_rate']*100:.0f}% ${d['net']:.2f}"
+        flag = " PASS" if d["above_70"] else ""
+        print(f"    {d['day']}  {wr}{flag}")
 
 
 if __name__ == "__main__":
